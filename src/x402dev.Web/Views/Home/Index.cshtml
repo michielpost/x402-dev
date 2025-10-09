@@ -3,27 +3,97 @@
 @inject ContentService ContentService
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "x402 Developer Portal";
 
     var facilitators = await ContentService.GetFacilitators();
     var content = await ContentService.GetProjects();
     var markdown = Markdown.ToHtml(content);
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section class="hero text-center py-5 mb-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">x402 Developer Portal</h1>
+        <p class="lead mb-4">Discover live facilitators and a curated list of awesome x402 projects. Contribute your own and help the community grow.</p>
+        <div class="d-flex gap-2 justify-content-center">
+            <a class="btn btn-primary btn-lg" href="https://github.com/michielpost/x402-dev" target="_blank" rel="noopener">Add your project on GitHub</a>
+            <a class="btn btn-outline-primary btn-lg" href="#projects">Browse Projects</a>
+        </div>
+    </div>
+    <div class="hero-accent"></div>
+ </section>
 
-    <h2>Facilitators</h2>
-    @foreach(var facilitator in facilitators)
-    {
-        <p>@facilitator.Name</p>
-    }
+<section id="facilitators" class="mb-5">
+    <div class="container">
+        <div class="d-flex align-items-baseline justify-content-between flex-wrap mb-3">
+            <h2 class="h3 m-0">Facilitators</h2>
+            <small class="text-body-secondary">Checked live and updated periodically</small>
+        </div>
 
+        @if (facilitators?.Any() == true)
+        {
+            <div class="table-responsive">
+                <table class="table table-dark table-striped align-middle cyber-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>URL</th>
+                            <th>Kinds</th>
+                            <th>Checked</th>
+                            <th>Next</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var facilitator in facilitators.OrderBy(f => f.Name))
+                    {
+                        var isError = facilitator.HasError;
+                        var statusText = isError ? "Offline" : "Online";
+                        var statusClass = isError ? "badge bg-danger" : "badge bg-success";
+                        var kinds = (facilitator.Kinds is not null && facilitator.Kinds.Count > 0)
+                            ? string.Join(", ", facilitator.Kinds)
+                            : "Unknown";
+                        var checkedText = facilitator.Checked.HasValue ? facilitator.Checked.Value.ToLocalTime().ToString("g") : "—";
+                        var nextText = facilitator.NextCheck.HasValue ? facilitator.NextCheck.Value.ToLocalTime().ToString("t") : "—";
 
+                        <tr>
+                            <td class="fw-semibold">@facilitator.Name</td>
+                            <td><span class="@statusClass">@statusText</span></td>
+                            <td class="font-monospace">
+                                <a href="@facilitator.Url" target="_blank" rel="noopener">@facilitator.Url</a>
+                            </td>
+                            <td class="small">@kinds</td>
+                            <td class="small">@checkedText</td>
+                            <td class="small">@nextText</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary copy-btn" type="button" data-copy="@facilitator.Url">Copy URL</button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">No facilitators available yet.</div>
+        }
+    </div>
+</section>
 
-</div>
-
-<div>
-    @Html.Raw(markdown)
-</div>
+<section id="projects" class="mb-5">
+    <div class="container">
+        <div class="d-flex align-items-baseline justify-content-between flex-wrap mb-3">
+            <h2 class="h3 m-0">Awesome x402 Projects</h2>
+            <a class="link-primary" href="https://github.com/michielpost/x402-dev/blob/master/Content/AwesomeProjects.md" target="_blank" rel="noopener">Open on GitHub</a>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body markdown-body">
+                @Html.Raw(markdown)
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <a class="btn btn-outline-primary" href="https://github.com/michielpost/x402-dev/pulls" target="_blank" rel="noopener">Make a PR to add your project</a>
+        </div>
+    </div>
+</section>

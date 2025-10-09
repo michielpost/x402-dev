@@ -9,7 +9,7 @@ html {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #0052FF;
 }
 
 html {
@@ -19,6 +19,8 @@ html {
 
 body {
   margin-bottom: 60px;
+  background: #0a0f1e;
+  color: #e6ecff;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +30,124 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+/* x402dev accent and components */
+:root {
+  --x402-accent: #0052FF;
+  --x402-accent-neon: #5aa0ff;
+  --x402-bg: #0a0f1e;
+  --x402-surface: #0f1730;
+  --x402-surface-2: #0c1228;
+  --x402-text: #e6ecff;
+  --x402-muted: #93a4c8;
+}
+
+.text-primary, .link-primary {
+  color: var(--x402-accent) !important;
+}
+
+.btn-primary {
+  background-color: var(--x402-accent);
+  border-color: var(--x402-accent);
+}
+
+.btn-outline-primary {
+  color: var(--x402-accent);
+  border-color: var(--x402-accent);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--x402-accent);
+  border-color: var(--x402-accent);
+}
+
+.hero {
+  position: relative;
+  background: linear-gradient(180deg, rgba(0,82,255,0.16), rgba(0,82,255,0.0));
+  border-radius: .75rem;
+  border: 1px solid rgba(90,160,255,0.25);
+  box-shadow: 0 0 40px rgba(0,82,255,0.15);
+}
+
+.hero-accent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--x402-accent);
+  border-bottom-left-radius: .75rem;
+  border-bottom-right-radius: .75rem;
+}
+
+.facilitator-card .badge.bg-success {
+  background-color: #16a34a !important;
+}
+
+.facilitator-card .badge.bg-danger {
+  background-color: #dc2626 !important;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  color: #e6ecff;
+}
+
+.markdown-body a {
+  color: var(--x402-accent);
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+/* Cyberpunk theme elements */
+.theme-cyber .navbar,
+.theme-cyber .footer,
+.theme-cyber .cyber-navbar,
+.theme-cyber .cyber-footer {
+  background-color: transparent;
+  color: var(--x402-text);
+}
+
+.cyber-navbar {
+  border-bottom: 1px solid rgba(90,160,255,0.25) !important;
+  box-shadow: 0 0 20px rgba(0,82,255,0.1) !important;
+}
+
+.cyber-footer {
+  border-top: 1px solid rgba(90,160,255,0.25) !important;
+}
+
+.container .card,
+.cyber-table,
+.markdown-body {
+  background-color: var(--x402-surface);
+  color: var(--x402-text);
+}
+
+.card {
+  background-color: var(--x402-surface);
+  border: 1px solid rgba(90,160,255,0.2);
+}
+
+.table-dark {
+  --bs-table-bg: var(--x402-surface-2);
+  --bs-table-striped-bg: rgba(255,255,255,0.03);
+  --bs-table-striped-color: var(--x402-text);
+  --bs-table-color: var(--x402-text);
+  border-color: rgba(90,160,255,0.2);
+}
+
+.cyber-table a { color: var(--x402-accent); }
+
+.copy-btn {
+  --bs-btn-color: var(--x402-accent);
+  --bs-btn-border-color: var(--x402-accent);
+}
+
+.copy-btn:hover {
+  --bs-btn-hover-bg: var(--x402-accent);
+  --bs-btn-hover-border-color: var(--x402-accent);
 }
