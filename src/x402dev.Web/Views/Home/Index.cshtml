@@ -25,8 +25,13 @@
 <section id="facilitators" class="mb-5">
     <div class="container">
         <div class="d-flex align-items-baseline justify-content-between flex-wrap mb-3">
-            <h2 class="h3 m-0">Facilitators</h2>
-            <small class="text-body-secondary">Checked live and updated periodically</small>
+            <div class="d-flex align-items-baseline gap-3">
+                <h2 class="h3 m-0">Facilitators</h2>
+                <small class="text-body-secondary">Checked live and updated periodically</small>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-primary" href="https://github.com/michielpost/x402-dev/blob/master/Content/facilitators.json" target="_blank" rel="noopener">Add facilitator (edit JSON)</a>
+            </div>
         </div>
 
         @if (facilitators?.Any() == true)
@@ -35,13 +40,12 @@
                 <table class="table table-dark table-striped align-middle cyber-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>URL</th>
-                            <th>Kinds</th>
-                            <th>Checked</th>
-                            <th>Next</th>
-                            <th></th>
+                            <th scope="col" class="text-center" style="width:42px">Copy</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">URL</th>
+                            <th scope="col">Kinds</th>
+                            <th scope="col">Checked</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,17 +61,14 @@
                         var nextText = facilitator.NextCheck.HasValue ? facilitator.NextCheck.Value.ToLocalTime().ToString("t") : "—";
 
                         <tr>
+                            <td class="text-center">
+                                <button class="btn btn-link btn-sm p-0 align-baseline copy-btn" type="button" aria-label="Copy URL for @facilitator.Name" title="Copy URL" data-copy="@facilitator.Url">📋</button>
+                            </td>
                             <td class="fw-semibold">@facilitator.Name</td>
                             <td><span class="@statusClass">@statusText</span></td>
-                            <td class="font-monospace">
-                                <a href="@facilitator.Url" target="_blank" rel="noopener">@facilitator.Url</a>
-                            </td>
+                            <td class="font-monospace"><a href="@facilitator.Url" target="_blank" rel="noopener">@facilitator.Url</a></td>
                             <td class="small">@kinds</td>
                             <td class="small">@checkedText</td>
-                            <td class="small">@nextText</td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-outline-primary copy-btn" type="button" data-copy="@facilitator.Url">Copy URL</button>
-                            </td>
                         </tr>
                     }
                     </tbody>
@@ -89,11 +90,11 @@
         </div>
         <div class="card shadow-sm">
             <div class="card-body markdown-body">
-                @Html.Raw(markdown)
-            </div>
+    @Html.Raw(markdown)
+</div>
         </div>
         <div class="text-center mt-3">
-            <a class="btn btn-outline-primary" href="https://github.com/michielpost/x402-dev/pulls" target="_blank" rel="noopener">Make a PR to add your project</a>
+            <a class="btn btn-primary" href="https://github.com/michielpost/x402-dev/pulls" target="_blank" rel="noopener">Make a PR to add your project</a>
         </div>
     </div>
 </section>

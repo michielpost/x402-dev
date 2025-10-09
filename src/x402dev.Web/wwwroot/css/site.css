@@ -1,3 +1,35 @@
+.link-cta, a.link-cta {
+  color: #ff66e5; /* magenta neon for CTAs */
+}
+
+.link-cta:hover, a.link-cta:hover {
+  color: #ff99ef;
+}
+
+.btn-cta {
+  color: #0a0f1e;
+  background: linear-gradient(90deg, #ff66e5, #66e0ff);
+  border: 0;
+}
+
+.btn-cta:hover {
+  filter: brightness(1.05);
+}
+
+.copy-btn {
+  color: var(--x402-link);
+}
+
+.copy-btn:hover, .copy-btn:focus {
+  color: var(--x402-link-hover);
+}
+
+/* Improve focus visibility for accessibility */
+a:focus, button:focus {
+  outline: 2px solid #66e0ff !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(102,224,255,0.3);
+}
 html {
   font-size: 14px;
 }
@@ -41,10 +73,16 @@ body {
   --x402-surface-2: #0c1228;
   --x402-text: #e6ecff;
   --x402-muted: #93a4c8;
+  --x402-link: #66e0ff; /* high-contrast neon cyan */
+  --x402-link-hover: #a6f3ff;
 }
 
-.text-primary, .link-primary {
+.text-primary {
   color: var(--x402-accent) !important;
+}
+
+.link-primary, a.link-primary, a {
+  color: var(--x402-link);
 }
 
 .btn-primary {
@@ -94,12 +132,13 @@ body {
 }
 
 .markdown-body a {
-  color: var(--x402-accent);
+  color: var(--x402-link);
   text-decoration: none;
 }
 
 .markdown-body a:hover {
   text-decoration: underline;
+  color: var(--x402-link-hover);
 }
 
 /* Cyberpunk theme elements */
@@ -140,7 +179,8 @@ body {
   border-color: rgba(90,160,255,0.2);
 }
 
-.cyber-table a { color: var(--x402-accent); }
+.cyber-table a { color: var(--x402-link); }
+.cyber-table a:hover { color: var(--x402-link-hover); }
 
 .copy-btn {
   --bs-btn-color: var(--x402-accent);
