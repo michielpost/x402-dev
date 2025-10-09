@@ -1,0 +1,29 @@
+﻿@using Markdig
+@using x402dev.Web.Services
+@inject ContentService ContentService
+
+@{
+    ViewData["Title"] = "Home Page";
+
+    var facilitators = await ContentService.GetFacilitators();
+    var content = await ContentService.GetProjects();
+    var markdown = Markdown.ToHtml(content);
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <h2>Facilitators</h2>
+    @foreach(var facilitator in facilitators)
+    {
+        <p>@facilitator.Name</p>
+    }
+
+
+
+</div>
+
+<div>
+    @Html.Raw(markdown)
+</div>
