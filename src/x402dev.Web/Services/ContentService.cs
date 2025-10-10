@@ -17,7 +17,7 @@ namespace x402dev.Web.Services
             var facilitatorJson = await GetContentAsync("facilitators.json");
             var facilitators = System.Text.Json.JsonSerializer.Deserialize<List<FacilitatorData>>(facilitatorJson);
 
-            var projects = await GetContentAsync("AwesomeProjects.md");
+            var projects = await GetContentAsync("Projects.md");
             
 
             memoryCache.Set(facilitatorsCacheKey, facilitators);
@@ -65,7 +65,7 @@ namespace x402dev.Web.Services
 
                 }
 
-                var projects = await httpClient.GetStringAsync(githubBase + "AwesomeProjects.md");
+                var projects = await httpClient.GetStringAsync(githubBase + "Projects.md");
                 memoryCache.Set(projectsCacheKey, projects);
             }
             catch (Exception ex)
