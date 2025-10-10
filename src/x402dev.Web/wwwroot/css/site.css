@@ -16,6 +16,14 @@
   filter: brightness(1.05);
 }
 
+.copy-btn {
+  color: var(--x402-link);
+}
+
+.copy-btn:hover, .copy-btn:focus {
+  color: var(--x402-link-hover);
+}
+
 /* Improve focus visibility for accessibility */
 a:focus, button:focus {
   outline: 2px solid #66e0ff !important;

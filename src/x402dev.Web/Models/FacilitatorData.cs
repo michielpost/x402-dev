@@ -2,7 +2,7 @@
 
 namespace x402dev.Web.Models
 {
-    public class FacilitatorData
+    public record FacilitatorData
     {
         public required string Name { get; set; }
         public required string Url { get; set; }

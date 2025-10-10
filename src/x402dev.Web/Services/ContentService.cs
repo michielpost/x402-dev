@@ -1,16 +1,19 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging.Abstractions;
 using x402.Facilitator;
 using x402dev.Web.Models;
 
 namespace x402dev.Web.Services
 {
-    public class ContentService(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory, ILogger<ContentService> logger)
+    public class ContentService(IMemoryCache memoryCache,
+        IHttpClientFactory httpClientFactory,
+        ILogger<ContentService> logger,
+        ILoggerFactory loggerFactory)
     {
         private readonly string projectsCacheKey = "projects";
         private readonly string facilitatorsCacheKey = "facilitators";
-        private readonly string facilitatorsModifiedCacheKey = "facilitators-modified";
+        private readonly string facilitatorsETagCacheKey = "facilitators-etag";
         private readonly string githubBase = "https://raw.githubusercontent.com/michielpost/x402-dev/refs/heads/master/";
+        private readonly SemaphoreSlim _testLock = new(1, 1);
 
         public async Task Initialize()
         {
@@ -18,7 +21,7 @@ namespace x402dev.Web.Services
             var facilitators = System.Text.Json.JsonSerializer.Deserialize<List<FacilitatorData>>(facilitatorJson);
 
             var projects = await GetContentAsync("Projects.md");
-            
+
 
             memoryCache.Set(facilitatorsCacheKey, facilitators);
             memoryCache.Set(projectsCacheKey, projects);
@@ -49,15 +52,15 @@ namespace x402dev.Web.Services
                 string facilitatorJson = await response.Content.ReadAsStringAsync();
 
                 // Try to get the last modified date
-                DateTimeOffset? lastModified = response.Content.Headers.LastModified;
+                var etag = response.Headers.ETag?.Tag;
 
-                var cachedLastModified = GetFromCache<DateTimeOffset?>(facilitatorsModifiedCacheKey);
+                var cachedETag = GetFromCache<string?>(facilitatorsETagCacheKey);
 
-                if(cachedLastModified == null || (lastModified.HasValue && lastModified > cachedLastModified))
+                if (cachedETag == null || (etag != cachedETag))
                 {
                     logger.LogInformation("Facilitators content updated from GitHub.");
 
-                    memoryCache.Set(facilitatorsModifiedCacheKey, lastModified);
+                    memoryCache.Set(facilitatorsETagCacheKey, etag);
                     var facilitators = System.Text.Json.JsonSerializer.Deserialize<List<FacilitatorData>>(facilitatorJson);
                     memoryCache.Set(facilitatorsCacheKey, facilitators);
 
@@ -66,7 +69,10 @@ namespace x402dev.Web.Services
                 }
 
                 var projects = await httpClient.GetStringAsync(githubBase + "Projects.md");
-                memoryCache.Set(projectsCacheKey, projects);
+                if (!string.IsNullOrWhiteSpace(projects))
+                {
+                    memoryCache.Set(projectsCacheKey, projects);
+                }
             }
             catch (Exception ex)
             {
@@ -107,40 +113,59 @@ namespace x402dev.Web.Services
 
         public async Task TestFacilitators()
         {
-            var facilitators = await GetFacilitators();
-
-            foreach(var facilitator in facilitators
-                .Where(x => !x.NeedsApiKey)
-                .Where(x => !x.NextCheck.HasValue || x.NextCheck.Value <= DateTime.UtcNow))
+            if (!await _testLock.WaitAsync(0)) // immediately check if another run is active
             {
-                try
-                {
-                    facilitator.HasError = false;
-                    facilitator.Checked = DateTimeOffset.UtcNow;
-                    facilitator.NextCheck = DateTimeOffset.UtcNow.AddMinutes(new Random().Next(10, 21));
-
-                    var httpClient = httpClientFactory.CreateClient();
-                    httpClient.Timeout = TimeSpan.FromSeconds(5);
-                    httpClient.BaseAddress = new Uri(facilitator.Url);
-
-                    var facilitatorClient = new HttpFacilitatorClient(httpClient, NullLogger<HttpFacilitatorClient>.Instance);
-                    var kinds = await facilitatorClient.SupportedAsync();
-
-                    facilitator.Kinds = kinds;
-
-                }
-                catch (Exception ex)
-                {
-                    facilitator.HasError = true;
-                    facilitator.NextCheck = DateTimeOffset.UtcNow.AddMinutes(1);
-
-                    facilitator.ErrorMessage = $"Error accessing facilitator {facilitator.Name} url {facilitator.Url}";
-
-                    logger.LogError(ex, $"Error accessing facilitator {facilitator.Name} url {facilitator.Url}");
-                }
+                logger.LogInformation("TestFacilitators is already running. Skipping concurrent execution.");
+                return;
             }
 
-            memoryCache.Set(facilitatorsCacheKey, facilitators);
+            try
+            {
+
+                var cachedFacilitators = await GetFacilitators();
+                var facilitators = cachedFacilitators.Select(f => f with { }).ToList();
+
+                var toCheck = facilitators
+                    .Where(x => !x.NeedsApiKey)
+                    .Where(x => !x.NextCheck.HasValue
+                    || x.NextCheck.Value <= DateTime.UtcNow).ToList();
+
+                foreach (var facilitator in toCheck)
+                {
+                    try
+                    {
+                        facilitator.HasError = false;
+                        facilitator.Checked = DateTimeOffset.UtcNow;
+                        facilitator.NextCheck = DateTimeOffset.UtcNow.AddMinutes(new Random().Next(10, 21));
+
+                        var httpClient = httpClientFactory.CreateClient();
+                        httpClient.Timeout = TimeSpan.FromSeconds(5);
+                        httpClient.BaseAddress = new Uri(facilitator.Url);
+
+                        var facilitatorClient = new HttpFacilitatorClient(httpClient, loggerFactory.CreateLogger<HttpFacilitatorClient>());
+                        var kinds = await facilitatorClient.SupportedAsync();
+
+                        facilitator.Kinds = kinds;
+
+                    }
+                    catch (Exception ex)
+                    {
+                        facilitator.HasError = true;
+                        facilitator.NextCheck = DateTimeOffset.UtcNow.AddMinutes(1);
+
+                        facilitator.ErrorMessage = $"Error accessing facilitator {facilitator.Name} url {facilitator.Url}";
+
+                        logger.LogError(ex, $"Error accessing facilitator {facilitator.Name} url {facilitator.Url}");
+                    }
+                }
+
+                memoryCache.Set(facilitatorsCacheKey, facilitators);
+
+            }
+            finally
+            {
+                _testLock.Release();
+            }
 
         }
     }
