@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<WarningsAsErrors>nullable</WarningsAsErrors>
+	<UserSecretsId>dcfcf18b-10a1-4ad9-9ae2-b7fb81ddf396</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.42.0" />
     <PackageReference Include="x402" Version="0.0.4" />
+    <PackageReference Include="x402.Coinbase" Version="0.0.4" />
   </ItemGroup>
 
 </Project>

@@ -63,9 +63,16 @@
 								<td class="text-center">
 									<button class="btn btn-link btn-sm p-0 align-baseline copy-btn" type="button" aria-label="Copy URL for @facilitator.Name" title="Copy URL" data-copy="@facilitator.Url">📋</button>
 								</td>
-								<td class="font-monospace"><a href="@facilitator.Url" target="_blank" rel="noopener">@facilitator.Url</a></td>
+								<td class="font-monospace"><a href="@facilitator.Url" target="_blank" rel="noopener">@facilitator.Url</a>
+								
+									@if(facilitator.Name == "Coinbase")
+									{
+										<p>Needs API key. Check the <a href="https://docs.cdp.coinbase.com/api-reference/v2/rest-api/x402-facilitator/x402-facilitator" target="_blank" rel="noopener">docs</a>.</p>
+									}
+
+								</td>
 								<td class="small">
-									@foreach (var kind in facilitator.Kinds ?? new())
+									@foreach (var kind in (facilitator.Kinds ?? new()).OrderBy(x => x.Network))
 									{
 										<span class="badge bg-secondary me-1 mb-1">@kind.Network</span>
 									}

@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using x402.Coinbase;
+using x402.Coinbase.Models;
 using x402.Facilitator;
 using x402dev.Web.Models;
 
@@ -6,6 +9,7 @@ namespace x402dev.Web.Services
 {
     public class ContentService(IMemoryCache memoryCache,
         IHttpClientFactory httpClientFactory,
+        IOptions<CoinbaseOptions> coinbaseOptions,
         ILogger<ContentService> logger,
         ILoggerFactory loggerFactory)
     {
@@ -39,6 +43,7 @@ namespace x402dev.Web.Services
 
         public async Task UpdateFromGithub()
         {
+            return;
             try
             {
                 //make HttpClient request to get the latest content from GitHub
@@ -126,7 +131,7 @@ namespace x402dev.Web.Services
                 var facilitators = cachedFacilitators.Select(f => f with { }).ToList();
 
                 var toCheck = facilitators
-                    .Where(x => !x.NeedsApiKey)
+                    .Where(x => !x.NeedsApiKey || x.Name == "Coinbase")
                     .Where(x => !x.NextCheck.HasValue
                     || x.NextCheck.Value <= DateTime.UtcNow).ToList();
 
@@ -143,6 +148,13 @@ namespace x402dev.Web.Services
                         httpClient.BaseAddress = new Uri(facilitator.Url);
 
                         var facilitatorClient = new HttpFacilitatorClient(httpClient, loggerFactory.CreateLogger<HttpFacilitatorClient>());
+                        
+                        if(facilitator.Name == "Coinbase")
+                        {
+                            //Use Coinbase Facilitator client with API keys
+                            facilitatorClient = new CoinbaseFacilitatorClient(httpClient, coinbaseOptions);
+                        }
+                        
                         var kinds = await facilitatorClient.SupportedAsync();
 
                         facilitator.Kinds = kinds;

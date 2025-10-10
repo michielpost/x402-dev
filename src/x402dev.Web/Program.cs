@@ -1,3 +1,4 @@
+using x402.Coinbase.Models;
 using x402dev.Web;
 using x402dev.Web.HostedServices;
 using x402dev.Web.Services;
@@ -11,6 +12,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<ContentService>();
+
+builder.Services.Configure<CoinbaseOptions>(builder.Configuration.GetSection(nameof(CoinbaseOptions)));
 
 //Background Hosted Services
 builder.Services.AddHostedService<ContentSyncBackgroundService>();

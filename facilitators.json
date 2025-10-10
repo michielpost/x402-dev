@@ -1,5 +1,10 @@
 [
   {
+    "Name": "Coinbase",
+    "Url": "https://api.cdp.coinbase.com/platform/v2/x402/",
+    "NeedsApiKey": true
+  },
+  {
     "Name": "PayAI",
     "Url": "https://facilitator.payai.network"
   },
@@ -7,7 +12,6 @@
     "Name": "Mogami",
     "Url": "https://facilitator.mogami.tech"
   },
-
   {
     "Name": "Daydreams Systems",
     "Url": "https://facilitator.daydreams.systems"
