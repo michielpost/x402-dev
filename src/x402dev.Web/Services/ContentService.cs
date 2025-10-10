@@ -158,12 +158,15 @@ namespace x402dev.Web.Services
                         var kinds = await facilitatorClient.SupportedAsync();
 
                         facilitator.Kinds = kinds;
-
+                        facilitator.ErrorCount = 0;
                     }
                     catch (Exception ex)
                     {
                         facilitator.HasError = true;
-                        facilitator.NextCheck = DateTimeOffset.UtcNow.AddMinutes(1);
+                        facilitator.ErrorCount++;
+
+                        int maxWaitMinutes = int.Min(30, 1 * facilitator.ErrorCount);
+                        facilitator.NextCheck = DateTimeOffset.UtcNow.AddMinutes(maxWaitMinutes);
 
                         facilitator.ErrorMessage = $"Error accessing facilitator {facilitator.Name} url {facilitator.Url}";
 

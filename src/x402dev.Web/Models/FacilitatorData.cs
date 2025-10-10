@@ -17,5 +17,6 @@ namespace x402dev.Web.Models
         public List<FacilitatorKind> Kinds { get; set; } = new();
         public bool HasError { get; set; }
         public string? ErrorMessage { get; set; }
+        public int ErrorCount { get; set; }
     }
 }
