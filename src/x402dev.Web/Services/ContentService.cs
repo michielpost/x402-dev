@@ -132,6 +132,8 @@ namespace x402dev.Web.Services
                 catch (Exception ex)
                 {
                     facilitator.HasError = true;
+                    facilitator.NextCheck = DateTimeOffset.UtcNow.AddMinutes(1);
+
                     facilitator.ErrorMessage = $"Error accessing facilitator {facilitator.Name} url {facilitator.Url}";
 
                     logger.LogError(ex, $"Error accessing facilitator {facilitator.Name} url {facilitator.Url}");
