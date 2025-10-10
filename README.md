@@ -1,8 +1,10 @@
 # x402-dev
 List of x402 facilitators and awesome projects
 
-Discover live facilitators and a curated list of awesome **x402 projects**.  
-Contribute your own and help the community grow.
+Discover live facilitators and a curated list of awesome **x402 projects**.   
+ 
+Did you develop a x402 project?   
+Add it to the [`Projects.md`](./Projects.md) file. Send a PR and it will be merged and published on the website.
 
 https://www.x402dev.com
 
@@ -26,16 +28,15 @@ Everything is published on https://www.x402dev.com
 
 ## How to Contribute
 
-Contributions are **welcome and encouraged**!  
-You can contribute in two main ways:
+Contributions are **welcome**! Did you develop a cool x402 project? Add it to the list!  
+
+### Add a Project
+To add a new project, edit the [`Projects.md`](./Projects.md) file and open a Pull Request (PR).  
+Provide a name, link and a short 1 description or tagline.
 
 ### Add a Facilitator
 To add a new facilitator, edit the [`facilitations.json`](./facilitations.json) file and open a Pull Request (PR).  
 Make sure to include the required fields and follow the existing structure.
-
-### Add a Project
-To add a new project, edit the [`Projects.md`](./Projects.md) file and open a Pull Request (PR).  
-Provide a short description, link, and any relevant tags.
 
 ---
 
