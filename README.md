@@ -1,12 +1,10 @@
 # x402-dev
 List of x402 facilitators and awesome projects
 
-# x402 Developer Portal
-
 Discover live facilitators and a curated list of awesome **x402 projects**.  
 Contribute your own and help the community grow.
 
----
+https://www.x402dev.com
 
 ## Live Facilitator Dashboard
 
@@ -14,8 +12,6 @@ View **live facilitator activity** directly in the portal — no refresh needed.
 This keeps the community up to date with active developers and facilitations.
 
 View facilitator dashboard: https://www.x402dev.com
-
----
 
 ## Overview
 
@@ -27,8 +23,6 @@ The **x402 Developer Portal** is an open platform that showcases:
 Live updates for facilitators are available directly from the portal.
 
 Everything is published on https://www.x402dev.com
-
----
 
 ## How to Contribute
 
