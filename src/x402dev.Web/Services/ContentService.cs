@@ -23,7 +23,7 @@ namespace x402dev.Web.Services
             memoryCache.Set(facilitatorsCacheKey, facilitators);
             memoryCache.Set(projectsCacheKey, projects);
 
-            await UpdateFromGithub();
+            Task.Run(() => UpdateFromGithub());
         }
 
         private async Task<string> GetContentAsync(string fileName)
