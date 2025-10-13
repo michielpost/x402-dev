@@ -23,11 +23,14 @@ Libraries, SDKs, and dev tools for building with x402.
 - [thirdweb](https://thirdweb.com) - Infrastructure for AI Agents (supports x402 integrations)  
 - [x402scan](https://www.x402scan.com/) - Explore and analyze x402 transactions  
 - [corbits](https://corbits.dev/) - Ready your apps for Agentic Commerce  
+- [x402station](https://x402station.com/) - Discover and monitor x402 services
+- [x402magic](https://x402magic.xyz/) - Build payment-protected APIs in minutes with TypeScript
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
 - [x402 Cloudflare Playground](https://playground.x402.cloudflare.com/) - Run and test x402 flows in Cloudflare Workers  
 - [x402 Test Page](https://www.x402.org/protected) - x402 test payment
+- [x402 Conole](https://console.mogami.tech/) - debugger
 
 ## x402 Learning & Community Resources
 Educational content, directories, and resource hubs.
