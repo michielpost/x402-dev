@@ -12,6 +12,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Meridian](https://mrdn.finance/) - x402 payment rails for the agent economy  
 - [tip.md](https://www.tip.md/) - Get rewarded for your open source work in minutes  
 - [ROZO Bananary](https://banana.rozo.ai/) - Generate images and pay with x402  
+- [402 load network](https://402.load.network/) - The x402 toolkit for ANS-104 dataitems  
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
