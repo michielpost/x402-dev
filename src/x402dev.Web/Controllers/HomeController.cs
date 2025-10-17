@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using x402dev.Web.Models;
 
 namespace x402dev.Web.Controllers

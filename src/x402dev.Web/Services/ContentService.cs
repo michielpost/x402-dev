@@ -148,13 +148,13 @@ namespace x402dev.Web.Services
                         httpClient.BaseAddress = new Uri(facilitator.Url);
 
                         var facilitatorClient = new HttpFacilitatorClient(httpClient, loggerFactory.CreateLogger<HttpFacilitatorClient>());
-                        
-                        if(facilitator.Name == "Coinbase")
+
+                        if (facilitator.Name == "Coinbase")
                         {
                             //Use Coinbase Facilitator client with API keys
                             facilitatorClient = new CoinbaseFacilitatorClient(httpClient, coinbaseOptions);
                         }
-                        
+
                         var kinds = await facilitatorClient.SupportedAsync();
 
                         facilitator.Kinds = kinds;

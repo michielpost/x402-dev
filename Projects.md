@@ -5,6 +5,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [402links](https://402links.com/) - Monetize any link with HTTP 402  
 - [proxy402](https://proxy402.com/) - Monetize any link in seconds  
 - [Gatepay](https://gatepay.cloud/) - Monetize any digital content with crypto payments  
+- [httpayer](https://www.httpayer.com/) - Automated x402 payments for Web2, Web3 and AI Agents
 - [snack.money](https://snack.money) - Send micropayments  
 - [MCPay](https://mcpay.tech/) - Payments for MCPs  
 - [Daydreams Router](https://router.daydreams.systems/) - Generate images, videos, and LLMs in one flow with USDC  
@@ -25,6 +26,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [corbits](https://corbits.dev/) - Ready your apps for Agentic Commerce  
 - [x402station](https://x402station.com/) - Discover and monitor x402 services
 - [x402magic](https://x402magic.xyz/) - Build payment-protected APIs in minutes with TypeScript
+- [x402-solana](https://github.com/payainetwork/x402-solana) - Solana SDK for x402
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
