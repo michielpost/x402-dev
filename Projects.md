@@ -29,6 +29,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [x402station](https://x402station.com/) - Discover and monitor x402 services
 - [x402magic](https://x402magic.xyz/) - Build payment-protected APIs in minutes with TypeScript
 - [x402-solana](https://github.com/payainetwork/x402-solana) - Solana SDK for x402
+- [mogami.tech](https://www.mogami.tech) - SDKs, tools, and services built in Java 
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
