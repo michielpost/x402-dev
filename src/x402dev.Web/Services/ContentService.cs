@@ -43,7 +43,6 @@ namespace x402dev.Web.Services
 
         public async Task UpdateFromGithub()
         {
-            return;
             try
             {
                 //make HttpClient request to get the latest content from GitHub
@@ -152,7 +151,7 @@ namespace x402dev.Web.Services
                         if (facilitator.Name == "Coinbase")
                         {
                             //Use Coinbase Facilitator client with API keys
-                            facilitatorClient = new CoinbaseFacilitatorClient(httpClient, coinbaseOptions);
+                            facilitatorClient = new CoinbaseFacilitatorClient(httpClient, coinbaseOptions, loggerFactory);
                         }
 
                         var kinds = await facilitatorClient.SupportedAsync();

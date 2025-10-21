@@ -1,4 +1,4 @@
-﻿using x402.Facilitator.Models;
+﻿using x402.Core.Models.Facilitator;
 
 namespace x402dev.Web.Models
 {
