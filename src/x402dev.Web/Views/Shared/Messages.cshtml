@@ -1,0 +1,41 @@
+﻿@using Markdig
+@using x402dev.Web.Services
+@inject PublicMessagesService PublicMessagesService
+
+@{
+	var messages = await PublicMessagesService.GetPublicMessagesAsync();
+}
+
+@if (messages?.Any() == true)
+{
+
+	<div class="table-responsive">
+		<table class="table table-dark table-striped align-middle cyber-table">
+			<thead>
+				<tr>
+					<th scope="col">Address</th>
+					<th scope="col">Name</th>
+					<th scope="col">Message</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var msg in messages)
+				{
+					var markdown = Markdown.ToHtml(msg.Message);
+
+					<tr>
+						<td><span class="Online">@msg.Payer</span></td>
+						<td class="fw-semibold">@msg.Name</td>
+						<td class="small">
+							@markdown
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+else
+{
+	<div class="alert alert-info">No messages posted yet.</div>
+}
