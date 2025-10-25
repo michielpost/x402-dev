@@ -190,3 +190,139 @@ body {
   --bs-btn-hover-bg: var(--x402-accent);
   --bs-btn-hover-border-color: var(--x402-accent);
 }
+
+/* Product Hunt-style message cards */
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 100%;
+}
+
+.message-card {
+  background: var(--x402-surface);
+  border: 1px solid rgba(90,160,255,0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.message-card:hover {
+  border-color: rgba(90,160,255,0.3);
+  box-shadow: 0 4px 20px rgba(0,82,255,0.1);
+  transform: translateY(-2px);
+}
+
+.message-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--x402-accent), var(--x402-accent-neon));
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.message-card:hover::before {
+  opacity: 1;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.message-address {
+  flex-shrink: 0;
+  min-width: 80px;
+}
+
+.address-text {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--x402-muted);
+  background: rgba(90,160,255,0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(90,160,255,0.2);
+  display: inline-block;
+}
+
+.message-name {
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.name-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--x402-text);
+  background: rgba(255,255,255,0.05);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: inline-block;
+}
+
+.message-link {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(102,224,255,0.1);
+  border: 1px solid rgba(102,224,255,0.3);
+  border-radius: 8px;
+  color: var(--x402-link);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.link-btn:hover {
+  background: rgba(102,224,255,0.2);
+  border-color: var(--x402-link);
+  color: var(--x402-link-hover);
+  transform: scale(1.05);
+}
+
+.message-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--x402-text);
+  margin-left: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .message-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .message-link {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+  
+  .message-card {
+    padding: 1rem;
+  }
+  
+  .message-address,
+  .message-name {
+    min-width: auto;
+  }
+}

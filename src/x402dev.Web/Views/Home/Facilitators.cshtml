@@ -6,36 +6,7 @@
 	ViewData["Title"] = "x402 Developer Portal";
 
 	var facilitators = (await ContentService.GetFacilitators()).Where(x => x.Checked.HasValue);
-	var content = await ContentService.GetProjects();
-	var markdown = Markdown.ToHtml(content);
 }
-
-<section class="hero text-center py-5 mb-5">
-	<div class="container">
-		<h1 class="display-4 fw-bold mb-3">x402 Developer Portal</h1>
-		<p class="lead mb-4">Discover live facilitators and a curated list of awesome x402 projects. Contribute your own and help the community grow.</p>
-		<div class="d-flex gap-2 justify-content-center">
-			<a class="btn btn-primary btn-lg" href="https://github.com/michielpost/x402-dev" target="_blank" rel="noopener">Add your project on GitHub</a>
-			<a class="btn btn-outline-primary btn-lg" href="#projects">Browse Projects</a>
-		</div>
-	</div>
-	<div class="hero-accent"></div>
-</section>
-
-<section id="facilitators" class="mb-5">
-	<div class="container">
-		<div class="d-flex align-items-baseline justify-content-between flex-wrap mb-3">
-			<div >
-				<h2 class="h3 m-0">Public Messages posted using x402</h2>
-				<p>Launcing a new x402 project? Promote it here! Messages can only be posted using x402.</p>
-				<p>See <a href="/swagger" target="_blank">Open API Specs</a> for API details</p>
-			</div>
-		</div>
-
-		@await Html.PartialAsync("Messages")
-	</div>
-</section>
-
 
 <section id="facilitators" class="mb-5">
 	<div class="container">
@@ -106,19 +77,3 @@
 	</div>
 </section>
 
-<section id="projects" class="mb-5">
-	<div class="container">
-		<div class="d-flex align-items-baseline justify-content-between flex-wrap mb-3">
-			<h2 class="h3 m-0">Awesome x402 Projects</h2>
-			<a class="btn btn-sm btn-outline-primary" href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" target="_blank" rel="noopener">Edit on GitHub</a>
-		</div>
-		<div class="card shadow-sm">
-			<div class="card-body markdown-body">
-				@Html.Raw(markdown)
-			</div>
-		</div>
-		<div class="text-center mt-3">
-			<a class="btn btn-primary" href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" target="_blank" rel="noopener">Make a PR to add your project</a>
-		</div>
-	</div>
-</section>

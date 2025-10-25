@@ -15,6 +15,7 @@ namespace x402dev.Web.Data
 
         public string? Name { get; set; }
         public required string Message { get; set; }
+        public string? Link { get; set; }
 
         public required DateTimeOffset CreatedDateTime { get; set; }
 

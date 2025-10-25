@@ -5,7 +5,7 @@
 namespace x402dev.Web.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPublicMessages : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,6 +23,7 @@ namespace x402dev.Web.Migrations
                     Value = table.Column<string>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Message = table.Column<string>(type: "TEXT", nullable: false),
+                    Link = table.Column<string>(type: "TEXT", nullable: true),
                     CreatedDateTime = table.Column<long>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

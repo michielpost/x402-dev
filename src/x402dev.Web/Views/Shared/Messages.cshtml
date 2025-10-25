@@ -8,31 +8,44 @@
 
 @if (messages?.Any() == true)
 {
-
-	<div class="table-responsive">
-		<table class="table table-dark table-striped align-middle cyber-table">
-			<thead>
-				<tr>
-					<th scope="col">Address</th>
-					<th scope="col">Name</th>
-					<th scope="col">Message</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var msg in messages)
-				{
-					var markdown = Markdown.ToHtml(msg.Message);
-
-					<tr>
-						<td><span class="Online">@msg.Payer</span></td>
-						<td class="fw-semibold">@msg.Name</td>
-						<td class="small">
-							@markdown
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
+	<div class="messages-container">
+		@foreach (var msg in messages)
+		{
+			<div class="message-card">
+				<div class="message-header">
+					<div class="message-address">
+						@{
+							var address = msg.Payer ?? "";
+							var truncatedAddress = address.Length > 6 ? 
+								address.Substring(0, 3) + "..." + address.Substring(address.Length - 3) : 
+								address;
+						}
+						<span class="address-text">
+							<a href="https://basescan.org/address/@address" target="_blank" rel="noopener">
+								@truncatedAddress
+							</a>
+						</span>
+					</div>
+					<div class="message-name">
+						<span class="name-text">@msg.Name</span>
+					</div>
+					<div class="message-link">
+						@if(!string.IsNullOrWhiteSpace(msg.Link))
+						{
+							<a href="@msg.Link" target="_blank" rel="noopener" class="link-btn">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+									<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+								</svg>
+							</a>
+						}
+					</div>
+				</div>
+				<div class="message-content">
+					@msg.Message
+				</div>
+			</div>
+		}
 	</div>
 }
 else

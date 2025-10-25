@@ -28,6 +28,9 @@ namespace x402dev.Web.Migrations
                     b.Property<long>("CreatedDateTime")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Link")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("TEXT");

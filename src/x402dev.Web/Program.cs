@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Filters;
 using x402;
 using x402.Coinbase.Models;
 using x402dev.Web;
@@ -30,8 +31,9 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "x402dev API", Version = "v1" });
+    c.ExampleFilters();
 });
-
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();

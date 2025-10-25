@@ -10,8 +10,8 @@ using x402dev.Web.Data;
 namespace x402dev.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251024115916_AddPublicMessages")]
-    partial class AddPublicMessages
+    [Migration("20251025130759_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,9 @@ namespace x402dev.Web.Migrations
 
                     b.Property<long>("CreatedDateTime")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Message")
                         .IsRequired()

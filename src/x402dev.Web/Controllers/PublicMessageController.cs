@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
 using x402;
 using x402.Core.Enums;
 using x402.Core.Models;
@@ -23,6 +24,7 @@ namespace x402dev.Web.Controllers
 
         [HttpPost]
         [Route("send-msg")]
+        [SwaggerRequestExample(typeof(PublicMessageRequest), typeof(PublicMessageRequestExample))]
         public async Task<PublicMessageResponse?> SendMsg([FromBody] PublicMessageRequest req)
         {
             var payReq = new PaymentRequirementsBasic
@@ -30,7 +32,7 @@ namespace x402dev.Web.Controllers
                 Asset = "0x036CbD53842c5426634e7929541eC2318f3dCF7e", //Testnet
                 //Asset = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", //Mainnet
                 Description = "Publish a public message on x402dev.com",
-                MaxAmountRequired = "10000",
+                MaxAmountRequired = "1000",
                 PayTo = "0x7D95514aEd9f13Aa89C8e5Ed9c29D08E8E9BfA37",
             };
 
@@ -65,6 +67,15 @@ namespace x402dev.Web.Controllers
                                 Description = "Message to publish (max length: 255)",
                                 Type = "string"
                             }
+                        },
+                        {
+                            nameof(req.Link),
+                            new FieldDefenition
+                            {
+                                Required = false,
+                                Description = "Optional URL to show (max length: 255)",
+                                Type = "string"
+                            }
                         }
                     };
 
@@ -82,6 +93,7 @@ namespace x402dev.Web.Controllers
                 var publicMessage = new PublicMessage
                 {
                     Name = req.Name,
+                    Link = req.Link,
                     Message = req.Message,
                     CreatedDateTime = DateTimeOffset.UtcNow,
                     Payer = x402Result.VerificationResponse?.Payer,
