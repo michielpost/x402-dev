@@ -1,6 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 using x402;
 using x402.Coinbase.Models;
 using x402dev.Web;
@@ -32,6 +33,10 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "x402dev API", Version = "v1" });
     c.ExampleFilters();
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 });
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
@@ -52,6 +57,18 @@ builder.Services.AddHsts(options =>
     options.MaxAge = TimeSpan.FromDays(365);
 });
 
+// Add CORS to allow testing from https://proxy402.com/fetch
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()   // allow any domain
+            .AllowAnyMethod()   // allow GET, POST, PUT, DELETE, etc.
+            .AllowAnyHeader();  // allow all headers
+    });
+});
+
 var app = builder.Build();
 
 var sqlLiteBuilder = new SqliteConnectionStringBuilder(connectionString);
@@ -70,6 +87,9 @@ using (var scope = app.Services.CreateScope())
 
 var contentService = app.Services.GetRequiredService<ContentService>();
 await contentService.Initialize();
+
+// Use CORS before endpoints
+app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

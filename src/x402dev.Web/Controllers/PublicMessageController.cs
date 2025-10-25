@@ -22,6 +22,12 @@ namespace x402dev.Web.Controllers
         }
 
 
+        /// <summary>
+        /// Post a message on x402dev.com.
+        /// A payment of 0.1 USDC is required using the x402 protocol.
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("send-msg")]
         [SwaggerRequestExample(typeof(PublicMessageRequest), typeof(PublicMessageRequestExample))]
@@ -29,16 +35,16 @@ namespace x402dev.Web.Controllers
         {
             var payReq = new PaymentRequirementsBasic
             {
-                Asset = "0x036CbD53842c5426634e7929541eC2318f3dCF7e", //Testnet
-                //Asset = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", //Mainnet
+                //Asset = "0x036CbD53842c5426634e7929541eC2318f3dCF7e", //Testnet
+                Asset = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", //Mainnet
                 Description = "Publish a public message on x402dev.com",
-                MaxAmountRequired = "1000",
+                MaxAmountRequired = "100000",
                 PayTo = "0x7D95514aEd9f13Aa89C8e5Ed9c29D08E8E9BfA37",
             };
 
             var x402Result = await x402Handler.HandleX402Async(
                 payReq,
-                discoverable: false, //TODO: Change when going public
+                discoverable: true,
                 SettlementMode.Pessimistic,
                 onSetOutputSchema: (context, reqs, schema) =>
                 {

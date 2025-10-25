@@ -3,7 +3,7 @@
 @inject PublicMessagesService PublicMessagesService
 
 @{
-	var messages = await PublicMessagesService.GetPublicMessagesAsync();
+	var messages = await PublicMessagesService.GetPublicMessagesAsync(10);
 }
 
 @if (messages?.Any() == true)

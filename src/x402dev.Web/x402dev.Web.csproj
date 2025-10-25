@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<WarningsAsErrors>nullable</WarningsAsErrors>
 	<UserSecretsId>dcfcf18b-10a1-4ad9-9ae2-b7fb81ddf396</UserSecretsId>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

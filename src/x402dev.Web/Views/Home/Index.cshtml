@@ -25,21 +25,6 @@
 <section id="facilitators" class="mb-5">
 	<div class="container">
 		<div class="d-flex align-items-baseline justify-content-between flex-wrap mb-3">
-			<div >
-				<h2 class="h3 m-0">Public Messages posted using x402</h2>
-				<p>Launcing a new x402 project? Promote it here! Messages can only be posted using x402.</p>
-				<p>See <a href="/swagger" target="_blank">Open API Specs</a> for API details</p>
-			</div>
-		</div>
-
-		@await Html.PartialAsync("Messages")
-	</div>
-</section>
-
-
-<section id="facilitators" class="mb-5">
-	<div class="container">
-		<div class="d-flex align-items-baseline justify-content-between flex-wrap mb-3">
 			<div class="d-flex align-items-baseline gap-3">
 				<h2 class="h3 m-0">Facilitators</h2>
 				<small class="text-body-secondary">Checked live and updated periodically</small>
@@ -103,6 +88,20 @@
 		{
 			<div class="alert alert-info">No facilitators available yet.</div>
 		}
+	</div>
+</section>
+
+<section id="facilitators" class="mb-5">
+	<div class="container">
+		<div class="d-flex align-items-baseline justify-content-between flex-wrap mb-3">
+			<div>
+				<h2 class="h3 m-0">Public Messages posted using x402</h2>
+				<p>Launcing a new x402 project? Promote it here! Messages can only be posted using x402.</p>
+				<p>See <a href="/swagger" target="_blank">Open API Specs</a> for API details. A payment of 0.1 USDC on Base is required.</p>
+			</div>
+		</div>
+
+		@await Html.PartialAsync("Messages")
 	</div>
 </section>
 
