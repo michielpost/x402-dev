@@ -120,5 +120,77 @@ namespace x402dev.Web.Controllers
             return new PublicMessageResponse { Success = true };
         }
 
+
+        /// <summary>
+        /// This endpoint does not actually work, but makes the X402 payment flow discoverable for GET requests.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("send-msg")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<PublicMessageResponse?> SendMsg()
+        {
+            var payReq = new PaymentRequirementsBasic
+            {
+                //Asset = "0x036CbD53842c5426634e7929541eC2318f3dCF7e", //Testnet
+                Asset = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", //Mainnet
+                Description = "Publish a public message on x402dev.com",
+                MaxAmountRequired = "100000",
+                PayTo = "0x7D95514aEd9f13Aa89C8e5Ed9c29D08E8E9BfA37",
+            };
+
+            var x402Result = await x402Handler.HandleX402Async(
+                payReq,
+                discoverable: true,
+                SettlementMode.Pessimistic,
+                onSetOutputSchema: (context, reqs, schema) =>
+                {
+                    schema.Input ??= new();
+
+                    schema.Input.Method = "POST";
+                    schema.Input.BodyType = "json";
+
+                    //Manually set the input schema
+                    schema.Input.BodyFields = new Dictionary<string, object>
+                    {
+                        {
+                            nameof(PublicMessageRequest.Name),
+                            new FieldDefenition
+                            {
+                                Required = false,
+                                Description = "Sender name (max length: 32)",
+                                Type = "string"
+                            }
+                        },
+                        {
+                            nameof(PublicMessageRequest.Message),
+                            new FieldDefenition
+                            {
+                                Required = true,
+                                Description = "Message to publish (max length: 255)",
+                                Type = "string"
+                            }
+                        },
+                        {
+                            nameof(PublicMessageRequest.Link),
+                            new FieldDefenition
+                            {
+                                Required = false,
+                                Description = "Optional URL to show (max length: 255)",
+                                Type = "string"
+                            }
+                        }
+                    };
+
+                    return schema;
+                });
+
+            if (!x402Result.CanContinueRequest)
+            {
+                return null;
+            }
+
+            return new PublicMessageResponse { Success = true };
+        }
     }
 }
