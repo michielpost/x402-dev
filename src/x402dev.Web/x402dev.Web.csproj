@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<WarningsAsErrors>nullable</WarningsAsErrors>
 	<UserSecretsId>dcfcf18b-10a1-4ad9-9ae2-b7fb81ddf396</UserSecretsId>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Content\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,8 +29,20 @@
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.43.0" />
-    <PackageReference Include="x402" Version="0.0.5" />
-    <PackageReference Include="x402.Coinbase" Version="0.0.5" />
-  </ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="9.0.1" />
+    <PackageReference Include="x402" Version="0.0.8">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
+	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
+    <PackageReference Include="x402.Coinbase" Version="0.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+	</ItemGroup>
 
 </Project>

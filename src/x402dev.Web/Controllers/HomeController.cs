@@ -18,6 +18,22 @@ namespace x402dev.Web.Controllers
             return View();
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet]
+        [Route("messages")]
+        public IActionResult PublicMessages()
+        {
+            return View();
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet]
+        [Route("facilitators")]
+        public IActionResult Facilitators()
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

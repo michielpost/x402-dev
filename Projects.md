@@ -43,3 +43,4 @@ Educational content, directories, and resource hubs.
 - [awesome-x402](https://github.com/Merit-Systems/awesome-x402) - Curated list of x402-related projects  
 - [Firecrawl](https://www.firecrawl.dev) - Turn websites into LLM-ready data (useful for x402 + agentic use cases)  
 - [x402 Ecosystem](https://www.x402.org/ecosystem) - Overview of all ecosystem participants  
+- [x402 on Coingecko](https://www.coingecko.com/en/categories/x402-ecosystem) - Top x402 Ecosystem Coins by Market Cap
