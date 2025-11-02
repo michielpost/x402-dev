@@ -417,3 +417,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /src/x402dev.Web/App_Data
+/src/x402dev/Server/App_Data

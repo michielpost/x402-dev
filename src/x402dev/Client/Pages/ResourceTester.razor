@@ -1,0 +1,154 @@
+﻿@page "/resource-tester"
+@using System.Text.Json
+@using System.Net.Http.Json
+@using System.Text
+@using x402dev.Server.Models
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>x402dev - Resource Tester</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <h1>Resource Tester</h1>
+    <p>Check and debug x402 resources.</p>
+
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical" HorizontalGap="10">
+            <FluentTextField @bind-Value="@url" 
+                           Style="width: 100%;"
+                           Placeholder="Enter URL to test"
+                           Required="true">URL</FluentTextField>
+
+            <FluentTextField @bind-Value="@paymentHeader"
+                             Style="width: 100%;"
+							 Placeholder="Generate a signature using the Signature Builder..."
+							 Required="true">Optional Payment Header Signature</FluentTextField>
+
+            <FluentButton Appearance="Appearance.Accent" 
+                         OnClick="FetchResource"
+                         Disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <FluentProgressRing />
+                    <span>Loading...</span>
+                }
+                else
+                {
+                    <span>Fetch</span>
+                }
+            </FluentButton>
+        </FluentStack>
+    </FluentCard>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <FluentMessageBar Intent="MessageIntent.Error">
+            @errorMessage
+        </FluentMessageBar>
+    }
+
+@*     @if (headers != null)
+    {
+        <FluentCard>
+            <FluentLabel Typo="Typography.Subject">Response Headers</FluentLabel>
+            <FluentTextArea Style="width: 100%; min-height: 100%;"
+                          Value="@headers"
+                            Resize="TextAreaResize.Both"
+                          Readonly="true" />
+        </FluentCard>
+    } *@
+
+    @if (content != null)
+    {
+        <FluentCard>
+            <FluentTextArea Style="width: 100%; min-height: 100%;"
+                          Value="@content"
+                            Resize="TextAreaResize.Both"
+                            Rows="@lineCount"
+                            Readonly="true">x402 Response</FluentTextArea>
+        </FluentCard>
+    }
+</FluentStack>
+
+    @code {
+    private string url = "https://www.x402.org/protected";
+    private string? paymentHeader;
+    private string? headers;
+    private string? content;
+    private string? errorMessage;
+    private bool isLoading;
+    private int lineCount = 0;
+
+    private async Task FetchResource()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            headers = null;
+            content = null;
+
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                errorMessage = "Please enter a URL";
+                return;
+            }
+
+            var req = new ProxyRequest { Url = url, PaymentHeader = paymentHeader };
+            var json = JsonSerializer.Serialize(req);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/proxy/get-x402")
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            var httpClient = HttpClientFactory.CreateClient("ServerAPI");
+            var response = await httpClient.SendAsync(request);
+
+            var responseObj = await response.Content.ReadFromJsonAsync<ProxyResponse>();
+            if(responseObj == null)
+            {
+                errorMessage = "Failed to parse response.";
+                return;
+            }
+
+            if(responseObj.StatusCode != 402)
+            {
+                errorMessage = "No 402 returned from url.";
+                return;
+            }
+
+            // Process headers
+            var headersList = responseObj.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}");
+            headers = string.Join("\n", headersList);
+
+            // Process content
+            var responseContent = responseObj.Content;
+
+            // Try to format if JSON
+            try
+            {
+                using var doc = JsonDocument.Parse(responseContent);
+                content = JsonSerializer.Serialize(doc, new JsonSerializerOptions 
+                { 
+                    WriteIndented = true 
+                });
+            }
+            catch
+            {
+                // If not valid JSON, show as plain text
+                content = responseContent;
+            }
+
+            lineCount = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Length;
+            lineCount = int.Max(10, lineCount);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

@@ -1,0 +1,201 @@
+﻿@page "/messages"
+@using Nethereum.Hex.HexTypes
+@using Nethereum.RPC.HostWallet
+@using x402.Client.EVM
+@using x402dev.Client.Models
+@inherits BaseMetaMaskPage
+@inject IHttpClientFactory ClientFactory
+
+<PageTitle>x402dev - Messages</PageTitle>
+
+
+<h1>Post a message onx402dev</h1>
+
+<div>
+	<h4>Public Messages posted using x402</h4>
+	<p>Launcing a new x402 project? Promote it here! Messages can only be posted using x402.</p>
+</div>
+
+<div>
+	<h5>Let your agent post using the API endpoint:</h5>
+	<p>See <a href="/swagger" target="_blank">Open API Specs</a> for API details. A payment of 0.1 USDC on Base is required.</p>
+</div>
+
+<div>
+	<h5>Post manually using this x402 enabled form</h5>
+
+	<Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
+
+@if (!string.IsNullOrEmpty(SelectedAccount))
+	{
+		<FluentCard Class="max-w-md mx-auto mt-10 p-6 shadow-lg rounded-2xl">
+			<FluentStack Orientation="Orientation.Vertical" Gap="1rem">
+				<h5>Post a Public Message</h5>
+
+        <EditForm Model="@model" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <FluentTextField Label="Name"
+                             @bind-Value="model.Name"
+                             Placeholder="Enter your name (optional)"
+                             MaxLength="32"
+                             Class="w-full" />
+            <ValidationMessage For="@(() => model.Name)" />
+
+            <FluentTextArea Label="Message"
+                            @bind-Value="model.Message"
+                            Placeholder="Write your message"
+                            MaxLength="255"
+                            Required
+                            Class="w-full" />
+            <ValidationMessage For="@(() => model.Message)" />
+
+            <FluentTextField Label="Link"
+                             @bind-Value="model.Link"
+                             Placeholder="https://example.com"
+                             Type="url"
+                             MaxLength="255"
+                             Class="w-full" />
+            <ValidationMessage For="@(() => model.Link)" />
+
+					<FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit" Class="mt-4">
+                Submit
+            </FluentButton>
+        </EditForm>
+
+				<p>
+					@Result
+				</p>
+
+        @if (submitted)
+        {
+            <p>
+                Message submitted successfully!
+            </p>
+        }
+    </FluentStack>
+</FluentCard>
+	}
+
+</div>
+
+<MessagesList />
+
+@code {
+
+	private PublicMessageRequest model = new();
+	private bool submitted;
+	EVMWallet? wallet = null;
+	private bool isLoading;
+	private string? errorMessage;
+
+	string? Result { get; set; }
+
+	private async Task Submit()
+	{
+		try
+		{
+			Result = "";
+
+			if (_ethereumHostProvider == null)
+				return;
+
+			var web3 = await _ethereumHostProvider.GetWeb3Async();
+			var chainId = new HexBigInteger(8453);
+
+
+			var changeIdResult = await ChangeChainTo(8453);
+			Console.WriteLine(changeIdResult);
+			Result = "Changed chainId";
+
+			if (!string.IsNullOrWhiteSpace(changeIdResult))
+			{
+				await AddBaseMainnetAsync();
+				Result = "Added chainId";
+
+				changeIdResult = await ChangeChainTo(8453);
+				Result = "Changed chainId";
+			}
+
+			var selectedChainId = await web3.Eth.ChainId.SendRequestAsync();
+			if (selectedChainId.Value != chainId.Value)
+			{
+				Result = "Failed to change chainId";
+				return;
+			}
+
+			if (SelectedAccount == null)
+			{
+				Result = "No account selected";
+				return;
+			}
+
+			var wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, (ulong)chainId.Value)
+			{
+				IgnoreAllowances = true
+			};
+			WalletProvider.Wallet = wallet;
+
+			if (model.Message == null || model.Message.Length > 255)
+			{
+				Result = "Please fill in a message of max 255 characters.";
+				return;
+			}
+
+			var request = new HttpRequestMessage(HttpMethod.Post, "/PublicMessage/send-msg")
+			{
+				Content = JsonContent.Create(model)
+			};
+
+			var httpClient = ClientFactory.CreateClient("x402");
+			var response = await httpClient.SendAsync(request);
+
+			Result = await response.Content.ReadAsStringAsync();
+		}
+		catch (Exception ex)
+		{
+			Result = $"Error: {ex}";
+		}
+	}
+
+	protected async Task AddBaseMainnetAsync()
+	{
+		if (_ethereumHostProvider == null)
+			return;
+
+		var web3 = await _ethereumHostProvider.GetWeb3Async();
+
+		var baseMainnet = new AddEthereumChainParameter()
+		{
+			// Chain ID 8453 decimal == 0x2105 hex
+			ChainId = new Nethereum.Hex.HexTypes.HexBigInteger(8453),
+			ChainName = "Base",
+			NativeCurrency = new NativeCurrency()
+			{
+				Decimals = 18,
+				Name = "Ether",
+				Symbol = "ETH"
+			},
+			RpcUrls = new List<string>
+			{
+				"https://mainnet.base.org"
+			},
+				BlockExplorerUrls = new List<string>
+			{
+				"https://basescan.org"
+			}
+		};
+
+		try
+		{
+			await web3.Eth.HostWallet.AddEthereumChain.SendRequestAsync(baseMainnet);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Failed to add Base mainnet: {ex.Message}");
+		}
+	}
+
+	
+}

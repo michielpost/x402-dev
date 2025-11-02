@@ -1,0 +1,70 @@
+﻿@page "/facilitators"
+@inject IFacilitatorGrpcService FacilitatorGrpcService
+@using x402dev.Shared.Interfaces
+@using x402dev.Shared.Models
+
+<PageTitle>x402dev home</PageTitle>
+
+
+<h1>Facilitators</h1>
+<p>
+    Checked live and updated periodically.
+    
+</p>
+<p>
+    <a class="btn btn-sm btn-outline-primary" href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json" target="_blank" rel="noopener">Add facilitator (edit JSON)</a>
+</p>
+
+@if (facilitators == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <FluentDataGrid Id="bridgegrid" Items="@facilitators" TGridItem="Facilitator" AutoFit="true" MultiLine="true">
+        <PropertyColumn Title="Name" Property="@(b => b.Name)" Sortable="true" Align="Align.Start" />
+        <TemplateColumn Title="Status" Sortable="true" Align="Align.Start">
+            @if(context.HasError)
+            {
+                <span style="color:red">Offline</span>
+            }
+            else
+            {
+                <span style="color:green">Online</span>
+            }
+        </TemplateColumn>
+        <TemplateColumn Title="URL" Sortable="true" Align="Align.Start">
+            <NavLink href="@context.Url">@context.Url</NavLink>
+
+            @if (context.Name == "Coinbase")
+			{
+				<p>Needs API key. Check the <a href="https://docs.cdp.coinbase.com/api-reference/v2/rest-api/x402-facilitator/x402-facilitator" target="_blank" rel="noopener">docs</a>.</p>
+			}
+        </TemplateColumn>
+        <TemplateColumn Title="Networks" Align="Align.Start">
+            @foreach (var kind in (context.Kinds ?? new()).OrderBy(x => x))
+            {
+                <FluentBadge Appearance="Appearance.Neutral" Circular=true>
+                    @kind
+                </FluentBadge>
+				<text> </text>
+            }
+        </TemplateColumn>
+        <PropertyColumn Title="Checked" Property="@(b => b.Checked)" Sortable="true" Align="Align.Start" />
+    </FluentDataGrid>
+}
+
+
+@code {
+    private IQueryable<Facilitator>? facilitators;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await FacilitatorGrpcService.GetFacilitators();
+        facilitators = result.AsQueryable();
+    }
+
+ 
+
+}
+

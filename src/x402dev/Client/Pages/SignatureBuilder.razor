@@ -1,0 +1,363 @@
+﻿@page "/signature-builder"
+@using System.Text.Json
+@using System.Net.Http.Json
+@using System.Text
+@using System.Numerics
+@using Nethereum.ABI.EIP712
+@using System.Security.Cryptography
+@using Nethereum.Hex.HexConvertors.Extensions
+@using Nethereum.Signer
+@using Nethereum.Signer.EIP712
+@using Nethereum.Web3.Accounts
+@using x402.Client.EVM
+@using x402.Client.v1
+@using x402.Core.Enums
+@using x402.Core.Models
+@using x402.Core.Models.v1
+@using x402dev.Client.Models
+@using x402dev.Server.Models
+@inject IHttpClientFactory HttpClientFactory
+@inject SignatureBuilderState State
+@inject IToastService ToastService
+@using Nethereum.Hex.HexTypes
+@using Nethereum.RPC.HostWallet
+@using System.Security.Claims
+@inherits BaseMetaMaskPage
+
+<PageTitle>x402dev - Signature Builder</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+	<h1>Signature Builder</h1>
+	<p>Build custom x402 signatures.</p>
+
+	@if (State.Address == null)
+	{
+		<div>
+			<FluentButton Appearance="Appearance.Accent" OnClick="GenerateNewPrivateKey">Generate a new Private Key for testing</FluentButton>
+			<br />
+			<br />
+			or connect with MetaMask to use your own account
+			<Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
+		</div>
+
+		return;
+	}
+
+	@if (State.Pkey != null)
+	{
+		<div>
+			<FluentButton Appearance="Appearance.Accent" OnClick="GenerateNewPrivateKey">Generate a new Private Key for testing</FluentButton>
+			<br />
+			Generated private key:	@State.Pkey<br />
+		</div>
+	}
+
+	Address: @State.Address <br />
+
+	<FluentSelect TOption="NetworkOption" Items="@NetworkOptions" @bind-SelectedOption="@State.SelectedNetworkOption" OptionValue="@(item => item.Value)">
+		<OptionTemplate>
+			@context.Name
+		</OptionTemplate>
+	</FluentSelect>
+
+	@if (State.SelectedNetworkOption?.Value == ulong.MaxValue.ToString())
+	{
+		<FluentNumberField @bind-Value="@State.CustomNetworkId" Placeholder="Enter custom network ID" />
+	}
+
+	<FluentTextField @bind-Value="@State.Network" Placeholder="Network">Network</FluentTextField>
+	<FluentTextField @bind-Value="@State.TokenName" Placeholder="Token Name">Token Name</FluentTextField>
+	<FluentTextField @bind-Value="@State.TokenVersion" Placeholder="Token Version">Token Version</FluentTextField>
+	<FluentTextField @bind-Value="@State.TokenContractAddress" Placeholder="Token Contract Address">Token Contract Address</FluentTextField>
+	<FluentTextField @bind-Value="@State.PayTo" Placeholder="Pay To Address">Pay To</FluentTextField>
+	<FluentNumberField @bind-Value="@State.Amount" Placeholder="Amount">Amount</FluentNumberField>
+	<FluentTextField @bind-Value="@State.Resource" Placeholder="Resource">Resource URL</FluentTextField>
+	<FluentNumberField @bind-Value="@State.ValidAfter">Add minutes to valid after</FluentNumberField>
+	<FluentNumberField @bind-Value="@State.ValidBefore">Add minutes to valid before</FluentNumberField>
+
+	<FluentButton Appearance="Appearance.Accent" OnClick="Submit">Generate Signature</FluentButton>
+
+	@if (!string.IsNullOrEmpty(State.Base64Header))
+	{
+		<FluentTextArea ReadOnly=true Value="@State.Base64Header" Style="width: 100%;" Rows="3">X-PAYMENT header value:</FluentTextArea>
+	}
+
+	@if (!string.IsNullOrEmpty(State.HeaderJson))
+	{
+		<FluentTextArea Style="width: 100%; min-height: 100%;"
+						Value="@State.HeaderJson"
+						Resize="TextAreaResize.Both"
+						Rows="@State.LineCount"
+						Readonly="true">Decoded X-PAYMENT header value</FluentTextArea>
+	}
+
+	@if (!string.IsNullOrEmpty(State.Base64Header))
+	{
+		<FluentCard>
+			<FluentStack Orientation="Orientation.Vertical" HorizontalGap="10">
+				<FluentTextField @bind-Value="@url"
+								 Style="width: 100%;"
+								 Placeholder="Enter URL to test"
+								 Required="true">URL</FluentTextField>
+
+				<FluentTextField Value="@State.Base64Header"
+								 Style="width: 100%;"
+								 ReadOnly=true
+								 Placeholder="Generate a signature using the Signature Builder..."
+								 Required="true">X-PAYMENT Header</FluentTextField>
+
+				<FluentButton Appearance="Appearance.Accent"
+							  OnClick="FetchResource"
+							  Disabled="@isLoading">
+					@if (isLoading)
+					{
+						<FluentProgressRing />
+						<span>Loading...</span>
+					}
+					else
+					{
+						<span>Fetch</span>
+					}
+				</FluentButton>
+			</FluentStack>
+		</FluentCard>
+	}
+
+	@if (!string.IsNullOrEmpty(errorMessage))
+	{
+		<FluentMessageBar Intent="MessageIntent.Error">
+			@errorMessage
+		</FluentMessageBar>
+	}
+
+	@if (content != null)
+	{
+		<FluentCard>
+			<FluentTextArea Style="width: 100%; min-height: 100%;"
+							Value="@content"
+							Resize="TextAreaResize.Both"
+							Rows="@lineCount"
+							Readonly="true">x402 Response</FluentTextArea>
+		</FluentCard>
+	}
+
+
+</FluentStack>
+
+@code {
+
+
+	EVMWallet? wallet = null;
+	private string url = "https://www.x402.org/protected";
+	private bool isLoading;
+	private string? errorMessage;
+	private string? content;
+	private int lineCount;
+
+
+	string? Result { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		State.Address = SelectedAccount;
+	}
+
+	protected override async Task HostProvider_SelectedAccountChanged(string account)
+	{
+		await base.HostProvider_SelectedAccountChanged(account);
+
+		State.Address = SelectedAccount;
+	}
+
+
+	private List<NetworkOption> NetworkOptions = new()
+	{
+		new NetworkOption(84532.ToString(), "base-sepolia"),
+		new NetworkOption(8453.ToString(), "base"),
+		new NetworkOption(ulong.MaxValue.ToString(), "Other")
+	};
+
+	protected static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+	{
+		DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+	};
+
+
+
+	private void GenerateNewPrivateKey()
+	{
+		var key = new byte[32];
+		using (var rng = RandomNumberGenerator.Create())
+		{
+			rng.GetBytes(key);
+		}
+		State.Pkey = key.ToHex();
+
+		var account = new Account(State.Pkey);
+		State.Address = account.Address;
+
+	}
+
+	private async Task Submit()
+	{
+		//Reset
+		State.Base64Header = null;
+
+		if (string.IsNullOrEmpty(State.Address))
+			State.Address = SelectedAccount;
+
+		if (string.IsNullOrEmpty(State.Address))
+			return;
+
+		if (!string.IsNullOrEmpty(State.Resource))
+			url = State.Resource;
+
+		try
+		{
+			string networkId = State.SelectedNetworkOption?.Value == ulong.MaxValue.ToString() ?
+				State.CustomNetworkId.ToString() ?? throw new InvalidOperationException("Custom network ID is required") :
+				State.SelectedNetworkOption?.Value ?? throw new InvalidOperationException("Network is required");
+
+
+			if (!string.IsNullOrEmpty(State.Pkey))
+			{
+				wallet = new EVMWallet(State.Pkey, ulong.Parse(networkId));
+			}
+
+			if (_ethereumHostProvider != null && SelectedAccount != null)
+			{
+				var web3 = await _ethereumHostProvider.GetWeb3Async();
+
+				var changeResult = await ChangeChainTo(ulong.Parse(networkId));
+
+				if (!string.IsNullOrEmpty(changeResult))
+				{
+					ToastService.ShowToast(ToastIntent.Error, $"Error changing MetaMask to ChainId: {networkId}: {changeResult}");
+					return;
+				}
+
+				wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, ulong.Parse(networkId))
+				{
+					IgnoreAllowances = true
+				};
+			}
+
+			if (wallet == null)
+				return;
+
+			wallet.AddValidBeforeFromNow = TimeSpan.FromMinutes(State.ValidBefore);
+			wallet.AddValidAfterFromNow = TimeSpan.FromMinutes(State.ValidAfter);
+
+			var requirements = new PaymentRequirements
+			{
+				Scheme = PaymentScheme.Exact,
+				Network = State.Network ?? string.Empty,
+				MaxAmountRequired = State.Amount.ToString(),
+				Asset = State.TokenContractAddress ?? string.Empty,
+				PayTo = State.PayTo ?? string.Empty,
+				Resource = State.Resource ?? string.Empty,
+				MaxTimeoutSeconds = 300,
+				Extra = new()
+				{
+					Name = State.TokenName ?? string.Empty,
+					Version = State.TokenVersion ?? string.Empty
+				}
+			};
+
+			var header = await wallet.CreateHeaderAsync(requirements);
+			var headerJsonRaw = JsonSerializer.Serialize(header, JsonOptions);
+			State.HeaderJson = JsonSerializer.Serialize(header, JsonOptions);
+
+			State.HeaderJson = JsonSerializer.Serialize(header, new JsonSerializerOptions
+			{
+				WriteIndented = true,
+				DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+			});
+
+			State.Base64Header = Convert.ToBase64String(Encoding.UTF8.GetBytes(headerJsonRaw));
+
+			State.LineCount = State.HeaderJson.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Length;
+			State.LineCount = int.Max(10, State.LineCount);
+		}
+		catch (Exception ex)
+		{
+			State.Base64Header = $"Error generating signature: {ex.Message}";
+		}
+	}
+
+	private async Task FetchResource()
+	{
+		try
+		{
+			isLoading = true;
+			errorMessage = null;
+			content = null;
+
+			if (string.IsNullOrWhiteSpace(url))
+			{
+				errorMessage = "Please enter a URL";
+				return;
+			}
+
+			var req = new ProxyRequest { Url = url, PaymentHeader = State.Base64Header };
+			var json = JsonSerializer.Serialize(req);
+
+			var request = new HttpRequestMessage(HttpMethod.Post, "/api/proxy/get-x402")
+			{
+				Content = new StringContent(json, Encoding.UTF8, "application/json")
+			};
+
+			var httpClient = HttpClientFactory.CreateClient("ServerAPI");
+
+			var response = await httpClient.SendAsync(request);
+
+			var responseObj = await response.Content.ReadFromJsonAsync<ProxyResponse>();
+			if (responseObj == null)
+			{
+				errorMessage = "Failed to parse response.";
+				return;
+			}
+
+			if (responseObj.StatusCode != 200 && responseObj.StatusCode != 402)
+			{
+				errorMessage = "No 200 or 402 returned from url.";
+				return;
+			}
+
+			// Process headers
+			var headersList = responseObj.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}");
+			var headers = string.Join("\n", headersList);
+
+			// Process content
+			var responseContent = responseObj.Content;
+
+			// Try to format if JSON
+			try
+			{
+				using var doc = JsonDocument.Parse(responseContent);
+				content = JsonSerializer.Serialize(doc, new JsonSerializerOptions
+				{
+					WriteIndented = true
+				});
+			}
+			catch
+			{
+				// If not valid JSON, show as plain text
+				content = responseContent;
+			}
+
+			lineCount = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Length;
+			lineCount = int.Max(10, lineCount);
+		}
+		catch (Exception ex)
+		{
+			errorMessage = $"Error: {ex.Message}";
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+}

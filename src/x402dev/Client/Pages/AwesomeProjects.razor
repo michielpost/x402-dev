@@ -1,0 +1,35 @@
+﻿@page "/awesome-projects"
+@using x402dev.Shared.Interfaces
+@inject IContentGrpcService ContentGrpcService
+
+<PageTitle>x402dev - Awesome x402 Projects</PageTitle>
+
+<h1>Awesome x402 Projects</h1>
+<p>
+    <a class="btn btn-sm btn-outline-primary" href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" target="_blank" rel="noopener">Edit on GitHub</a>
+</p>
+
+@(Text)
+
+@if(Text == null)
+{
+    <p><em>Loading...</em></p>
+    <FluentProgress></FluentProgress>
+}
+
+<p>
+    <a class="btn btn-primary" href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" target="_blank" rel="noopener">Make a PR to add your project</a>
+</p>
+
+@code {
+    MarkupString? Text = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await ContentGrpcService.GetContent();
+        if(result?.Text != null)
+        {
+			Text = (MarkupString)result.Text;
+        }
+    }
+}

@@ -1,0 +1,21 @@
+<div class="navmenu">
+	<input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon" />
+	<label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
+	<nav class="sitenav" aria-labelledby="main-menu">
+		<FluentNavMenu Id="main-menu" Width="250" Collapsible="true" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
+			<FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Home</FluentNavLink>
+			<FluentNavLink Href="facilitators" Icon="@(new Icons.Regular.Size20.People())" IconColor="Color.Accent">Facilitators</FluentNavLink>
+			<FluentNavLink Href="messages" Icon="@(new Icons.Regular.Size20.Chat())" IconColor="Color.Accent">Messages</FluentNavLink>
+			<FluentNavLink Href="resource-tester" Icon="@(new Icons.Regular.Size20.AppsListDetail())" IconColor="Color.Accent">Resource Tester</FluentNavLink>
+			<FluentNavLink Href="signature-builder" Icon="@(new Icons.Regular.Size20.DocumentSignature())" IconColor="Color.Accent">Signature Builder</FluentNavLink>
+			<FluentNavLink Href="base64-helper" Icon="@(new Icons.Regular.Size20.Code())" IconColor="Color.Accent">Base64 Helper</FluentNavLink>
+			@* <FluentNavLink Href="test-endpoints" Icon="@(new Icons.Regular.Size20.ServerMultiple())" IconColor="Color.Accent">Test Endpoints</FluentNavLink> *@
+			<FluentNavLink Href="awesome-projects" Icon="@(new Icons.Regular.Size20.Star())" IconColor="Color.Accent">Awesome Projects</FluentNavLink>
+			<FluentNavLink Href="settings" Icon="@(new Icons.Regular.Size20.Settings())" IconColor="Color.Accent">Settings</FluentNavLink>
+		</FluentNavMenu>
+	</nav>
+</div>
+
+@code {
+	private bool expanded = true;
+}
