@@ -44,7 +44,7 @@ Make sure to include the required fields and follow the existing structure.
 This project uses dotnet and EF Core with SQLite
 
 ### Migrations
-Run in src/x402dev.Web:
+Run in src/x402dev/Server:
 ```
 dotnet ef migrations add MIGRATION_NAME
 ```

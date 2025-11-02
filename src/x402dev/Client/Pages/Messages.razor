@@ -26,60 +26,62 @@
 
 	<Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
 
-@if (!string.IsNullOrEmpty(SelectedAccount))
+	@if (!string.IsNullOrEmpty(SelectedAccount))
 	{
 		<FluentCard Class="max-w-md mx-auto mt-10 p-6 shadow-lg rounded-2xl">
 			<FluentStack Orientation="Orientation.Vertical" Gap="1rem">
 				<h5>Post a Public Message</h5>
 
-        <EditForm Model="@model" OnValidSubmit="Submit">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+				<EditForm Model="@model" OnValidSubmit="Submit" Class="w-full" style="width: 80%;">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
 
-            <FluentTextField Label="Name"
-                             @bind-Value="model.Name"
-                             Placeholder="Enter your name (optional)"
-                             MaxLength="32"
-                             Class="w-full" />
-            <ValidationMessage For="@(() => model.Name)" />
+					<FluentTextField Label="Name"
+									 @bind-Value="model.Name"
+									 Placeholder="Enter your name (optional)"
+									 MaxLength="32"
+									 Class="w-full" />
+					<ValidationMessage For="@(() => model.Name)" />
 
-            <FluentTextArea Label="Message"
-                            @bind-Value="model.Message"
-                            Placeholder="Write your message"
-                            MaxLength="255"
-                            Required
-                            Class="w-full" />
-            <ValidationMessage For="@(() => model.Message)" />
+					<FluentTextArea Label="Message"
+									@bind-Value="model.Message"
+									Placeholder="Write your message"
+									MaxLength="255"
+									Required
+									Class="w-full"
+									style="width: 100%;" />
+					<ValidationMessage For="@(() => model.Message)" />
 
-            <FluentTextField Label="Link"
-                             @bind-Value="model.Link"
-                             Placeholder="https://example.com"
-                             Type="url"
-                             MaxLength="255"
-                             Class="w-full" />
-            <ValidationMessage For="@(() => model.Link)" />
+					<FluentTextField Label="Link"
+									 @bind-Value="model.Link"
+									 Placeholder="https://example.com"
+									 Type="url"
+									 MaxLength="255"
+									 Class="w-full"
+									 style="width: 100%;" />
+					<ValidationMessage For="@(() => model.Link)" />
 
 					<FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit" Class="mt-4">
-                Submit
-            </FluentButton>
-        </EditForm>
+						Submit
+					</FluentButton>
+				</EditForm>
 
 				<p>
 					@Result
 				</p>
 
-        @if (submitted)
-        {
-            <p>
-                Message submitted successfully!
-            </p>
-        }
-    </FluentStack>
-</FluentCard>
+				@if (submitted)
+				{
+					<p>
+						Message submitted successfully!
+					</p>
+				}
+			</FluentStack>
+		</FluentCard>
 	}
 
 </div>
-
+<br />
 <MessagesList />
 
 @code {
@@ -181,7 +183,7 @@
 			{
 				"https://mainnet.base.org"
 			},
-				BlockExplorerUrls = new List<string>
+			BlockExplorerUrls = new List<string>
 			{
 				"https://basescan.org"
 			}
@@ -197,5 +199,5 @@
 		}
 	}
 
-	
+
 }
