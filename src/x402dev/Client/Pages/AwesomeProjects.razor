@@ -26,10 +26,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await ContentGrpcService.GetContent();
-        if(result?.Text != null)
+        if (OperatingSystem.IsBrowser())
         {
-			Text = (MarkupString)result.Text;
+            var result = await ContentGrpcService.GetContent();
+            if (result?.Text != null)
+            {
+                Text = (MarkupString)result.Text;
+            }
         }
     }
 }

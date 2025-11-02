@@ -161,7 +161,10 @@
 	{
 		await base.OnInitializedAsync();
 
-		State.Address = SelectedAccount;
+		if (OperatingSystem.IsBrowser())
+		{
+			State.Address = SelectedAccount;
+		}
 	}
 
 	protected override async Task HostProvider_SelectedAccountChanged(string account)

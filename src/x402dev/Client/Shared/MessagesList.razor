@@ -70,7 +70,10 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        messages = await PublicMessageGrpcService.GetMessages();
+        if (OperatingSystem.IsBrowser())
+        {
+            messages = await PublicMessageGrpcService.GetMessages();
+        }
     }
 
     private static string TruncateAddress(string? address)

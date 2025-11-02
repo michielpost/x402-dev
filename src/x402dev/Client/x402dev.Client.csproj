@@ -8,6 +8,7 @@
 		<InvariantTimezone>false</InvariantTimezone>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<BlazorWebAssemblyEnablePrerendering>true</BlazorWebAssemblyEnablePrerendering>
+		<BlazorWasmPrerenderingDeleteLoadingContents>true</BlazorWasmPrerenderingDeleteLoadingContents>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,6 +27,7 @@
 		<PackageReference Include="x402.Core" Version="0.0.11" />
 		<PackageReference Include="Nethereum.Metamask.Blazor" Version="5.0.0" />
 		<PackageReference Include="Nethereum.UI" Version="5.0.0" />
+		<PackageReference Include="BlazorWasmPreRendering.Build" Version="6.0.0" />
 	</ItemGroup>
 
   <ItemGroup>

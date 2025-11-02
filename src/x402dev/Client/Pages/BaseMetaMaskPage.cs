@@ -26,9 +26,12 @@ public class BaseMetaMaskPage : ComponentBase, IDisposable
 
     protected override void OnInitialized()
     {
-        //metamask is selected
-        _ethereumHostProvider = selectedHostProviderService.SelectedHost;
-        _ethereumHostProvider.SelectedAccountChanged += HostProvider_SelectedAccountChanged;
+        if (OperatingSystem.IsBrowser())
+        {
+            //metamask is selected
+            _ethereumHostProvider = selectedHostProviderService.SelectedHost;
+            _ethereumHostProvider.SelectedAccountChanged += HostProvider_SelectedAccountChanged;
+        }
     }
 
     public void Dispose()
@@ -41,19 +44,22 @@ public class BaseMetaMaskPage : ComponentBase, IDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        if (_ethereumHostProvider != null)
+        if (OperatingSystem.IsBrowser())
         {
-            var ethereumAvailable = await _ethereumHostProvider.CheckProviderAvailabilityAsync();
-            if (ethereumAvailable)
+            if (_ethereumHostProvider != null)
             {
-                SelectedAccount = await _ethereumHostProvider.GetProviderSelectedAccountAsync();
+                var ethereumAvailable = await _ethereumHostProvider.CheckProviderAvailabilityAsync();
+                if (ethereumAvailable)
+                {
+                    SelectedAccount = await _ethereumHostProvider.GetProviderSelectedAccountAsync();
+                }
             }
-        }
 
-        var authState = await AuthenticationState;
-        if (authState != null)
-        {
-            UserName = authState.User.FindFirst(c => c.Type.Contains(ClaimTypes.NameIdentifier))?.Value;
+            var authState = await AuthenticationState;
+            if (authState != null)
+            {
+                UserName = authState.User.FindFirst(c => c.Type.Contains(ClaimTypes.NameIdentifier))?.Value;
+            }
         }
     }
 

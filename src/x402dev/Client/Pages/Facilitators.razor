@@ -60,8 +60,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await FacilitatorGrpcService.GetFacilitators();
-        facilitators = result.AsQueryable();
+        if (OperatingSystem.IsBrowser())
+        {
+            var result = await FacilitatorGrpcService.GetFacilitators();
+            facilitators = result.AsQueryable();
+        }
     }
 
  
