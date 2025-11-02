@@ -4,22 +4,53 @@
 
 <PageTitle>x402dev - Awesome x402 Projects</PageTitle>
 
-<h1>Awesome x402 Projects</h1>
-<p>
-    <a class="btn btn-sm btn-outline-primary" href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" target="_blank" rel="noopener">Edit on GitHub</a>
-</p>
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <h1>Awesome x402 Projects</h1>
+    <p>
+        Discover and explore innovative projects built with the x402 payment protocol. 
+        This curated list showcases applications, tools, and services that leverage x402 
+        for seamless micro-payments and resource monetization.
+    </p>
 
-@(Text)
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
+        <FluentButton Appearance="Appearance.Accent" 
+                      Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" 
+                      Target="_blank" 
+                      Rel="noopener">
+            Edit on GitHub
+        </FluentButton>
+    </FluentStack>
 
-@if(Text == null)
-{
-    <p><em>Loading...</em></p>
-    <FluentProgress></FluentProgress>
-}
+    @if(Text == null)
+    {
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+            <p><em>Loading projects...</em></p>
+            <FluentProgress></FluentProgress>
+        </FluentStack>
+    }
+    else
+    {
+        <div>
+            @(Text)
+        </div>
+    }
 
-<p>
-    <a class="btn btn-primary" href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" target="_blank" rel="noopener">Make a PR to add your project</a>
-</p>
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+            <h4>Want to add your project?</h4>
+            <p>
+                Have you built something awesome with x402? Share it with the community! 
+                Submit a pull request to add your project to this list.
+            </p>
+            <FluentButton Appearance="Appearance.Accent" 
+                          Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" 
+                          Target="_blank" 
+                          Rel="noopener">
+                Make a PR to add your project
+            </FluentButton>
+        </FluentStack>
+    </FluentCard>
+</FluentStack>
 
 @code {
     MarkupString? Text = null;

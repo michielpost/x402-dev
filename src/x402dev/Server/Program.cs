@@ -35,15 +35,15 @@ builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = 429;
 
-    // 1 request every 3 seconds (per IP)
+    // Max 4 requests every 10 seconds (per IP)
     options.AddPolicy("proxy-3sec", httpContext =>
         RateLimitPartition.GetTokenBucketLimiter(
             partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             factory: _ => new TokenBucketRateLimiterOptions
             {
-                TokenLimit = 1,
-                ReplenishmentPeriod = TimeSpan.FromSeconds(3),
-                TokensPerPeriod = 1,
+                TokenLimit = 4,
+                ReplenishmentPeriod = TimeSpan.FromSeconds(10),
+                TokensPerPeriod = 4,
                 AutoReplenishment = true,
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 QueueLimit = 0
@@ -139,9 +139,6 @@ using (var scope = app.Services.CreateScope())
 var contentService = app.Services.GetRequiredService<ContentService>();
 await contentService.Initialize();
 
-// Do not apply rate limiting globally
-//app.UseRateLimiter();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -160,6 +157,10 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Rate limiting middleware must be enabled for per-endpoint attributes to work
+// Must be after UseRouting() for attribute-based rate limiting to work correctly
+app.UseRateLimiter();
 
 app.UseGrpcWeb();
 app.MapGrpcService<FacilitatorGrpcService>().EnableGrpcWeb();

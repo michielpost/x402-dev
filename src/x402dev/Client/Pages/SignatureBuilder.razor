@@ -28,7 +28,11 @@
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
 	<h1>Signature Builder</h1>
-	<p>Build custom x402 signatures.</p>
+	<p>
+		Build and test custom x402 payment signatures. This tool helps you create properly formatted 
+		X-PAYMENT headers for authenticating requests to x402-protected resources. Configure payment 
+		parameters, network settings, and resource URLs to generate signed headers ready for use.
+	</p>
 
 	@if (State.Address == null)
 	{

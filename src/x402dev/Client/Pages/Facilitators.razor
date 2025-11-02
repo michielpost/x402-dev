@@ -3,24 +3,34 @@
 @using x402dev.Shared.Interfaces
 @using x402dev.Shared.Models
 
-<PageTitle>x402dev home</PageTitle>
+<PageTitle>x402dev - Facilitators</PageTitle>
 
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <h1>Facilitators</h1>
+    <p>
+        x402 facilitators are services that help process payments and enable seamless transactions 
+        across different networks. This list shows active facilitators, their status, supported 
+        networks, and service availability. Status is checked live and updated periodically.
+    </p>
 
-<h1>Facilitators</h1>
-<p>
-    Checked live and updated periodically.
-    
-</p>
-<p>
-    <a class="btn btn-sm btn-outline-primary" href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json" target="_blank" rel="noopener">Add facilitator (edit JSON)</a>
-</p>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
+        <FluentButton Appearance="Appearance.Accent" 
+                      Href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json" 
+                      Target="_blank" 
+                      Rel="noopener">
+            Add facilitator (edit JSON)
+        </FluentButton>
+    </FluentStack>
 
-@if (facilitators == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
+    @if (facilitators == null)
+    {
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+            <p><em>Loading facilitators...</em></p>
+            <FluentProgress></FluentProgress>
+        </FluentStack>
+    }
+    else
+    {
     <FluentDataGrid Id="bridgegrid" Items="@facilitators" TGridItem="Facilitator" AutoFit="true" MultiLine="true">
         <PropertyColumn Title="Name" Property="@(b => b.Name)" Sortable="true" Align="Align.Start" />
         <TemplateColumn Title="Status" Sortable="true" Align="Align.Start">
@@ -52,8 +62,8 @@ else
         </TemplateColumn>
         <PropertyColumn Title="Checked" Property="@(b => b.Checked)" Sortable="true" Align="Align.Start" />
     </FluentDataGrid>
-}
-
+    }
+</FluentStack>
 
 @code {
     private IQueryable<Facilitator>? facilitators;

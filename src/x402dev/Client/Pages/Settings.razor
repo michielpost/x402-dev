@@ -1,19 +1,28 @@
 @page "/settings"
 
-<PageTitle>Settings</PageTitle>
+<PageTitle>x402dev - Settings</PageTitle>
 
-<h1>Settings</h1>
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <h1>Settings</h1>
+    <p>
+        Customize your x402dev experience. Adjust the theme and appearance settings to match your preferences.
+    </p>
 
-<FluentDesignTheme @bind-Mode="@Mode"
-                   @bind-OfficeColor="@OfficeColor"
-                   OnLoaded="@OnLoaded"
-                   OnLuminanceChanged="@OnLuminanceChanged"
-                   StorageName="theme" />
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+            <FluentDesignTheme @bind-Mode="@Mode"
+                               @bind-OfficeColor="@OfficeColor"
+                               OnLoaded="@OnLoaded"
+                               OnLuminanceChanged="@OnLuminanceChanged"
+                               StorageName="theme" />
 
-<FluentSelect Label="Theme"
-              Width="250px"
-              Items="@(Enum.GetValues<DesignThemeModes>())"
-              @bind-SelectedOption="@Mode" />
+            <FluentSelect Label="Theme"
+                          Width="250px"
+                          Items="@(Enum.GetValues<DesignThemeModes>())"
+                          @bind-SelectedOption="@Mode" />
+        </FluentStack>
+    </FluentCard>
+</FluentStack>
 
 @code {
 
