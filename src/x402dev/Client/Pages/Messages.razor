@@ -8,81 +8,106 @@
 
 <PageTitle>x402dev - Messages</PageTitle>
 
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <h1>Public Messages</h1>
+    <p>
+        Share and discover x402 projects and announcements! Post messages that require x402 payments, 
+        ensuring only authenticated users can contribute. Perfect for promoting new projects, 
+        sharing updates, or connecting with the x402 community.
+    </p>
 
-<h1>Post a message onx402dev</h1>
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+            <h4>About Public Messages</h4>
+            <p>
+                Launching a new x402 project? Want to promote your service? Share it here! 
+                Messages can only be posted using x402 payments, which helps maintain quality 
+                and prevents spam.
+            </p>
+            
+            <FluentDivider />
+            
+            <h5>Post via API</h5>
+            <p>
+                Integrate message posting directly into your application or agent. 
+                See <FluentAnchor Href="/swagger" Target="_blank">Open API Specs</FluentAnchor> for API details. 
+                A payment of 0.1 USDC on Base is required per message.
+            </p>
+            
+        </FluentStack>
+    </FluentCard>
 
-<div>
-	<h4>Public Messages posted using x402</h4>
-	<p>Launcing a new x402 project? Promote it here! Messages can only be posted using x402.</p>
-</div>
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+            <h4>Post Manually</h4>
+            <p>
+                Use the form below to post a message directly from your browser. 
+                Connect your MetaMask wallet to get started.
+            </p>
 
-<div>
-	<h5>Let your agent post using the API endpoint:</h5>
-	<p>See <a href="/swagger" target="_blank">Open API Specs</a> for API details. A payment of 0.1 USDC on Base is required.</p>
-</div>
+            <Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
 
-<div>
-	<h5>Post manually using this x402 enabled form</h5>
+            @if (!string.IsNullOrEmpty(SelectedAccount))
+            {
+                <FluentDivider />
+                
+                <FluentStack Orientation="Orientation.Vertical" Gap="1rem">
+                    <h5>Post a Public Message</h5>
 
-	<Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
+                    <EditForm Model="@model" OnValidSubmit="Submit" Class="w-full" style="width: 80%;">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
 
-	@if (!string.IsNullOrEmpty(SelectedAccount))
-	{
-		<FluentCard Class="max-w-md mx-auto mt-10 p-6 shadow-lg rounded-2xl">
-			<FluentStack Orientation="Orientation.Vertical" Gap="1rem">
-				<h5>Post a Public Message</h5>
+                        <FluentTextField Label="Name"
+                                         @bind-Value="model.Name"
+                                         Placeholder="Enter your name (optional)"
+                                         MaxLength="32"
+                                         Class="w-full" />
+                        <ValidationMessage For="@(() => model.Name)" />
 
-				<EditForm Model="@model" OnValidSubmit="Submit" Class="w-full" style="width: 80%;">
-					<DataAnnotationsValidator />
-					<ValidationSummary />
+                        <FluentTextArea Label="Message"
+                                        @bind-Value="model.Message"
+                                        Placeholder="Write your message"
+                                        MaxLength="255"
+                                        Required
+                                        Class="w-full"
+                                        style="width: 100%;" />
+                        <ValidationMessage For="@(() => model.Message)" />
 
-					<FluentTextField Label="Name"
-									 @bind-Value="model.Name"
-									 Placeholder="Enter your name (optional)"
-									 MaxLength="32"
-									 Class="w-full" />
-					<ValidationMessage For="@(() => model.Name)" />
+                        <FluentTextField Label="Link"
+                                         @bind-Value="model.Link"
+                                         Placeholder="https://example.com"
+                                         Type="url"
+                                         MaxLength="255"
+                                         Class="w-full"
+                                         style="width: 100%;" />
+                        <ValidationMessage For="@(() => model.Link)" />
 
-					<FluentTextArea Label="Message"
-									@bind-Value="model.Message"
-									Placeholder="Write your message"
-									MaxLength="255"
-									Required
-									Class="w-full"
-									style="width: 100%;" />
-					<ValidationMessage For="@(() => model.Message)" />
+                        <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit" Class="mt-4">
+                            Submit
+                        </FluentButton>
+                    </EditForm>
 
-					<FluentTextField Label="Link"
-									 @bind-Value="model.Link"
-									 Placeholder="https://example.com"
-									 Type="url"
-									 MaxLength="255"
-									 Class="w-full"
-									 style="width: 100%;" />
-					<ValidationMessage For="@(() => model.Link)" />
+                    <p>
+                        @Result
+                    </p>
 
-					<FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit" Class="mt-4">
-						Submit
-					</FluentButton>
-				</EditForm>
+                    @if (submitted)
+                    {
+                        <p>
+                            Message submitted successfully!
+                        </p>
+                    }
+                </FluentStack>
+            }
+        </FluentStack>
+    </FluentCard>
 
-				<p>
-					@Result
-				</p>
-
-				@if (submitted)
-				{
-					<p>
-						Message submitted successfully!
-					</p>
-				}
-			</FluentStack>
-		</FluentCard>
-	}
-
-</div>
-<br />
-<MessagesList />
+    <div>
+        <h2>Recent Messages</h2>
+        <MessagesList @ref="messagesListRef" />
+    </div>
+</FluentStack>
 
 @code {
 
@@ -91,6 +116,7 @@
 	EVMWallet? wallet = null;
 	private bool isLoading;
 	private string? errorMessage;
+	private MessagesList? messagesListRef;
 
 	string? Result { get; set; }
 
@@ -154,6 +180,17 @@
 			var response = await httpClient.SendAsync(request);
 
 			Result = await response.Content.ReadAsStringAsync();
+			
+			if (response.IsSuccessStatusCode)
+			{
+				submitted = true;
+				model = new(); // Reset form
+				// Reload the messages list
+				if (messagesListRef != null)
+				{
+					await messagesListRef.ReloadAsync();
+				}
+			}
 		}
 		catch (Exception ex)
 		{

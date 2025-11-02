@@ -70,6 +70,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadMessagesAsync();
+    }
+
+    public async Task ReloadAsync()
+    {
+        await LoadMessagesAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMessagesAsync()
+    {
         if (OperatingSystem.IsBrowser())
         {
             messages = await PublicMessageGrpcService.GetMessages();
