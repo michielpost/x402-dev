@@ -12,6 +12,7 @@ on:
       - 'LICENSE'
       - 'facilitators.json'
       - 'Projects.md'
+      - 'src/x402dev/Client/**'
       
   workflow_dispatch:
 
