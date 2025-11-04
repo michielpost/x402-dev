@@ -178,7 +178,9 @@ app.UseHttpsRedirection();
 // Add middleware to redirect to www domain, except on localhost
 app.Use(async (context, next) =>
 {
-    if (context.Request.Host.Host != "localhost" && !context.Request.Host.Host.StartsWith("www."))
+    if (context.Request.Host.Host != "localhost"
+    && !context.Request.Host.Host.StartsWith("www.") 
+    && !context.Request.Host.Host.StartsWith("api."))
     {
         var newUrl = $"{context.Request.Scheme}://www.{context.Request.Host.Host}{context.Request.Path}{context.Request.QueryString}";
         context.Response.Redirect(newUrl, permanent: true);
