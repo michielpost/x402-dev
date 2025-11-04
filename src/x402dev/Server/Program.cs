@@ -175,6 +175,18 @@ app.UseCors(corsPolicyName);
 
 app.UseHttpsRedirection();
 
+// Add middleware to redirect to www domain, except on localhost
+app.Use(async (context, next) =>
+{
+    if (context.Request.Host.Host != "localhost" && !context.Request.Host.Host.StartsWith("www."))
+    {
+        var newUrl = $"{context.Request.Scheme}://www.{context.Request.Host.Host}{context.Request.Path}{context.Request.QueryString}";
+        context.Response.Redirect(newUrl, permanent: true);
+        return;
+    }
+    await next();
+});
+
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
