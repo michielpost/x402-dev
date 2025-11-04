@@ -73,6 +73,7 @@ builder.Services.AddCors(options =>
             var host = uri.Host;
             return host == "x402-dev.pages.com"
             || host.EndsWith("x402-dev.pages.com")
+            || host.EndsWith("x402dev.com")
             || host == "x402dev.com"
             || host.Contains("localhost"); // dev only
         })
