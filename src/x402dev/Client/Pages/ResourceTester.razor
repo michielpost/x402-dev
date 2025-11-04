@@ -10,36 +10,38 @@
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
     <h1>Resource Tester</h1>
     <p>
-        Test and debug x402-protected resources. This tool allows you to send requests to x402-enabled 
-        endpoints with optional payment headers to verify authentication, check responses, and debug 
+        Test and debug x402-protected resources. This tool allows you to send requests to x402-enabled
+        endpoints with optional payment headers to verify authentication, check responses, and debug
         payment-related issues. Perfect for developers integrating x402 into their applications.
     </p>
 
     <FluentCard>
         <FluentStack Orientation="Orientation.Vertical" HorizontalGap="10">
-            <FluentTextField @bind-Value="@url" 
-                           Style="width: 100%;"
-                           Placeholder="Enter URL to test"
-                           Required="true">URL</FluentTextField>
+            <FluentTextField @bind-Value="@url"
+                             Style="width: 100%;"
+                             Placeholder="Enter URL to test"
+                             Required="true">URL</FluentTextField>
 
             <FluentTextField @bind-Value="@paymentHeader"
                              Style="width: 100%;"
-							 Placeholder="Generate a signature using the Signature Builder..."
-							 Required="true">Optional Payment Header Signature</FluentTextField>
+                             Placeholder="Generate a signature using the Signature Builder..."
+                             Required="true">Optional Payment Header Signature</FluentTextField>
 
-            <FluentButton Appearance="Appearance.Accent" 
-                         OnClick="FetchResource"
-                         Disabled="@isLoading">
-                @if (isLoading)
-                {
-                    <FluentProgressRing />
-                    <span>Loading...</span>
-                }
-                else
-                {
+
+            @if (isLoading)
+            {
+                <FluentProgressRing />
+                <span>Loading...</span>
+            }
+            else
+            {
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="FetchResource"
+                              Disabled="@isLoading">
                     <span>Fetch</span>
-                }
-            </FluentButton>
+                </FluentButton>
+            }
+
         </FluentStack>
     </FluentCard>
 
@@ -50,7 +52,7 @@
         </FluentMessageBar>
     }
 
-@*     @if (headers != null)
+    @*     @if (headers != null)
     {
         <FluentCard>
             <FluentLabel Typo="Typography.Subject">Response Headers</FluentLabel>
@@ -65,7 +67,7 @@
     {
         <FluentCard>
             <FluentTextArea Style="width: 100%; min-height: 100%;"
-                          Value="@content"
+                            Value="@content"
                             Resize="TextAreaResize.Both"
                             Rows="@lineCount"
                             Readonly="true">x402 Response</FluentTextArea>
@@ -73,7 +75,7 @@
     }
 </FluentStack>
 
-    @code {
+@code {
     private string url = "https://www.x402.org/protected";
     private string? paymentHeader;
     private string? headers;
@@ -109,13 +111,13 @@
             var response = await httpClient.SendAsync(request);
 
             var responseObj = await response.Content.ReadFromJsonAsync<ProxyResponse>();
-            if(responseObj == null)
+            if (responseObj == null)
             {
                 errorMessage = "Failed to parse response.";
                 return;
             }
 
-            if(responseObj.StatusCode != 402)
+            if (responseObj.StatusCode != 402)
             {
                 errorMessage = "No 402 returned from url.";
                 return;
@@ -132,9 +134,9 @@
             try
             {
                 using var doc = JsonDocument.Parse(responseContent);
-                content = JsonSerializer.Serialize(doc, new JsonSerializerOptions 
-                { 
-                    WriteIndented = true 
+                content = JsonSerializer.Serialize(doc, new JsonSerializerOptions
+                {
+                    WriteIndented = true
                 });
             }
             catch
