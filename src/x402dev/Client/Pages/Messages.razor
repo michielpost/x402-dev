@@ -84,9 +84,16 @@
                                          style="width: 100%;" />
                         <ValidationMessage For="@(() => model.Link)" />
 
-                        <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit" Class="mt-4">
-                            Submit
-                        </FluentButton>
+                        @if (!isSubmitting)
+                        {
+                            <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit" Class="mt-4">
+                                Submit
+                            </FluentButton>
+                        }
+                        else
+                        {
+                            <FluentProgressRing />
+                        }
                     </EditForm>
 
                     <p>
@@ -118,11 +125,13 @@
 	private bool isLoading;
 	private string? errorMessage;
 	private MessagesList? messagesListRef;
+	private bool isSubmitting = false;
 
 	string? Result { get; set; }
 
 	private async Task Submit()
 	{
+		isSubmitting = true;
 		try
 		{
 			Result = "";
@@ -196,6 +205,10 @@
 		catch (Exception ex)
 		{
 			Result = $"Error: {ex}";
+		}
+		finally
+		{
+			isSubmitting = false;
 		}
 	}
 
