@@ -2,7 +2,7 @@
 
 <PageTitle>x402dev - Home</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
     <h1>Welcome to x402dev</h1>
     <p>
         Explore tools, check facilitators, and experiment with x402 on x402dev.com. 
@@ -11,30 +11,27 @@
     </p>
 
     <FluentCard>
-        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
             <h4>Explore x402dev Tools</h4>
-            <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
-                <p><a Href="/facilitators">Facilitators</a> - Check the status of x402 facilitators and view their supported networks.</p>
-                <p><a Href="/messages">Messages</a> - Post and view public messages using x402 payments.</p>
-                <p><a Href="/resource-tester">Resource Tester</a> - Test and debug x402-protected resources with payment headers.</p>
-                <p><a Href="/signature-builder">Signature Builder</a> - Build and test custom x402 payment signatures for authentication.</p>
-                <p><a Href="/base64-helper">Base64 Helper</a> - Encode and decode Base64 strings used in x402 headers.</p>
-                <p><a Href="/awesome-projects">Awesome Projects</a> - Discover innovative projects built with the x402 payment protocol.</p>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
+               <a Href="/facilitators">Facilitators</a> - Check the status of x402 facilitators and view their supported networks.<br/>
+               <a Href="/messages">Messages</a> - Post and view public messages using x402 payments.<br/>
+               <a Href="/resource-tester">Resource Tester</a> - Test and debug x402-protected resources with payment headers.<br/>
+               <a Href="/signature-builder">Signature Builder</a> - Build and test custom x402 payment signatures for authentication.<br/>
+               <a Href="/base64-helper">Base64 Helper</a> - Encode and decode Base64 strings used in x402 headers.<br/>
+               <a Href="/awesome-projects">Awesome Projects</a> - Discover innovative projects built with the x402 payment protocol.<br/>
             </FluentStack>
         </FluentStack>
     </FluentCard>
 
     <FluentCard>
-        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
             <h4>Public Messages posted using x402</h4>
             <p>
                 Launching a new x402 project? Want to promote your service? Share it here! 
                 Messages can only be posted using x402 payments, which helps maintain quality 
-                and prevents spam.
-            </p>
-            <p>
-                See <FluentAnchor Href="/swagger" Target="_blank">Open API Specs</FluentAnchor> for API details. 
-                A payment of 0.1 USDC on Base is required per message.
+                and prevents spam. <br />
+                Check out the <a href="/messages">Messages</a> page.
             </p>
         </FluentStack>
     </FluentCard>

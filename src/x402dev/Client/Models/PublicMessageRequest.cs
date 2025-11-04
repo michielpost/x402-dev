@@ -15,5 +15,5 @@ namespace x402dev.Client.Models
         [Url]
         public string? Link { get; set; }
     }
-   
+
 }

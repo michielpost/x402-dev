@@ -8,7 +8,7 @@
 
 <PageTitle>x402dev - Messages</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
     <h1>Public Messages</h1>
     <p>
         Share and discover x402 projects and announcements! Post messages that require x402 payments, 
@@ -17,29 +17,32 @@
     </p>
 
     <FluentCard>
-        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
-            <h4>About Public Messages</h4>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
+            <b>About Public Messages</b>
             <p>
                 Launching a new x402 project? Want to promote your service? Share it here! 
                 Messages can only be posted using x402 payments, which helps maintain quality 
                 and prevents spam.
             </p>
-            
-            <FluentDivider />
-            
-            <h5>Post via API</h5>
-            <p>
-                Integrate message posting directly into your application or agent. 
-                See <FluentAnchor Href="/swagger" Target="_blank">Open API Specs</FluentAnchor> for API details. 
-                A payment of 0.1 USDC on Base is required per message.
-            </p>
-            
         </FluentStack>
     </FluentCard>
 
+	<FluentCard>
+		<FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
+			<b>Post via API</b>
+			<p>
+				Integrate message posting directly into your application or agent.
+				See <a href="/swagger" target="_blank">Open API Specs</a> for API details.
+				A payment of 0.1 USDC on Base is required per message.
+			</p>
+
+		</FluentStack>
+	</FluentCard>
+
+
     <FluentCard>
-        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
-            <h4>Post Manually</h4>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
+            <b>Post Manually</b>
             <p>
                 Use the form below to post a message directly from your browser. 
                 Connect your MetaMask wallet to get started.
@@ -49,8 +52,6 @@
 
             @if (!string.IsNullOrEmpty(SelectedAccount))
             {
-                <FluentDivider />
-                
                 <FluentStack Orientation="Orientation.Vertical" Gap="1rem">
                     <h5>Post a Public Message</h5>
 

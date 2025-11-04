@@ -1,5 +1,4 @@
 using Grpc.Net.Client;
-using Microsoft.AspNetCore.Components;
 using ProtoBuf.Grpc.Client;
 
 namespace x402dev.Client.Extensions
