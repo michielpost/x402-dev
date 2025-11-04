@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Website/">
+    <Project Path="x402dev/Client/x402dev.Client.csproj" />
+    <Project Path="x402dev/Server/x402dev.Server.csproj" />
+    <Project Path="x402dev/Shared/x402dev.Shared.csproj" />
+  </Folder>
+  <Project Path="x402dev.Database/x402dev.Database.csproj" Id="6f853a46-c310-4ca9-9db7-0742ac3cae88" />
+  <Project Path="x402dev.Services/x402dev.Services.csproj" Id="5867b75c-1317-46d4-8fd5-11a3e2f56fb9" />
+</Solution>

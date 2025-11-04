@@ -1,0 +1,99 @@
+﻿@using x402dev.Shared.Interfaces
+@using x402dev.Shared.Models
+@inject IPublicMessageGrpcService PublicMessageGrpcService
+
+@if (messages?.Any() == true)
+{
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="1" Class="messages-container">
+        @foreach (var msg in messages)
+        {
+            <FluentCard Style="padding: 1rem; max-width: 600px;">
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentStack Orientation="Orientation.Horizontal" VerticalGap="0">
+                        <FluentAnchor
+                            Href=@($"https://basescan.org/address/{msg.Payer}")
+                            Target="_blank"
+                            Rel="noopener">
+                            @TruncateAddress(msg.Payer)
+                        </FluentAnchor>
+                    </FluentStack>
+
+                    <p>
+                        <b>@msg.Name</b>
+                    </p>
+
+                    @if (!string.IsNullOrWhiteSpace(msg.Link))
+                    {
+                        <FluentAnchor
+                            Href=@msg.Link
+                            Target="_blank"
+                            Rel="noopener"
+                            Appearance="Appearance.Stealth"
+                            Title="Open link">
+                        </FluentAnchor>
+                            
+                        <FluentIcon Value="@(new Icons.Regular.Size24.ArrowAutofitUp())" />
+
+                    }
+                </FluentStack>
+
+                <FluentDivider />
+
+                <p Style="margin-top: 0.75rem;">
+                    @msg.Message
+                </p>
+
+                <FluentDivider />
+
+                <FluentAnchor
+                    Style="margin-top: 0.75rem; display: inline-block;"
+                    Href=@($"https://basescan.org/tx/{msg.Transaction}")
+                    Target="_blank"
+                    Rel="noopener">
+                    @msg.Transaction
+                </FluentAnchor>
+            </FluentCard>
+        }
+    </FluentStack>
+}
+else
+{
+    <FluentMessageBar Intent="MessageIntent.Info" Style="max-width: 600px;">
+        No messages posted yet.
+    </FluentMessageBar>
+}
+
+
+
+@code {
+    private IEnumerable<PublicMessage>? messages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMessagesAsync();
+    }
+
+    public async Task ReloadAsync()
+    {
+        await LoadMessagesAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMessagesAsync()
+    {
+        if (OperatingSystem.IsBrowser())
+        {
+            messages = await PublicMessageGrpcService.GetMessages();
+        }
+    }
+
+    private static string TruncateAddress(string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+            return string.Empty;
+
+        return address.Length > 6
+            ? $"{address[..3]}...{address[^3..]}"
+            : address;
+    }
+}

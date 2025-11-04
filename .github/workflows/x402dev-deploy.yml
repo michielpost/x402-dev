@@ -33,7 +33,7 @@ jobs:
         run: dotnet build src --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish src/x402dev.Web -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish src/x402dev/Server -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4

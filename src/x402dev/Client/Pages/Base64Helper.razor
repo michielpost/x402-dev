@@ -1,0 +1,83 @@
+﻿@page "/base64-helper"
+@using System.Text.Json
+@using System.Net.Http.Json
+@using System.Text
+
+<PageTitle>x402dev - Base64 Helper</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+	<h1>Base64 Helper</h1>
+	<p>
+		x402 uses Base64 encoding in headers for payload and responses to ensure safe transmission 
+		of binary and special characters. This tool helps you easily encode and decode Base64 strings, 
+		with automatic JSON formatting when applicable.
+	</p>
+
+	<FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
+		<FluentButton Appearance="Appearance.Accent" OnClick="DecodeData">Decode from Base64</FluentButton>
+		<FluentButton Appearance="Appearance.Accent" OnClick="EncodeData">Encode to Base64</FluentButton>
+	</FluentStack>
+
+	<FluentTextField @bind-Value="@base64Text" Placeholder="Enter Base64 string to decode..." Style="width: 100%;">Data to decode</FluentTextField>
+
+	<FluentTextArea @bind-Value="@dataText"
+					Placeholder="Enter data to encode..."
+					Style="width: 100%;"
+					Rows="@textAreaRows">Data to encode</FluentTextArea>
+</FluentStack>
+
+@code {
+	private string base64Text = "";
+	private string dataText = "";
+	private int textAreaRows = 10;
+
+	private void EncodeData()
+	{
+		if (string.IsNullOrWhiteSpace(dataText))
+			return;
+
+		try
+		{
+			byte[] textBytes = Encoding.UTF8.GetBytes(dataText);
+			base64Text = Convert.ToBase64String(textBytes);
+		}
+		catch (Exception ex)
+		{
+			base64Text = $"Error encoding data: {ex.Message}";
+		}
+	}
+
+	private void DecodeData()
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(base64Text))
+				return;
+
+			var decodedBytes = Convert.FromBase64String(base64Text);
+			var decodedText = Encoding.UTF8.GetString(decodedBytes);
+
+			// Try to format as JSON if possible
+			try
+			{
+				using var document = JsonDocument.Parse(decodedText);
+				var options = new JsonSerializerOptions { WriteIndented = true };
+				dataText = JsonSerializer.Serialize(document, options);
+
+				// Count lines and adjust textarea
+				textAreaRows = dataText.Count(c => c == '\n') + 2;
+			}
+			catch (JsonException)
+			{
+				// If not valid JSON, just show as plain text
+				dataText = decodedText;
+				textAreaRows = Math.Max(10, dataText.Count(c => c == '\n') + 2);
+			}
+		}
+		catch (FormatException)
+		{
+			dataText = "Invalid base64 string";
+			textAreaRows = 10;
+		}
+	}
+}

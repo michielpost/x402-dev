@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<WarningsAsErrors>nullable</WarningsAsErrors>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantTimezone>false</InvariantTimezone>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<BlazorWebAssemblyEnablePrerendering>true</BlazorWebAssemblyEnablePrerendering>
+		<BlazorWasmPrerenderingDeleteLoadingContents>true</BlazorWasmPrerenderingDeleteLoadingContents>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Nethereum.HdWallet" Version="5.0.0" />
+		<PackageReference Include="Nethereum.Hex" Version="5.0.0" />
+		<PackageReference Include="Nethereum.Signer.EIP712" Version="5.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.13.1" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.13.1" />
+		<PackageReference Include="protobuf-net.Grpc" Version="1.2.2" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
+		<PackageReference Include="Grpc.Net.Client.Web" Version="2.71.0" />
+		<PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
+		<PackageReference Include="x402.Client.EVM" Version="0.0.12" />
+		<PackageReference Include="x402.Core" Version="0.0.11" />
+		<PackageReference Include="Nethereum.Metamask.Blazor" Version="5.0.0" />
+		<PackageReference Include="Nethereum.UI" Version="5.0.0" />
+		<PackageReference Include="BlazorWasmPreRendering.Build" Version="6.0.0" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\x402dev.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

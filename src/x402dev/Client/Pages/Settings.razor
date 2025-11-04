@@ -1,0 +1,44 @@
+@page "/settings"
+
+<PageTitle>x402dev - Settings</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <h1>Settings</h1>
+    <p>
+        Customize your x402dev experience. Adjust the theme and appearance settings to match your preferences.
+    </p>
+
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+            <FluentDesignTheme @bind-Mode="@Mode"
+                               @bind-OfficeColor="@OfficeColor"
+                               OnLoaded="@OnLoaded"
+                               OnLuminanceChanged="@OnLuminanceChanged"
+                               StorageName="theme" />
+
+            <FluentSelect Label="Theme"
+                          Width="250px"
+                          Items="@(Enum.GetValues<DesignThemeModes>())"
+                          @bind-SelectedOption="@Mode" />
+        </FluentStack>
+    </FluentCard>
+</FluentStack>
+
+@code {
+
+    public DesignThemeModes Mode { get; set; }
+
+
+
+    public OfficeColor? OfficeColor { get; set; }
+
+    void OnLoaded(LoadedEventArgs e)
+    {
+        //DemoLogger.WriteLine($"Loaded: {(e.Mode == DesignThemeModes.System ? "System" : "")} {(e.IsDark ? "Dark" : "Light")}");
+    }
+
+    void OnLuminanceChanged(LuminanceChangedEventArgs e)
+    {
+        //DemoLogger.WriteLine($"Changed: {(e.Mode == DesignThemeModes.System ? "System" : "")} {(e.IsDark ? "Dark" : "Light")}");
+    }
+}

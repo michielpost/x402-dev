@@ -1,0 +1,240 @@
+﻿@page "/messages"
+@using Nethereum.Hex.HexTypes
+@using Nethereum.RPC.HostWallet
+@using x402.Client.EVM
+@using x402dev.Client.Models
+@inherits BaseMetaMaskPage
+@inject IHttpClientFactory ClientFactory
+
+<PageTitle>x402dev - Messages</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <h1>Public Messages</h1>
+    <p>
+        Share and discover x402 projects and announcements! Post messages that require x402 payments, 
+        ensuring only authenticated users can contribute. Perfect for promoting new projects, 
+        sharing updates, or connecting with the x402 community.
+    </p>
+
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+            <h4>About Public Messages</h4>
+            <p>
+                Launching a new x402 project? Want to promote your service? Share it here! 
+                Messages can only be posted using x402 payments, which helps maintain quality 
+                and prevents spam.
+            </p>
+            
+            <FluentDivider />
+            
+            <h5>Post via API</h5>
+            <p>
+                Integrate message posting directly into your application or agent. 
+                See <FluentAnchor Href="/swagger" Target="_blank">Open API Specs</FluentAnchor> for API details. 
+                A payment of 0.1 USDC on Base is required per message.
+            </p>
+            
+        </FluentStack>
+    </FluentCard>
+
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+            <h4>Post Manually</h4>
+            <p>
+                Use the form below to post a message directly from your browser. 
+                Connect your MetaMask wallet to get started.
+            </p>
+
+            <Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
+
+            @if (!string.IsNullOrEmpty(SelectedAccount))
+            {
+                <FluentDivider />
+                
+                <FluentStack Orientation="Orientation.Vertical" Gap="1rem">
+                    <h5>Post a Public Message</h5>
+
+                    <EditForm Model="@model" OnValidSubmit="Submit" Class="w-full" style="width: 80%;">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <FluentTextField Label="Name"
+                                         @bind-Value="model.Name"
+                                         Placeholder="Enter your name (optional)"
+                                         MaxLength="32"
+                                         Class="w-full" />
+                        <ValidationMessage For="@(() => model.Name)" />
+
+                        <FluentTextArea Label="Message"
+                                        @bind-Value="model.Message"
+                                        Placeholder="Write your message"
+                                        MaxLength="255"
+                                        Required
+                                        Class="w-full"
+                                        style="width: 100%;" />
+                        <ValidationMessage For="@(() => model.Message)" />
+
+                        <FluentTextField Label="Link"
+                                         @bind-Value="model.Link"
+                                         Placeholder="https://example.com"
+                                         Type="url"
+                                         MaxLength="255"
+                                         Class="w-full"
+                                         style="width: 100%;" />
+                        <ValidationMessage For="@(() => model.Link)" />
+
+                        <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit" Class="mt-4">
+                            Submit
+                        </FluentButton>
+                    </EditForm>
+
+                    <p>
+                        @Result
+                    </p>
+
+                    @if (submitted)
+                    {
+                        <p>
+                            Message submitted successfully!
+                        </p>
+                    }
+                </FluentStack>
+            }
+        </FluentStack>
+    </FluentCard>
+
+    <div>
+        <h2>Recent Messages</h2>
+        <MessagesList @ref="messagesListRef" />
+    </div>
+</FluentStack>
+
+@code {
+
+	private PublicMessageRequest model = new();
+	private bool submitted;
+	EVMWallet? wallet = null;
+	private bool isLoading;
+	private string? errorMessage;
+	private MessagesList? messagesListRef;
+
+	string? Result { get; set; }
+
+	private async Task Submit()
+	{
+		try
+		{
+			Result = "";
+
+			if (_ethereumHostProvider == null)
+				return;
+
+			var web3 = await _ethereumHostProvider.GetWeb3Async();
+			var chainId = new HexBigInteger(8453);
+
+
+			var changeIdResult = await ChangeChainTo(8453);
+			Console.WriteLine(changeIdResult);
+			Result = "Changed chainId";
+
+			if (!string.IsNullOrWhiteSpace(changeIdResult))
+			{
+				await AddBaseMainnetAsync();
+				Result = "Added chainId";
+
+				changeIdResult = await ChangeChainTo(8453);
+				Result = "Changed chainId";
+			}
+
+			var selectedChainId = await web3.Eth.ChainId.SendRequestAsync();
+			if (selectedChainId.Value != chainId.Value)
+			{
+				Result = "Failed to change chainId";
+				return;
+			}
+
+			if (SelectedAccount == null)
+			{
+				Result = "No account selected";
+				return;
+			}
+
+			var wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, (ulong)chainId.Value)
+			{
+				IgnoreAllowances = true
+			};
+			WalletProvider.Wallet = wallet;
+
+			if (model.Message == null || model.Message.Length > 255)
+			{
+				Result = "Please fill in a message of max 255 characters.";
+				return;
+			}
+
+			var request = new HttpRequestMessage(HttpMethod.Post, "/PublicMessage/send-msg")
+			{
+				Content = JsonContent.Create(model)
+			};
+
+			var httpClient = ClientFactory.CreateClient("x402");
+			var response = await httpClient.SendAsync(request);
+
+			Result = await response.Content.ReadAsStringAsync();
+			
+			if (response.IsSuccessStatusCode)
+			{
+				submitted = true;
+				model = new(); // Reset form
+				// Reload the messages list
+				if (messagesListRef != null)
+				{
+					await messagesListRef.ReloadAsync();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Result = $"Error: {ex}";
+		}
+	}
+
+	protected async Task AddBaseMainnetAsync()
+	{
+		if (_ethereumHostProvider == null)
+			return;
+
+		var web3 = await _ethereumHostProvider.GetWeb3Async();
+
+		var baseMainnet = new AddEthereumChainParameter()
+		{
+			// Chain ID 8453 decimal == 0x2105 hex
+			ChainId = new Nethereum.Hex.HexTypes.HexBigInteger(8453),
+			ChainName = "Base",
+			NativeCurrency = new NativeCurrency()
+			{
+				Decimals = 18,
+				Name = "Ether",
+				Symbol = "ETH"
+			},
+			RpcUrls = new List<string>
+			{
+				"https://mainnet.base.org"
+			},
+			BlockExplorerUrls = new List<string>
+			{
+				"https://basescan.org"
+			}
+		};
+
+		try
+		{
+			await web3.Eth.HostWallet.AddEthereumChain.SendRequestAsync(baseMainnet);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Failed to add Base mainnet: {ex.Message}");
+		}
+	}
+
+
+}
