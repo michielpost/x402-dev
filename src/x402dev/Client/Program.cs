@@ -65,7 +65,12 @@ public class Program
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
-        ConfigureServices(builder.Services, builder.HostEnvironment.BaseAddress);
+        var baseAddress = builder.HostEnvironment.BaseAddress;
+
+#if RELEASE
+        baseAddress = "https://api.x402dev.com";
+#endif
+        ConfigureServices(builder.Services, baseAddress);
 
         WebAssemblyHost host = builder.Build();
 
