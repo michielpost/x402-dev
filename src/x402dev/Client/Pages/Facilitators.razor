@@ -13,15 +13,7 @@
         networks, and service availability. Status is checked live and updated periodically.
     </p>
 
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
-        <FluentButton Appearance="Appearance.Accent" 
-                      Href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json" 
-                      Target="_blank" 
-                      Rel="noopener">
-            Add facilitator (edit JSON)
-        </FluentButton>
-    </FluentStack>
-
+ 
     @if (facilitators == null)
     {
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
@@ -63,6 +55,16 @@
         <PropertyColumn Title="Checked" Property="@(b => b.Checked)" Sortable="true" Align="Align.Start" />
     </FluentDataGrid>
     }
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
+        <FluentButton Appearance="Appearance.Accent"
+                      Href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json"
+                      Target="_blank"
+                      Rel="noopener">
+            Add facilitator (edit JSON on GitHub)
+        </FluentButton>
+    </FluentStack>
+
 </FluentStack>
 
 @code {
