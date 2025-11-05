@@ -27,5 +27,13 @@
   {
     "Name": "open.x402.host",
     "Url": "http://open.x402.host"
+  },
+  {
+    "Name": "x402.org",
+    "Url": "https://www.x402.org/facilitator/"
+  },
+  {
+    "Name": "octox402.xyz",
+    "Url": "https://facilitator.octox402.xyz/"
   }
 ]
