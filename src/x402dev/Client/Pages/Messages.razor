@@ -2,6 +2,7 @@
 @using Nethereum.Hex.HexTypes
 @using Nethereum.RPC.HostWallet
 @using x402.Client.EVM
+@using x402.Client.v1
 @using x402.Core.Interfaces
 @using x402dev.Client.Models
 @inherits BaseMetaMaskPage
@@ -181,11 +182,19 @@
 			var response = await httpClient.SendAsync(request);
 
 			Result = await response.Content.ReadAsStringAsync();
-			
+
 			if (response.IsSuccessStatusCode)
 			{
 				submitted = true;
 				model = new(); // Reset form
+
+				var paymentResponse = response.ReadSettlementResponseHeader();
+
+				if (paymentResponse != null && paymentResponse.Success)
+				{
+					Result = $"Success! Tx: {paymentResponse.Transaction}";
+				}
+
 				// Reload the messages list
 				if (messagesListRef != null)
 				{
