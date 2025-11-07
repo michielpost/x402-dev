@@ -2,9 +2,11 @@
 @using Nethereum.Hex.HexTypes
 @using Nethereum.RPC.HostWallet
 @using x402.Client.EVM
+@using x402.Core.Interfaces
 @using x402dev.Client.Models
 @inherits BaseMetaMaskPage
 @inject IHttpClientFactory ClientFactory
+@inject IAssetInfoProvider AssetInfoProvider
 
 <PageTitle>x402dev - Messages</PageTitle>
 
@@ -129,6 +131,7 @@
 
 			var web3 = await _ethereumHostProvider.GetWeb3Async();
 			var chainId = new HexBigInteger(8453);
+			var assetInfo = AssetInfoProvider.GetAll().Where(x => x.ChainId == 8453).FirstOrDefault();
 
 
 			var changeIdResult = await ChangeChainTo(8453);
@@ -157,7 +160,7 @@
 				return;
 			}
 
-			var wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, (ulong)chainId.Value)
+			var wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, assetInfo?.Network ?? string.Empty, (ulong)chainId.Value)
 			{
 				IgnoreAllowances = true
 			};

@@ -12,6 +12,7 @@
 @using x402.Client.EVM
 @using x402.Client.v1
 @using x402.Core.Enums
+@using x402.Core.Interfaces
 @using x402.Core.Models
 @using x402.Core.Models.v1
 @using x402dev.Client.Models
@@ -19,6 +20,7 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject SignatureBuilderState State
 @inject IToastService ToastService
+@inject IAssetInfoProvider AssetInfoProvider
 @using Nethereum.Hex.HexTypes
 @using Nethereum.RPC.HostWallet
 @using System.Security.Claims
@@ -229,9 +231,12 @@
                 State.SelectedNetworkOption?.Value ?? throw new InvalidOperationException("Network is required");
 
 
+            var asset = AssetInfoProvider.GetAll().Where(x => x.ChainId == ulong.Parse(networkId)).FirstOrDefault();
+            var networkName = asset?.Network ?? string.Empty;
+
             if (!string.IsNullOrEmpty(State.Pkey))
             {
-                wallet = new EVMWallet(State.Pkey, ulong.Parse(networkId));
+                wallet = new EVMWallet(State.Pkey, networkName, ulong.Parse(networkId));
             }
 
             if (_ethereumHostProvider != null && SelectedAccount != null)
@@ -246,7 +251,7 @@
                     return;
                 }
 
-                wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, ulong.Parse(networkId))
+                wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, networkName, ulong.Parse(networkId))
                 {
                     IgnoreAllowances = true
                 };

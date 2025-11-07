@@ -8,6 +8,8 @@ using Nethereum.Metamask;
 using Nethereum.Metamask.Blazor;
 using Nethereum.UI;
 using x402.Client.v1;
+using x402.Core;
+using x402.Core.Interfaces;
 using x402dev.Client.Extensions;
 using x402dev.Client.Models;
 using x402dev.Shared.Interfaces;
@@ -101,6 +103,7 @@ public class Program
         });
         services.AddSingleton<AuthenticationStateProvider, EthereumAuthenticationStateProvider>();
 
+        services.AddSingleton<IAssetInfoProvider, AssetInfoProvider>();
 
         services.AddHttpClient("x402", client =>
         {

@@ -46,6 +46,8 @@ namespace x402dev.Services
         {
             try
             {
+                await Task.Delay(TimeSpan.FromMinutes(1)); //delay to allow startup to complete
+
                 //make HttpClient request to get the latest content from GitHub
                 var httpClient = httpClientFactory.CreateClient();
 

@@ -15,18 +15,21 @@ namespace x402dev.Server.HostedServices
             this.services = services;
         }
 
-        public Task StartAsync(CancellationToken stoppingToken)
+        public async Task StartAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation($"{nameof(ContentSyncBackgroundService)} running.");
 
             _timer = new Timer(DoWork, null, TimeSpan.Zero,
                 TimeSpan.FromMinutes(10));
 
-            return Task.CompletedTask;
         }
 
         private async void DoWork(object? state)
         {
+#if DEBUG
+            await Task.Delay(TimeSpan.FromMinutes(1));
+#endif
+
             //Only run one at a time
             if (System.Threading.Interlocked.CompareExchange(ref this.isBusy, 1, 0) == 1)
             {
