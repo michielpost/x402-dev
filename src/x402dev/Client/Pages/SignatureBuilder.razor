@@ -137,6 +137,14 @@
         </FluentMessageBar>
     }
 
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <FluentMessageBar Intent="MessageIntent.Success">
+            @successMessage
+        </FluentMessageBar>
+    }
+
     @if (content != null)
     {
         <FluentCard>
@@ -158,6 +166,7 @@
     private string url = "https://www.x402.org/protected";
     private bool isLoading;
     private string? errorMessage;
+    private string? successMessage;
     private string? content;
     private int lineCount;
 
@@ -345,6 +354,17 @@
 
             // Process content
             var responseContent = responseObj.Content;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var paymentResponse = response.ReadSettlementResponseHeader();
+
+                if (paymentResponse != null && paymentResponse.Success)
+                {
+                    successMessage = $"Success! Tx: {paymentResponse.Transaction}";
+                }
+
+            }
 
             // Try to format if JSON
             try
