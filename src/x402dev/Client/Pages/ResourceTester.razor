@@ -2,9 +2,16 @@
 @using System.Text.Json
 @using System.Net.Http.Json
 @using System.Text
+@using Nethereum.Hex.HexTypes
+@using x402.Client.EVM
+@using x402.Client.Events
 @using x402.Client.v1
+@using x402.Core.Interfaces
+@using x402.Core.Models.v1
 @using x402dev.Server.Models
 @inject IHttpClientFactory HttpClientFactory
+@inject IAssetInfoProvider AssetInfoProvider
+@inherits BaseMetaMaskPage
 
 <PageTitle>x402dev - Resource Tester</PageTitle>
 
@@ -46,6 +53,11 @@
         </FluentStack>
     </FluentCard>
 
+    @if (needsMetaMask)
+    {
+        <Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
+    }
+
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <FluentMessageBar Intent="MessageIntent.Error">
@@ -81,17 +93,197 @@
                             Readonly="true">x402 Response</FluentTextArea>
         </FluentCard>
     }
+
+    @if (finalResult != null)
+    {
+        <FluentCard>
+            <FluentTextArea Style="width: 100%; min-height: 100%;"
+                            Value="@finalResult"
+                            Resize="TextAreaResize.Both"
+                            Rows="@lineCountFinalResult"
+                            Readonly="true">Final Response</FluentTextArea>
+        </FluentCard>
+    }
 </FluentStack>
 
-@code {
+    @code {
     private string url = "https://www.x402.org/protected";
     private string? paymentHeader;
     private string? headers;
+    private string? result;
+    private string? finalResult;
     private string? content;
     private string? errorMessage;
     private string? successMessage;
     private bool isLoading;
+    private bool needsMetaMask;
     private int lineCount = 0;
+    private int lineCountFinalResult = 0;
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        WalletProvider.PrepareWallet += WalletProvider_PrepareWallet;
+        WalletProvider.PaymentSelected += WalletProvider_PaymentSelected;
+        WalletProvider.HeaderCreated += WalletProvider_HeaderCreated;
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        WalletProvider.PrepareWallet -= WalletProvider_PrepareWallet;
+        WalletProvider.PaymentSelected -= WalletProvider_PaymentSelected;
+        WalletProvider.HeaderCreated -= WalletProvider_HeaderCreated;
+    }
+
+    private void WriteResultLine(string line)
+    {
+        result += line + "\r\n";
+        StateHasChanged();
+    }
+
+
+    private async Task<bool> WalletProvider_PrepareWallet(object? sender, PrepareWalletEventArgs<PaymentRequiredResponse> eventArgs)
+    {
+        //Show it
+        // Try to format if JSON
+        try
+        {
+            content = JsonSerializer.Serialize(eventArgs.PaymentRequiredResponse, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+        }
+        catch
+        {
+        }
+
+        if (content != null)
+        {
+            lineCount = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Length;
+            lineCount = int.Max(10, lineCount);
+        }
+
+        WriteResultLine("Preparing wallet for x402 payment requirements");
+
+        var networks = eventArgs.PaymentRequiredResponse.Accepts.Select(x => x.Network).Distinct();
+
+        if (networks.Count() == 0)
+        {
+            errorMessage = "No networks found in x402 requirements";
+            return false;
+        }
+
+        if (networks.Count() > 1)
+        {
+            WriteResultLine($"Received x402 requirements for these networks: ");
+            WriteResultLine(string.Join(", ", networks));
+        }
+        else
+        {
+            WriteResultLine($"Received x402 requirements for network: {string.Join(", ", networks)}");
+        }
+
+        var network = networks.First();
+
+        //Get known assets
+        var assetInfo = AssetInfoProvider.GetAssetInfoByNetwork(network);
+        if (assetInfo != null)
+        {
+            WriteResultLine($"Known network: {assetInfo.Network} ({assetInfo.ChainId})");
+        }
+        else
+        {
+            WriteResultLine($"Unknown network: {network}");
+            errorMessage = $"No asset info found for network: {network}";
+            return false;
+        }
+
+        if (assetInfo.NetworkType == x402.Core.Models.NetworkType.EVM)
+        {
+            needsMetaMask = true;
+
+            if (_ethereumHostProvider == null)
+            {
+                WriteResultLine($"Enable MetaMask to proceed.");
+                errorMessage = "MetaMask not available. Please install or enable MetaMask to sign this payment.";
+                return false;
+            }
+
+            if (SelectedAccount == null)
+            {
+                WriteResultLine("No account selected in MetaMask");
+                errorMessage = "Please connect MetaMask";
+                return false;
+            }
+
+            WriteResultLine($"Preparing wallet");
+
+            var web3 = await _ethereumHostProvider.GetWeb3Async();
+
+            var chainId = new HexBigInteger(assetInfo.ChainId);
+
+            var changeResult = await ChangeChainTo(assetInfo.ChainId);
+            if (!string.IsNullOrEmpty(changeResult))
+            {
+                WriteResultLine($"Error changing MetaMask to ChainId: {assetInfo.ChainId}: {changeResult}");
+                errorMessage = $"Failed to change MetaMask to ChainId: {assetInfo.ChainId}: {changeResult}";
+                return false;
+            }
+            else
+            {
+                WriteResultLine($"Changed MetaMask to ChainId: {assetInfo.ChainId}");
+            }
+
+
+            var selectedChainId = await web3.Eth.ChainId.SendRequestAsync();
+            if (selectedChainId.Value != chainId.Value)
+            {
+                WriteResultLine("Failed to change chainId");
+                errorMessage = "Failed to change chainId in MetaMask";
+                return false;
+            }
+
+
+
+            var wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, assetInfo.Network, assetInfo.ChainId)
+                {
+                    IgnoreAllowances = true
+                };
+            WalletProvider.Wallet = wallet;
+
+            return true;
+        }
+        else
+        {
+            errorMessage = $"Unsupported network: {network}. Automatic signing using Metamask is only supported for EVM networks.";
+            return false;
+        }
+    }
+
+    private void WalletProvider_PaymentSelected(object? sender, PaymentSelectedEventArgs<PaymentRequirements> eventArgs)
+    {
+        if (eventArgs.PaymentRequirements == null)
+        {
+            WriteResultLine("No payment selected");
+        }
+        else
+        {
+            WriteResultLine($"Payment selected: {eventArgs.PaymentRequirements.MaxAmountRequired} {eventArgs.PaymentRequirements.Asset} on {eventArgs.PaymentRequirements.Network}");
+        }
+    }
+
+    private void WalletProvider_HeaderCreated(object? sender, HeaderCreatedEventArgs<PaymentPayloadHeader> eventArgs)
+    {
+        WriteResultLine("Payment header created:");
+        WriteResultLine($"Payload: {eventArgs.PaymentPayloadHeader.Payload}");
+
+        paymentHeader = eventArgs.PaymentPayloadHeader.ToBase64Header();
+    }
+
 
     private async Task FetchResource()
     {
@@ -102,6 +294,7 @@
             headers = null;
             content = null;
             successMessage = null;
+            finalResult = null;
 
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -112,33 +305,15 @@
             var req = new ProxyRequest { Url = url, PaymentHeader = paymentHeader };
             var json = JsonSerializer.Serialize(req);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "/api/proxy/get-x402")
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/proxy/proxy-x402")
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
             };
 
-            var httpClient = HttpClientFactory.CreateClient("ServerAPI");
+            var httpClient = HttpClientFactory.CreateClient("x402");
             var response = await httpClient.SendAsync(request);
 
-            var responseObj = await response.Content.ReadFromJsonAsync<ProxyResponse>();
-            if (responseObj == null)
-            {
-                errorMessage = "Failed to parse response.";
-                return;
-            }
-
-            if (responseObj.StatusCode != 402)
-            {
-                errorMessage = "No 402 returned from url.";
-                return;
-            }
-
-            // Process headers
-            var headersList = responseObj.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}");
-            headers = string.Join("\n", headersList);
-
-            // Process content
-            var responseContent = responseObj.Content;
+            var responseContent = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
@@ -155,7 +330,7 @@
             try
             {
                 using var doc = JsonDocument.Parse(responseContent);
-                content = JsonSerializer.Serialize(doc, new JsonSerializerOptions
+                finalResult = JsonSerializer.Serialize(doc, new JsonSerializerOptions
                 {
                     WriteIndented = true
                 });
@@ -163,11 +338,11 @@
             catch
             {
                 // If not valid JSON, show as plain text
-                content = responseContent;
+                finalResult = responseContent;
             }
 
-            lineCount = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Length;
-            lineCount = int.Max(10, lineCount);
+            lineCountFinalResult = finalResult.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Length;
+            lineCountFinalResult = int.Max(10, lineCountFinalResult);
         }
         catch (Exception ex)
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Net;
+using x402;
 using x402dev.Server.Models;
 
 namespace PaymentRequiredProxyApi.Controllers;
@@ -35,9 +36,15 @@ public class ProxyController : ControllerBase
         {
             var proxyRequest = new HttpRequestMessage(HttpMethod.Get, request.Url);
 
-            if (!string.IsNullOrWhiteSpace(request.PaymentHeader))
+            var existingHeaderValue = Request.Headers[X402HandlerV1.PaymentHeaderV1].FirstOrDefault();
+
+            if(!string.IsNullOrWhiteSpace(existingHeaderValue))
             {
-                proxyRequest.Headers.Add("X-PAYMENT", request.PaymentHeader);
+                proxyRequest.Headers.Add(X402HandlerV1.PaymentHeaderV1, existingHeaderValue);
+            }
+            else if (!string.IsNullOrWhiteSpace(request.PaymentHeader))
+            {
+                proxyRequest.Headers.Add(X402HandlerV1.PaymentHeaderV1, request.PaymentHeader);
             }
 
             var response = await client.SendAsync(proxyRequest);
@@ -68,6 +75,65 @@ public class ProxyController : ControllerBase
             };
 
             return Ok(result);
+        }
+        catch (HttpRequestException ex) { return StatusCode(502, $"Target unreachable: {ex.Message}"); }
+        catch (TaskCanceledException) { return StatusCode(504, "Request timed out."); }
+        catch (Exception ex) { return StatusCode(500, $"Internal error: {ex.Message}"); }
+    }
+
+    [HttpPost]
+    [Route("proxy-x402")]
+    [EnableRateLimiting("proxy-3sec")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public async Task<IActionResult> ProxyPassThrough([FromBody] ProxyRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Url) ||
+            !Uri.TryCreate(request.Url, UriKind.Absolute, out var uri))
+        {
+            return BadRequest("Invalid or missing URL.");
+        }
+
+        var client = _httpClientFactory.CreateClient();
+        client.Timeout = TimeSpan.FromSeconds(30);
+
+        try
+        {
+            var proxyRequest = new HttpRequestMessage(HttpMethod.Get, request.Url);
+
+            // Add/override the payment header if present
+            var existingHeaderValue = Request.Headers[X402HandlerV1.PaymentHeaderV1].FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(existingHeaderValue))
+            {
+                proxyRequest.Headers.Remove(X402HandlerV1.PaymentHeaderV1);
+                proxyRequest.Headers.Add(X402HandlerV1.PaymentHeaderV1, existingHeaderValue);
+            }
+            else if (!string.IsNullOrWhiteSpace(request.PaymentHeader))
+            {
+                proxyRequest.Headers.Remove(X402HandlerV1.PaymentHeaderV1);
+                proxyRequest.Headers.Add(X402HandlerV1.PaymentHeaderV1, request.PaymentHeader);
+            }
+
+            var response = await client.SendAsync(proxyRequest, HttpCompletionOption.ResponseHeadersRead);
+
+            // Copy status code
+            Response.StatusCode = (int)response.StatusCode;
+
+            // Copy headers
+            foreach (var header in response.Headers)
+            {
+                Response.Headers[header.Key] = header.Value.ToArray();
+            }
+            foreach (var header in response.Content.Headers)
+            {
+                Response.Headers[header.Key] = header.Value.ToArray();
+            }
+            // Remove headers that are forbidden to set
+            Response.Headers.Remove("transfer-encoding");
+
+            // Copy content
+            var content = await response.Content.ReadAsStreamAsync();
+            await content.CopyToAsync(Response.Body);
+            return new EmptyResult();
         }
         catch (HttpRequestException ex) { return StatusCode(502, $"Target unreachable: {ex.Message}"); }
         catch (TaskCanceledException) { return StatusCode(504, "Request timed out."); }

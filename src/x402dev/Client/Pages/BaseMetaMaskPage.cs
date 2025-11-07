@@ -34,7 +34,7 @@ public class BaseMetaMaskPage : ComponentBase, IDisposable
         }
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         if (_ethereumHostProvider != null)
         {
@@ -82,7 +82,7 @@ public class BaseMetaMaskPage : ComponentBase, IDisposable
         }
         catch (Exception ex)
         {
-            return $"Error chaing MetaMask chain to {chainId}: {ex.Message}";
+            return $"Error changing MetaMask chain to {chainId}: {ex.Message}";
         }
     }
 }
