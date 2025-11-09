@@ -50,6 +50,9 @@
                 </FluentButton>
             }
 
+            Debug log:<br />
+            <textarea rows="7" style="width:80%">@result</textarea>
+
         </FluentStack>
     </FluentCard>
 
@@ -279,7 +282,7 @@
     private void WalletProvider_HeaderCreated(object? sender, HeaderCreatedEventArgs<PaymentPayloadHeader> eventArgs)
     {
         WriteResultLine("Payment header created:");
-        WriteResultLine($"Payload: {eventArgs.PaymentPayloadHeader.Payload}");
+        WriteResultLine($"Payload: {eventArgs.PaymentPayloadHeader.ToBase64Header()}");
 
         paymentHeader = eventArgs.PaymentPayloadHeader.ToBase64Header();
     }
@@ -295,6 +298,7 @@
             content = null;
             successMessage = null;
             finalResult = null;
+            result = null;
 
             if (string.IsNullOrWhiteSpace(url))
             {
