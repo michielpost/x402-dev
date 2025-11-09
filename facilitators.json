@@ -43,5 +43,13 @@
   {
     "Name": "Hydra Protocol",
     "Url": "https://api.hydraprotocol.org/"
+  },
+  {
+    "Name": "CodeNut",
+    "Url": "https://facilitator.codenut.ai/"
+  },
+  {
+    "Name": "Dexter",
+    "Url": "https://facilitator.dexter.cash/"
   }
 ]
