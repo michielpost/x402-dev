@@ -22,12 +22,12 @@
 		<PackageReference Include="protobuf-net.Grpc" Version="1.2.2" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
 		<PackageReference Include="Grpc.Net.Client.Web" Version="2.71.0" />
-		<PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
+		<PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
 		<PackageReference Include="x402.Client.EVM" Version="0.0.13" />
 		<PackageReference Include="x402.Core" Version="0.0.14" />
 		<PackageReference Include="Nethereum.Metamask.Blazor" Version="5.0.0" />
 		<PackageReference Include="Nethereum.UI" Version="5.0.0" />
-		<PackageReference Include="BlazorWasmPreRendering.Build" Version="6.0.0" />
+		<PackageReference Include="BlazorWasmPreRendering.Build" Version="7.0.0" />
 	</ItemGroup>
 
   <ItemGroup>
