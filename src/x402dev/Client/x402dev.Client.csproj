@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -15,19 +15,19 @@
 		<PackageReference Include="Nethereum.HdWallet" Version="5.0.0" />
 		<PackageReference Include="Nethereum.Hex" Version="5.0.0" />
 		<PackageReference Include="Nethereum.Signer.EIP712" Version="5.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.13.1" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.13.1" />
 		<PackageReference Include="protobuf-net.Grpc" Version="1.2.2" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
 		<PackageReference Include="Grpc.Net.Client.Web" Version="2.71.0" />
-		<PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
-		<PackageReference Include="x402.Client.EVM" Version="0.0.13" />
-		<PackageReference Include="x402.Core" Version="0.0.14" />
+		<PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
+		<PackageReference Include="x402.Client.EVM" Version="0.0.15" />
+		<PackageReference Include="x402.Core" Version="0.0.15" />
 		<PackageReference Include="Nethereum.Metamask.Blazor" Version="5.0.0" />
 		<PackageReference Include="Nethereum.UI" Version="5.0.0" />
-		<PackageReference Include="BlazorWasmPreRendering.Build" Version="6.0.0" />
+		<PackageReference Include="BlazorWasmPreRendering.Build" Version="7.0.0" />
 	</ItemGroup>
 
   <ItemGroup>
