@@ -12,12 +12,12 @@
 	<ItemGroup>
 		<PackageReference Include="Markdig" Version="0.44.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="10.0.1" />
-		<PackageReference Include="x402" Version="0.0.15">
+		<PackageReference Include="x402" Version="0.0.17">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
-		<PackageReference Include="x402.Coinbase" Version="0.0.15" />
+		<PackageReference Include="x402.Coinbase" Version="0.0.17" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.13.2" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.13.2" />
