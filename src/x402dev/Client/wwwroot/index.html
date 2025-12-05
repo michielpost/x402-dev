@@ -2,14 +2,18 @@
 <html lang="en">
 
 <head>
+    <base href="/" />
+    <link rel="preload" id="webassembly" />
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>x402dev</title>
-    <base href="/" />
+
     <link href="https://api.x402dev.com/_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" rel="stylesheet" />
 
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="x402dev.Client.styles.css" />
+    <script type="importmap"></script>
 
     <!-- Social Media Preview Meta Tags -->
     <meta property="og:type" content="website" />
@@ -44,8 +48,8 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-    <script src="_framework/blazor.webassembly.js"></script>
     <script src="https://api.x402dev.com/_content/Nethereum.Metamask.Blazor/NethereumMetamask.js"></script>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
 </body>
 
 </html>

@@ -1,13 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
-		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<WarningsAsErrors>nullable</WarningsAsErrors>
+		<OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
 		<InvariantTimezone>false</InvariantTimezone>
 		<InvariantGlobalization>true</InvariantGlobalization>
-		<BlazorWebAssemblyEnablePrerendering>true</BlazorWebAssemblyEnablePrerendering>
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
+		<TrimMode>partial</TrimMode>
+		<BlazorWebAssemblyEnablePrerendering>false</BlazorWebAssemblyEnablePrerendering>
 		<BlazorWasmPrerenderingDeleteLoadingContents>true</BlazorWasmPrerenderingDeleteLoadingContents>
 	</PropertyGroup>
 
