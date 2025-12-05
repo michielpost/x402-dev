@@ -12,9 +12,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Nethereum.HdWallet" Version="5.0.0" />
-		<PackageReference Include="Nethereum.Hex" Version="5.0.0" />
-		<PackageReference Include="Nethereum.Signer.EIP712" Version="5.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.13.2" />
@@ -24,9 +21,7 @@
 		<PackageReference Include="Grpc.Net.Client.Web" Version="2.71.0" />
 		<PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
 		<PackageReference Include="x402.Client.EVM" Version="0.0.17" />
-		<PackageReference Include="x402.Core" Version="0.0.17" />
 		<PackageReference Include="Nethereum.Metamask.Blazor" Version="5.0.0" />
-		<PackageReference Include="Nethereum.UI" Version="5.0.0" />
 		<PackageReference Include="BlazorWasmPreRendering.Build" Version="7.0.0" />
 	</ItemGroup>
 
