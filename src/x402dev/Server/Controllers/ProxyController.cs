@@ -36,15 +36,15 @@ public class ProxyController : ControllerBase
         {
             var proxyRequest = new HttpRequestMessage(HttpMethod.Get, request.Url);
 
-            var existingHeaderValue = Request.Headers[X402HandlerV1.PaymentHeaderV1].FirstOrDefault();
+            var existingHeaderValue = Request.Headers[X402HandlerV2.PaymentHeaderV2].FirstOrDefault();
 
             if(!string.IsNullOrWhiteSpace(existingHeaderValue))
             {
-                proxyRequest.Headers.Add(X402HandlerV1.PaymentHeaderV1, existingHeaderValue);
+                proxyRequest.Headers.Add(X402HandlerV2.PaymentHeaderV2, existingHeaderValue);
             }
             else if (!string.IsNullOrWhiteSpace(request.PaymentHeader))
             {
-                proxyRequest.Headers.Add(X402HandlerV1.PaymentHeaderV1, request.PaymentHeader);
+                proxyRequest.Headers.Add(X402HandlerV2.PaymentHeaderV2, request.PaymentHeader);
             }
 
             var response = await client.SendAsync(proxyRequest);
@@ -101,16 +101,16 @@ public class ProxyController : ControllerBase
             var proxyRequest = new HttpRequestMessage(HttpMethod.Get, request.Url);
 
             // Add/override the payment header if present
-            var existingHeaderValue = Request.Headers[X402HandlerV1.PaymentHeaderV1].FirstOrDefault();
+            var existingHeaderValue = Request.Headers[X402HandlerV2.PaymentHeaderV2].FirstOrDefault();
             if (!string.IsNullOrWhiteSpace(existingHeaderValue))
             {
-                proxyRequest.Headers.Remove(X402HandlerV1.PaymentHeaderV1);
-                proxyRequest.Headers.Add(X402HandlerV1.PaymentHeaderV1, existingHeaderValue);
+                proxyRequest.Headers.Remove(X402HandlerV2.PaymentHeaderV2);
+                proxyRequest.Headers.Add(X402HandlerV2.PaymentHeaderV2, existingHeaderValue);
             }
             else if (!string.IsNullOrWhiteSpace(request.PaymentHeader))
             {
-                proxyRequest.Headers.Remove(X402HandlerV1.PaymentHeaderV1);
-                proxyRequest.Headers.Add(X402HandlerV1.PaymentHeaderV1, request.PaymentHeader);
+                proxyRequest.Headers.Remove(X402HandlerV2.PaymentHeaderV2);
+                proxyRequest.Headers.Add(X402HandlerV2.PaymentHeaderV2, request.PaymentHeader);
             }
 
             var response = await client.SendAsync(proxyRequest, HttpCompletionOption.ResponseHeadersRead);

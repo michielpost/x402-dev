@@ -3,7 +3,7 @@ using Swashbuckle.AspNetCore.Filters;
 using x402;
 using x402.Core.Enums;
 using x402.Core.Models;
-using x402.Core.Models.v1;
+using x402.Core.Models.v2;
 using x402dev.Database;
 using x402dev.Database.Models;
 using x402dev.Server.Models;
@@ -15,9 +15,9 @@ namespace x402dev.Server.Controllers
     public class PublicMessageController : ControllerBase
     {
         private readonly ApplicationDbContext dbContext;
-        private readonly X402HandlerV1 x402Handler;
+        private readonly X402HandlerV2 x402Handler;
 
-        public PublicMessageController(ApplicationDbContext dbContext, X402HandlerV1 x402Handler)
+        public PublicMessageController(ApplicationDbContext dbContext, X402HandlerV2 x402Handler)
         {
             this.dbContext = dbContext;
             this.x402Handler = x402Handler;
