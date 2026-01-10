@@ -10,11 +10,11 @@
 @using Nethereum.Signer.EIP712
 @using Nethereum.Web3.Accounts
 @using x402.Client.EVM
-@using x402.Client.v1
+@using x402.Client.v2
 @using x402.Core.Enums
 @using x402.Core.Interfaces
 @using x402.Core.Models
-@using x402.Core.Models.v1
+@using x402.Core.Models.v2
 @using x402dev.Client.Models
 @using x402dev.Server.Models
 @inject IHttpClientFactory HttpClientFactory
@@ -32,7 +32,7 @@
     <h1>Signature Builder</h1>
     <p>
         Build and test custom x402 payment signatures. This tool helps you create properly formatted
-        X-PAYMENT headers for authenticating requests to x402-protected resources. Configure payment
+        PAYMENT-SIGNATURE headers for authenticating requests to x402-protected resources. Configure payment
         parameters, network settings, and resource URLs to generate signed headers ready for use.
     </p>
 
@@ -68,7 +68,7 @@
 
     @if (State.SelectedNetworkOption?.Value == ulong.MaxValue.ToString())
     {
-        <FluentNumberField @bind-Value="@State.CustomNetworkId" Placeholder="Enter custom network ID" />
+        <FluentTextField @bind-Value="@State.CustomNetworkId" Placeholder="Enter custom network ID" />
     }
 
     <FluentTextField @bind-Value="@State.Network" Placeholder="Network">Network</FluentTextField>
@@ -85,7 +85,7 @@
 
     @if (!string.IsNullOrEmpty(State.Base64Header))
     {
-        <FluentTextArea ReadOnly=true Value="@State.Base64Header" Style="width: 100%;" Rows="3">X-PAYMENT header value:</FluentTextArea>
+        <FluentTextArea ReadOnly=true Value="@State.Base64Header" Style="width: 100%;" Rows="3">PAYMENT-SIGNATURE header value:</FluentTextArea>
     }
 
     @if (!string.IsNullOrEmpty(State.HeaderJson))
@@ -94,7 +94,7 @@
                         Value="@State.HeaderJson"
                         Resize="TextAreaResize.Both"
                         Rows="@State.LineCount"
-                        Readonly="true">Decoded X-PAYMENT header value</FluentTextArea>
+                        Readonly="true">Decoded PAYMENT-SIGNATURE header value</FluentTextArea>
     }
 
     @if (!string.IsNullOrEmpty(State.Base64Header))
@@ -110,7 +110,7 @@
                                  Style="width: 100%;"
                                  ReadOnly=true
                                  Placeholder="Generate a signature using the Signature Builder..."
-                                 Required="true">X-PAYMENT Header</FluentTextField>
+                                 Required="true">PAYMENT-SIGNATURE Header</FluentTextField>
 
                 @if (isLoading)
                 {
@@ -235,13 +235,28 @@
 
         try
         {
+            if(State.SelectedNetworkOption?.Value == null)
+            {
+                State.SelectedNetworkOption = this.NetworkOptions.First();
+            }
+
             string networkId = State.SelectedNetworkOption?.Value == ulong.MaxValue.ToString() ?
-                State.CustomNetworkId.ToString() ?? throw new InvalidOperationException("Custom network ID is required") :
+                "0" :
                 State.SelectedNetworkOption?.Value ?? throw new InvalidOperationException("Network is required");
 
+            Console.WriteLine($"network id: {networkId}");
 
             var asset = AssetInfoProvider.GetAll().Where(x => x.ChainId == ulong.Parse(networkId)).FirstOrDefault();
             var networkName = asset?.Network ?? string.Empty;
+            if (State.SelectedNetworkOption?.Value == ulong.MaxValue.ToString())
+            {
+                networkName = State.CustomNetworkId ?? string.Empty;
+            }
+            State.Network = networkName;
+
+            Console.WriteLine($"assetId: {asset?.Name}");
+            Console.WriteLine($"network name: {networkName}");
+
 
             if (!string.IsNullOrEmpty(State.Pkey))
             {
@@ -276,10 +291,9 @@
             {
                 Scheme = PaymentScheme.Exact,
                 Network = State.Network ?? string.Empty,
-                MaxAmountRequired = State.Amount.ToString(),
+                Amount = State.Amount.ToString(),
                 Asset = State.TokenContractAddress ?? string.Empty,
                 PayTo = State.PayTo ?? string.Empty,
-                Resource = State.Resource ?? string.Empty,
                 MaxTimeoutSeconds = 300,
                 Extra = new()
                 {

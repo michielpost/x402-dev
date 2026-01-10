@@ -4,7 +4,7 @@ using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.HostWallet;
 using Nethereum.UI;
 using System.Security.Claims;
-using x402.Client.v1;
+using x402.Client.v2;
 
 namespace x402dev.Client.Pages;
 

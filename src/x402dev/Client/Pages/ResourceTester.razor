@@ -5,9 +5,9 @@
 @using Nethereum.Hex.HexTypes
 @using x402.Client.EVM
 @using x402.Client.Events
-@using x402.Client.v1
+@using x402.Client.v2
 @using x402.Core.Interfaces
-@using x402.Core.Models.v1
+@using x402.Core.Models.v2
 @using x402dev.Server.Models
 @inject IHttpClientFactory HttpClientFactory
 @inject IAssetInfoProvider AssetInfoProvider
@@ -33,7 +33,7 @@
             <FluentTextField @bind-Value="@paymentHeader"
                              Style="width: 100%;"
                              Placeholder="Generate a signature using the Signature Builder..."
-                             Required="true">Optional Payment Header Signature</FluentTextField>
+                             Required="true">Optional Payment Header Signature (leave empty to use MetaMask)</FluentTextField>
 
 
             @if (isLoading)
@@ -208,56 +208,62 @@
 
         if (assetInfo.NetworkType == x402.Core.Models.NetworkType.EVM)
         {
-            needsMetaMask = true;
-
-            if (_ethereumHostProvider == null)
+            if (string.IsNullOrEmpty(paymentHeader))
             {
-                WriteResultLine($"Enable MetaMask to proceed.");
-                errorMessage = "MetaMask not available. Please install or enable MetaMask to sign this payment.";
-                return false;
+                needsMetaMask = true;
             }
 
-            if (SelectedAccount == null)
+            if (needsMetaMask)
             {
-                WriteResultLine("No account selected in MetaMask");
-                errorMessage = "Please connect MetaMask";
-                return false;
-            }
-
-            WriteResultLine($"Preparing wallet");
-
-            var web3 = await _ethereumHostProvider.GetWeb3Async();
-
-            var chainId = new HexBigInteger(assetInfo.ChainId);
-
-            var changeResult = await ChangeChainTo(assetInfo.ChainId);
-            if (!string.IsNullOrEmpty(changeResult))
-            {
-                WriteResultLine($"Error changing MetaMask to ChainId: {assetInfo.ChainId}: {changeResult}");
-                errorMessage = $"Failed to change MetaMask to ChainId: {assetInfo.ChainId}: {changeResult}";
-                return false;
-            }
-            else
-            {
-                WriteResultLine($"Changed MetaMask to ChainId: {assetInfo.ChainId}");
-            }
-
-
-            var selectedChainId = await web3.Eth.ChainId.SendRequestAsync();
-            if (selectedChainId.Value != chainId.Value)
-            {
-                WriteResultLine("Failed to change chainId");
-                errorMessage = "Failed to change chainId in MetaMask";
-                return false;
-            }
-
-
-
-            var wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, assetInfo.Network, assetInfo.ChainId)
+                if (_ethereumHostProvider == null)
                 {
-                    IgnoreAllowances = true
-                };
-            WalletProvider.Wallet = wallet;
+                    WriteResultLine($"Enable MetaMask to proceed.");
+                    errorMessage = "MetaMask not available. Please install or enable MetaMask to sign this payment.";
+                    return false;
+                }
+
+                if (SelectedAccount == null)
+                {
+                    WriteResultLine("No account selected in MetaMask");
+                    errorMessage = "Please connect MetaMask";
+                    return false;
+                }
+
+                WriteResultLine($"Preparing wallet");
+
+                var web3 = await _ethereumHostProvider.GetWeb3Async();
+
+                var chainId = new HexBigInteger(assetInfo.ChainId);
+
+                var changeResult = await ChangeChainTo(assetInfo.ChainId);
+                if (!string.IsNullOrEmpty(changeResult))
+                {
+                    WriteResultLine($"Error changing MetaMask to ChainId: {assetInfo.ChainId}: {changeResult}");
+                    errorMessage = $"Failed to change MetaMask to ChainId: {assetInfo.ChainId}: {changeResult}";
+                    return false;
+                }
+                else
+                {
+                    WriteResultLine($"Changed MetaMask to ChainId: {assetInfo.ChainId}");
+                }
+
+
+                var selectedChainId = await web3.Eth.ChainId.SendRequestAsync();
+                if (selectedChainId.Value != chainId.Value)
+                {
+                    WriteResultLine("Failed to change chainId");
+                    errorMessage = "Failed to change chainId in MetaMask";
+                    return false;
+                }
+
+
+
+                var wallet = new EVMWallet((s) => web3.Eth.AccountSigning.SignTypedDataV4.SendRequestAsync(s), SelectedAccount, assetInfo.Network, assetInfo.ChainId)
+                    {
+                        IgnoreAllowances = true
+                    };
+                WalletProvider.Wallet = wallet;
+            }
 
             return true;
         }
@@ -276,7 +282,7 @@
         }
         else
         {
-            WriteResultLine($"Payment selected: {eventArgs.PaymentRequirements.MaxAmountRequired} {eventArgs.PaymentRequirements.Asset} on {eventArgs.PaymentRequirements.Network}");
+            WriteResultLine($"Payment selected: {eventArgs.PaymentRequirements.Amount} {eventArgs.PaymentRequirements.Asset} on {eventArgs.PaymentRequirements.Network}");
         }
     }
 
