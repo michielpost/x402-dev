@@ -26,7 +26,7 @@ public class ProxyController : ControllerBase
         return "2";
     }
 
-        [HttpPost]
+    [HttpPost]
     [Route("get-x402")]
     [EnableRateLimiting("proxy-3sec")]
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -47,7 +47,7 @@ public class ProxyController : ControllerBase
 
             var existingHeaderValue = Request.Headers[X402HandlerV2.PaymentHeaderV2].FirstOrDefault();
 
-            if(!string.IsNullOrWhiteSpace(existingHeaderValue))
+            if (!string.IsNullOrWhiteSpace(existingHeaderValue))
             {
                 proxyRequest.Headers.Add(X402HandlerV2.PaymentHeaderV2, existingHeaderValue);
             }
@@ -138,6 +138,9 @@ public class ProxyController : ControllerBase
             }
             // Remove headers that are forbidden to set
             Response.Headers.Remove("transfer-encoding");
+
+            Response.Headers.Remove("Access-Control-Expose-Headers");
+            Response.Headers.Append("Access-Control-Expose-Headers", X402HandlerV2.PaymentRequiredHeader);
 
             // Copy content
             var content = await response.Content.ReadAsStreamAsync();
