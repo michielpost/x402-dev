@@ -17,7 +17,16 @@ public class ProxyController : ControllerBase
         _httpClientFactory = httpClientFactory;
     }
 
-    [HttpPost]
+
+    [HttpGet]
+    [Route("version")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public string Version()
+    {
+        return "2";
+    }
+
+        [HttpPost]
     [Route("get-x402")]
     [EnableRateLimiting("proxy-3sec")]
     [ApiExplorerSettings(IgnoreApi = true)]
