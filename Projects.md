@@ -13,7 +13,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [tip.md](https://www.tip.md/) - Get rewarded for your open source work in minutes  
 - [ROZO Bananary](https://banana.rozo.ai/) - Generate images and pay with x402  
 - [402 load network](https://402.load.network/) - The x402 toolkit for ANS-104 dataitems  
-- [xcache.io](https://www.xcache.io/) - Create your own cache, no account required, just pay with x402 
+- [xcache.io](https://www.xcache.io/) - Create your own cache, no account required, just pay with x402
+- [Einstein AI](https://emc2ai.io) - AI blockchain intelligence - whale tracking, smart money, launchpad monitoring
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
