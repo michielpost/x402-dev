@@ -15,6 +15,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [402 load network](https://402.load.network/) - The x402 toolkit for ANS-104 dataitems  
 - [xcache.io](https://www.xcache.io/) - Create your own cache, no account required, just pay with x402
 - [Einstein AI](https://emc2ai.io) - AI blockchain intelligence - whale tracking, smart money, launchpad monitoring
+- [OpSpawn A2A x402 Gateway](https://a2a.opspawn.com) - AI agent services with x402 micropayments, Google A2A protocol, and multi-chain support (Base, SKALE, Arbitrum)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
