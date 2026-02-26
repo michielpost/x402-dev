@@ -16,6 +16,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [xcache.io](https://www.xcache.io/) - Create your own cache, no account required, just pay with x402
 - [Einstein AI](https://emc2ai.io) - AI blockchain intelligence - whale tracking, smart money, launchpad monitoring
 - [OpSpawn A2A x402 Gateway](https://a2a.opspawn.com) - AI agent services with x402 micropayments, Google A2A protocol, and multi-chain support (Base, SKALE, Arbitrum)
+- [x402-api](https://x402-api.fly.dev) - Unified DeFi data API (CoinGecko, DefiLlama, Hyperliquid, GoPlus, Blockchair) with x402 micropayments on Base. MCP server + ElizaOS plugin available. [Github](https://github.com/fernsugi/x402-api-server)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
