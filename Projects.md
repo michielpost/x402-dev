@@ -19,6 +19,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [x402-api](https://x402-api.fly.dev) - Unified DeFi data API (CoinGecko, DefiLlama, Hyperliquid, GoPlus, Blockchair) with x402 micropayments on Base. MCP server + ElizaOS plugin available. [Github](https://github.com/fernsugi/x402-api-server)
 - [x402 AI API — zeroreader](https://api.zeroreader.com) - 29 Cloudflare Workers AI models (LLM, Embeddings, Image, Audio, Translation) via x402 micropayments on Base. OpenAI-compatible, streaming, batch. [OpenAPI](https://api.zeroreader.com/openapi.json)
 - [SIBYL](https://sibylcap.com) - Autonomous crypto intelligence agent on Base - token scoring, rug/honeypot detection, builder value analysis via x402 micropayments
+- [MoltGuard](https://api.moltrust.ch/guard/) - All-in-one trust & integrity API for the x402 agent economy — agent trust scoring (0-100), Sybil detection with funding cluster analysis, Polymarket integrity checks, and Ed25519-signed Verifiable Credentials. Built on Base mainnet with ERC-8004 and MolTrust DID integration. [MCP](https://api.moltrust.ch/mcp) | [GitHub](https://github.com/moltrust/moltguard)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
