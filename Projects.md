@@ -16,6 +16,10 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [xcache.io](https://www.xcache.io/) - Create your own cache, no account required, just pay with x402
 - [Einstein AI](https://emc2ai.io) - AI blockchain intelligence - whale tracking, smart money, launchpad monitoring
 - [OpSpawn A2A x402 Gateway](https://a2a.opspawn.com) - AI agent services with x402 micropayments, Google A2A protocol, and multi-chain support (Base, SKALE, Arbitrum)
+- [x402-api](https://x402-api.fly.dev) - Unified DeFi data API (CoinGecko, DefiLlama, Hyperliquid, GoPlus, Blockchair) with x402 micropayments on Base. MCP server + ElizaOS plugin available. [Github](https://github.com/fernsugi/x402-api-server)
+- [x402 AI API — zeroreader](https://api.zeroreader.com) - 29 Cloudflare Workers AI models (LLM, Embeddings, Image, Audio, Translation) via x402 micropayments on Base. OpenAI-compatible, streaming, batch. [OpenAPI](https://api.zeroreader.com/openapi.json)
+- [SIBYL](https://sibylcap.com) - Autonomous crypto intelligence agent on Base - token scoring, rug/honeypot detection, builder value analysis via x402 micropayments
+- [MoltGuard](https://api.moltrust.ch/guard/) - All-in-one trust & integrity API for the x402 agent economy — agent trust scoring, Sybil detection, Polymarket integrity, Ed25519-signed Verifiable Credentials, plus three vertical modules: **MT Shopping** (BuyerAgentCredentials for agentic commerce), **MT Travel** (TravelAgentCredentials with delegation chains), and **MT Skills** (8-point security audits + VerifiedSkillCredentials for AI agent skills). 19 endpoints, x402 micropayments on Base. [MCP](https://api.moltrust.ch/mcp) | [Docs](https://moltrust.ch/moltguard.html)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
