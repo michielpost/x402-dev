@@ -51,6 +51,15 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: .net-app
+
+      - name: Deploy to Azure Web App Fix
+        id: deploy-to-webapp-fix
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'x402dev-fix'
+          slot-name: 'Production'
+          package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B5B736FE3842494380EFFB3D0C7A34F8 }}
       
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
