@@ -20,6 +20,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [x402 AI API — zeroreader](https://api.zeroreader.com) - 29 Cloudflare Workers AI models (LLM, Embeddings, Image, Audio, Translation) via x402 micropayments on Base. OpenAI-compatible, streaming, batch. [OpenAPI](https://api.zeroreader.com/openapi.json)
 - [SIBYL](https://sibylcap.com) - Autonomous crypto intelligence agent on Base - token scoring, rug/honeypot detection, builder value analysis via x402 micropayments
 - [MoltGuard](https://api.moltrust.ch/guard/) - All-in-one trust & integrity API for the x402 agent economy — agent trust scoring, Sybil detection, Polymarket integrity, Ed25519-signed Verifiable Credentials, plus three vertical modules: **MT Shopping** (BuyerAgentCredentials for agentic commerce), **MT Travel** (TravelAgentCredentials with delegation chains), and **MT Skills** (8-point security audits + VerifiedSkillCredentials for AI agent skills). 19 endpoints, x402 micropayments on Base. [MCP](https://api.moltrust.ch/mcp) | [Docs](https://moltrust.ch/moltguard.html)
+- [AI API](https://ai-api-1c5n.onrender.com) - Paid API for AI agents — real-time forex, crypto prices, weather data, and utilities via x402 micropayments on Base. [Info](https://ai-api-1c5n.onrender.com/api/info)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
