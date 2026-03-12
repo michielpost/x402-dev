@@ -1,19 +1,23 @@
 @inherits LayoutComponentBase
 
 <FluentLayout>
-	<FluentHeader Style="background-color:#18334E">
-		<FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center" Style="width:100%;">
+	<FluentHeader Style="background: linear-gradient(135deg, #0c1d30 0%, #18334E 55%, #1b3f60 100%); border-bottom: 1px solid rgba(255,255,255,0.07);">
+		<FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center" Style="width:100%; padding: 0 0.25rem;">
 
-			<FluentStack HorizontalAlignment="HorizontalAlignment.Start" VerticalAlignment="VerticalAlignment.Center">
-				<img src="/logo.jpg" height="40" /> x402dev
+			<FluentStack HorizontalAlignment="HorizontalAlignment.Start" VerticalAlignment="VerticalAlignment.Center" Style="gap: 0.75rem;">
+				<img src="/logo.jpg" height="36" class="header-logo" alt="x402dev logo" />
+				<div class="header-brand">
+					<span class="header-brand-name">x402dev</span>
+					<span class="header-brand-sub">Developer Tools</span>
+				</div>
 			</FluentStack>
 
 			<FluentStack HorizontalAlignment="HorizontalAlignment.End" VerticalAlignment="VerticalAlignment.Center">
-				<Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
+				<Metamask SelectedAccountTruncateLength="15" ConnectText="Connect Wallet" InstallMetamaskText="Install MetaMask" />
 			</FluentStack>
 		</FluentStack>
-
 	</FluentHeader>
+
 	<FluentStack Class="main" Orientation="Orientation.Horizontal" Width="100%">
 		<NavMenu />
 		<FluentBodyContent Class="body-content">
@@ -29,16 +33,21 @@
 			</ErrorBoundary>
 		</FluentBodyContent>
 	</FluentStack>
+
 	<FluentFooter>
-		<a href="https://github.com/michielpost/x402-dev" target="_blank">x402dev on GitHub</a>
+		<a href="https://github.com/michielpost/x402-dev" target="_blank" rel="noopener" class="footer-gh-link">
+			<svg class="footer-gh-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+			x402dev on GitHub
+		</a>
 		<FluentSpacer />
-		<a href="https://x.com/michielpostnl" target="_blank">Created by Michiel Post</a>
+		<span class="footer-byline">Built for the x402 community · <a href="https://x.com/michielpostnl" target="_blank" rel="noopener">@@michielpostnl</a></span>
 	</FluentFooter>
+
 	<FluentToastProvider MaxToastCount="10" />
 	<FluentDialogProvider />
 	<FluentTooltipProvider />
 	<FluentMessageBarProvider />
 	<FluentMenuProvider />
-	<FluentDesignTheme StorageName="theme" Mode="DesignThemeModes.Light"  CustomColor="#16314E" />
+	<FluentDesignTheme StorageName="theme" Mode="DesignThemeModes.Light" CustomColor="#16314E" />
 </FluentLayout>
 
