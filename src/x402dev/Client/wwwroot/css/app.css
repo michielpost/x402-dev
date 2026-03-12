@@ -852,6 +852,25 @@ footer {
     border: 1px solid rgba(0,120,212,0.18);
 }
 
+.post-section-tag--cli {
+    background: rgba(136,36,214,0.1);
+    color: #8824d6;
+    border: 1px solid rgba(136,36,214,0.2);
+}
+
+.code-block {
+    margin: 0;
+    padding: 0.65rem 0.9rem;
+    background: var(--neutral-layer-2, #f4f4f4);
+    border: 1px solid var(--neutral-stroke-rest, #e0e0e0);
+    border-radius: 6px;
+    font-family: "Cascadia Code", "Consolas", monospace;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--neutral-foreground-rest);
+}
+
 .post-section-title {
     font-size: 0.9rem;
     font-weight: 600;

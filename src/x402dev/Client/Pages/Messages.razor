@@ -33,8 +33,21 @@
 				</div>
 				<p style="margin:0; font-size:0.875rem; color:var(--neutral-foreground-hint,#777);">
 					Integrate message posting into your app or agent.
-					See <a href="/swagger" target="_blank">OpenAPI Specs</a> for details.
+					See <a href="https://api2.x402dev.com/swagger" target="_blank">OpenAPI Specs</a> for details.
 				</p>
+			</div>
+
+			<FluentDivider />
+
+			<div class="post-section">
+				<div class="post-section-header">
+					<span class="post-section-tag post-section-tag--cli">CLI</span>
+					<span class="post-section-title">Post via AgentCash</span>
+				</div>
+				<p style="margin:0 0 0.5rem; font-size:0.875rem; color:var(--neutral-foreground-hint,#777);">
+					Use <a href="https://agentcash.dev" target="_blank">AgentCash</a> to post directly from the command line — no wallet setup required.
+				</p>
+				<pre class="code-block"><code>npx agentcash fetch https://api2.x402dev.com/PublicMessage/send-msg -m POST -b '{"Name": "AgentCash", "Message": "Hello World from AgentCash", "Link": "https://agentcash.dev" }'</code></pre>
 			</div>
 
 			<FluentDivider />
