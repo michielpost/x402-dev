@@ -127,8 +127,8 @@ else
 
 
 //Background Hosted Services
-builder.Services.AddHostedService<ContentSyncBackgroundService>();
-builder.Services.AddHostedService<FacilitatorTestBackgroundService>();
+//builder.Services.AddHostedService<ContentSyncBackgroundService>();
+//builder.Services.AddHostedService<FacilitatorTestBackgroundService>();
 
 
 
@@ -141,23 +141,23 @@ builder.Services.AddHsts(options =>
 
 var app = builder.Build();
 
-var sqlLiteBuilder = new SqliteConnectionStringBuilder(connectionString);
-var dbPath = Path.GetDirectoryName(sqlLiteBuilder.DataSource);
-if (dbPath != null && !Directory.Exists(dbPath))
-{
-    Directory.CreateDirectory(dbPath);
-}
+//var sqlLiteBuilder = new SqliteConnectionStringBuilder(connectionString);
+//var dbPath = Path.GetDirectoryName(sqlLiteBuilder.DataSource);
+//if (dbPath != null && !Directory.Exists(dbPath))
+//{
+//    Directory.CreateDirectory(dbPath);
+//}
 
-// Ensure database is created and apply migrations
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    //db.Database.EnsureCreated();
-    db.Database.Migrate(); // Creates the database if it does not exist and applies any pending migrations
-}
+//// Ensure database is created and apply migrations
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//    //db.Database.EnsureCreated();
+//    db.Database.Migrate(); // Creates the database if it does not exist and applies any pending migrations
+//}
 
-var contentService = app.Services.GetRequiredService<ContentService>();
-await contentService.Initialize();
+//var contentService = app.Services.GetRequiredService<ContentService>();
+//await contentService.Initialize();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
