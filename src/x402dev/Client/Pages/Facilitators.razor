@@ -5,81 +5,93 @@
 
 <PageTitle>x402dev - Facilitators</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
-    <h1>Facilitators</h1>
-    <p>
-        x402 facilitators are services that help process payments and enable seamless transactions 
-        across different networks. This list shows active facilitators, their status, supported 
-        networks, and service availability. Status is checked live and updated periodically.
-    </p>
+<div class="page-header">
+	<span class="page-eyebrow">x402 Network</span>
+	<h1>Facilitators</h1>
+	<p class="page-desc">
+		x402 facilitators process and verify payments across different networks.
+		Status is checked live and updated periodically.
+	</p>
+</div>
 
- 
-    @if (facilitators == null)
-    {
-        <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
-            <p><em>Loading facilitators...</em></p>
-            <FluentProgress></FluentProgress>
-        </FluentStack>
-    }
-    else
-    {
-    <FluentDataGrid Id="bridgegrid" Items="@facilitators" TGridItem="Facilitator" AutoFit="true" MultiLine="true">
-        <PropertyColumn Title="Name" Property="@(b => b.Name)" Sortable="true" Align="Align.Start" />
-        <TemplateColumn Title="Status" Sortable="true" Align="Align.Start">
-            @if(context.HasError)
-            {
-                <span style="color:red">Offline</span>
-            }
-            else
-            {
-                <span style="color:green">Online</span>
-            }
-        </TemplateColumn>
-        <TemplateColumn Title="URL" Sortable="true" Align="Align.Start">
-            <NavLink href="@context.Url">@context.Url</NavLink>
+@if (facilitators == null)
+{
+	<div class="page-loading">
+		<FluentProgressRing />
+		<span>Checking facilitator status…</span>
+	</div>
+}
+else
+{
+	<FluentDataGrid Id="facilitatorgrid" Items="@facilitators" TGridItem="Facilitator" AutoFit="true" MultiLine="true">
+		<TemplateColumn Title="Status" Sortable="true" Align="Align.Start" SortBy="@(GridSort<Facilitator>.ByAscending(f => f.HasError))">
+			<span class="fac-status @(context.HasError ? "fac-status--offline" : "fac-status--online")">
+				<span class="fac-status-dot"></span>
+				@(context.HasError ? "Offline" : "Online")
+			</span>
+		</TemplateColumn>
 
-            @if (context.Name == "Coinbase")
+		<PropertyColumn Title="Name" Property="@(f => f.Name)" Sortable="true" Align="Align.Start" />
+
+		<TemplateColumn Title="URL" Align="Align.Start">
+			<a href="@context.Url" class="fac-url" target="_blank" rel="noopener">@context.Url</a>
+			@if (context.NeedsApiKey)
 			{
-				<p>Needs API key. Check the <a href="https://docs.cdp.coinbase.com/api-reference/v2/rest-api/x402-facilitator/x402-facilitator" target="_blank" rel="noopener">docs</a>.</p>
+				<p class="fac-note">Needs API key — <a href="https://docs.cdp.coinbase.com/api-reference/v2/rest-api/x402-facilitator/x402-facilitator" target="_blank" rel="noopener">docs</a></p>
 			}
-        </TemplateColumn>
-        <TemplateColumn Title="Networks" Align="Align.Start">
-            @foreach (var kind in (context.Kinds ?? new()).OrderBy(x => x))
-            {
-                <FluentBadge Appearance="Appearance.Neutral" Circular=true>
-                    @kind
-                </FluentBadge>
-				<text> </text>
-            }
-        </TemplateColumn>
-        <PropertyColumn Title="Checked" Property="@(b => b.Checked)" Sortable="true" Align="Align.Start" />
-    </FluentDataGrid>
-    }
+			@if (!string.IsNullOrWhiteSpace(context.Comments))
+			{
+				<p class="fac-note">@context.Comments</p>
+			}
+		</TemplateColumn>
 
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
-        <FluentAnchor Appearance="Appearance.Accent"
-                      Href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json"
-                      Target="_blank"
-                      Rel="noopener">
-            Add facilitator (edit JSON on GitHub)
-        </FluentAnchor>
-    </FluentStack>
+		<TemplateColumn Title="Networks" Align="Align.Start">
+			<div class="fac-networks">
+				@foreach (var kind in (context.Kinds ?? new()).OrderBy(x => x))
+				{
+					<FluentBadge Appearance="Appearance.Neutral" Circular="true">@kind</FluentBadge>
+				}
+			</div>
+		</TemplateColumn>
 
-</FluentStack>
+		<TemplateColumn Title="Last Checked" Sortable="true" Align="Align.Start" SortBy="@(GridSort<Facilitator>.ByDescending(f => f.Checked))">
+			@if (context.Checked.HasValue)
+			{
+				<span class="fac-checked">@FormatDate(context.Checked.Value)</span>
+			}
+		</TemplateColumn>
+	</FluentDataGrid>
+}
+
+<div style="margin-top: 1rem;">
+	<FluentAnchor Appearance="Appearance.Accent"
+				  Href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json"
+				  Target="_blank"
+				  Rel="noopener">
+		Add facilitator on GitHub
+	</FluentAnchor>
+</div>
 
 @code {
-    private IQueryable<Facilitator>? facilitators;
+	private IQueryable<Facilitator>? facilitators;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (OperatingSystem.IsBrowser())
-        {
-            var result = await FacilitatorGrpcService.GetFacilitators();
-            facilitators = result.AsQueryable();
-        }
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		if (OperatingSystem.IsBrowser())
+		{
+			var result = await FacilitatorGrpcService.GetFacilitators();
+			facilitators = result.AsQueryable();
+		}
+	}
 
- 
-
+	private static string FormatDate(DateTime dt)
+	{
+		var diff = DateTime.UtcNow - dt.ToUniversalTime();
+		return diff.TotalSeconds < 60  ? "just now"
+			 : diff.TotalMinutes < 60  ? $"{(int)diff.TotalMinutes}m ago"
+			 : diff.TotalHours < 24    ? $"{(int)diff.TotalHours}h ago"
+			 : diff.TotalDays < 7      ? $"{(int)diff.TotalDays}d ago"
+			 : dt.ToString("MMM d, yyyy");
+	}
 }
 

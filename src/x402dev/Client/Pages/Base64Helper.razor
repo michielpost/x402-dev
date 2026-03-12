@@ -5,26 +5,36 @@
 
 <PageTitle>x402dev - Base64 Helper</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+<div class="page-header">
+	<span class="page-eyebrow">Developer Tool</span>
 	<h1>Base64 Helper</h1>
-	<p>
-		x402 uses Base64 encoding in headers for payload and responses to ensure safe transmission 
-		of binary and special characters. This tool helps you easily encode and decode Base64 strings, 
-		with automatic JSON formatting when applicable.
+	<p class="page-desc">
+		x402 uses Base64 encoding in headers for safe transmission of binary data.
+		Encode or decode Base64 strings here — JSON is automatically pretty-printed.
 	</p>
+</div>
 
-	<FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
-		<FluentButton Appearance="Appearance.Accent" OnClick="DecodeData">Decode from Base64</FluentButton>
-		<FluentButton Appearance="Appearance.Accent" OnClick="EncodeData">Encode to Base64</FluentButton>
-	</FluentStack>
+<FluentCard Style="max-width: 780px;">
+	<div class="form-section">
+		<FluentTextField @bind-Value="@base64Text" Placeholder="Paste a Base64 string here…" Style="width: 100%;">Base64 Input</FluentTextField>
 
-	<FluentTextField @bind-Value="@base64Text" Placeholder="Enter Base64 string to decode..." Style="width: 100%;">Data to decode</FluentTextField>
+		<FluentTextArea @bind-Value="@dataText"
+						Placeholder="Plain text or JSON output will appear here…"
+						Style="width: 100%;"
+						Rows="@textAreaRows">Decoded / Plain Text</FluentTextArea>
 
-	<FluentTextArea @bind-Value="@dataText"
-					Placeholder="Enter data to encode..."
-					Style="width: 100%;"
-					Rows="@textAreaRows">Data to encode</FluentTextArea>
-</FluentStack>
+		<div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+			<FluentButton Appearance="Appearance.Accent" OnClick="DecodeData">
+				<FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" Style="margin-right:4px;" />
+				Decode from Base64
+			</FluentButton>
+			<FluentButton Appearance="Appearance.Accent" OnClick="EncodeData">
+				<FluentIcon Value="@(new Icons.Regular.Size16.ArrowUp())" Style="margin-right:4px;" />
+				Encode to Base64
+			</FluentButton>
+		</div>
+	</div>
+</FluentCard>
 
 @code {
 	private string base64Text = "";

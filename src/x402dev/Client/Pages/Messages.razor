@@ -12,41 +12,47 @@
 <PageTitle>x402dev - Messages</PageTitle>
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
-    <h1>Public Messages</h1>
-    <p>
-        Share and discover x402 projects and announcements! Post messages that require x402 payments, 
-        ensuring only authenticated users can contribute. Perfect for promoting new projects, 
-        sharing updates, or connecting with the x402 community. <br />
-		<br />
-		Messages can only be posted using x402 payments, which helps maintain quality
-		and prevents spam.<br /><br />
-
-		A payment of 0.1 USDC on Base is required per message.
-    </p>
+	<div class="page-header">
+		<span class="page-eyebrow">Community</span>
+		<h1>Public Messages</h1>
+		<p class="page-desc">
+			Share and discover x402 projects and announcements. Only messages backed by x402 payments
+			are accepted — keeping the feed quality high and spam-free.
+		</p>
+		<div class="page-header-actions">
+			<span class="post-payment-info">0.1 USDC on Base per message</span>
+		</div>
+	</div>
 
 	<FluentCard>
-		<FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
-			<b>Post via API</b>
-			<p>
-				Integrate message posting directly into your application or agent.
-				See <a href="/swagger" target="_blank">Open API Specs</a> for API details.
-				A payment of 0.1 USDC on Base is required per message.
-			</p>
+		<div class="form-section">
+			<div class="post-section">
+				<div class="post-section-header">
+					<span class="post-section-tag post-section-tag--api">API</span>
+					<span class="post-section-title">Post via API</span>
+				</div>
+				<p style="margin:0; font-size:0.875rem; color:var(--neutral-foreground-hint,#777);">
+					Integrate message posting into your app or agent.
+					See <a href="/swagger" target="_blank">OpenAPI Specs</a> for details.
+				</p>
+			</div>
 
-            <b>Post Manually</b>
-            <p>
-                Use the form below to post a message directly from your browser. 
-                Connect your MetaMask wallet to get started.
-            </p>
+			<FluentDivider />
 
-            <Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
+			<div class="post-section">
+				<div class="post-section-header">
+					<span class="post-section-tag post-section-tag--wallet">Wallet</span>
+					<span class="post-section-title">Post Manually</span>
+				</div>
+				<p style="margin:0; font-size:0.875rem; color:var(--neutral-foreground-hint,#777);">Connect your MetaMask wallet to post directly from your browser.</p>
+			</div>
 
-            @if (!string.IsNullOrEmpty(SelectedAccount))
-            {
-                <FluentStack Orientation="Orientation.Vertical" Gap="1rem">
-                    <h5>Post a Public Message</h5>
+			<Metamask SelectedAccountTruncateLength="15" ConnectText="Connect Wallet" InstallMetamaskText="Install MetaMask" />
 
-                    <EditForm Model="@model" OnValidSubmit="Submit" Class="w-full" style="width: 80%;">
+			@if (!string.IsNullOrEmpty(SelectedAccount))
+			{
+				<FluentStack Orientation="Orientation.Vertical" Gap="0.75rem">
+					<EditForm Model="@model" OnValidSubmit="Submit" style="width: 100%; max-width: 520px;">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
@@ -87,25 +93,27 @@
                         }
                     </EditForm>
 
-                    <p>
-                        @Result
-                    </p>
+					@if (!string.IsNullOrWhiteSpace(Result))
+					{
+						<p style="font-size:0.85rem; color:var(--neutral-foreground-hint,#777); margin:0;">@Result</p>
+					}
 
-                    @if (submitted)
-                    {
-                        <p>
-                            Message submitted successfully!
-                        </p>
-                    }
-                </FluentStack>
-            }
-        </FluentStack>
-    </FluentCard>
+					@if (submitted)
+					{
+						<FluentMessageBar Intent="MessageIntent.Success" Style="max-width:520px;">
+							Message submitted successfully!
+						</FluentMessageBar>
+					}
+				</FluentStack>
+			}
+		</div>
+	</FluentCard>
 
-    <div>
-        <h2>Recent Messages</h2>
-        <MessagesList @ref="messagesListRef" />
-    </div>
+	<div class="home-section" style="margin-top: 1.75rem;">
+		<h2 class="home-section-title">Recent Messages</h2>
+		<p class="home-section-desc">All messages are verified x402 payments on Base.</p>
+		<MessagesList @ref="messagesListRef" />
+	</div>
 </FluentStack>
 
 @code {

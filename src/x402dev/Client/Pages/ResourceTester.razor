@@ -16,49 +16,58 @@
 <PageTitle>x402dev - Resource Tester</PageTitle>
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
-    <h1>Resource Tester</h1>
-    <p>
-        Test and debug x402-protected resources. This tool allows you to send requests to x402-enabled
-        endpoints with optional payment headers to verify authentication, check responses, and debug
-        payment-related issues. Perfect for developers integrating x402 into their applications.
-    </p>
+    <div class="page-header">
+        <span class="page-eyebrow">Developer Tool</span>
+        <h1>Resource Tester</h1>
+        <p class="page-desc">
+            Send requests to x402-protected endpoints and inspect payment flows,
+            response headers, and authentication in real time.
+        </p>
+    </div>
 
     <FluentCard>
-        <FluentStack Orientation="Orientation.Vertical" HorizontalGap="10">
+        <div class="form-section">
+            <p class="form-section-title">Request</p>
             <FluentTextField @bind-Value="@url"
                              Style="width: 100%;"
-                             Placeholder="Enter URL to test"
+                             Placeholder="https://www.x402.org/protected"
                              Required="true">URL</FluentTextField>
 
             <FluentTextField @bind-Value="@paymentHeader"
                              Style="width: 100%;"
-                             Placeholder="Generate a signature using the Signature Builder..."
-                             Required="true">Optional Payment Header Signature (leave empty to use MetaMask)</FluentTextField>
-
+                             Placeholder="Leave empty to use MetaMask for payment…">
+                Optional PAYMENT-SIGNATURE header
+            </FluentTextField>
 
             @if (isLoading)
             {
-                <FluentProgressRing />
-                <span>Loading...</span>
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <FluentProgressRing />
+                    <span style="font-size:0.875rem; color:var(--neutral-foreground-hint,#888);">Fetching…</span>
+                </div>
             }
             else
             {
-                <FluentButton Appearance="Appearance.Accent"
-                              OnClick="FetchResource"
-                              Disabled="@isLoading">
-                    <span>Fetch</span>
-                </FluentButton>
+                <div>
+                    <FluentButton Appearance="Appearance.Accent"
+                                  OnClick="FetchResource"
+                                  Disabled="@isLoading">Fetch Resource</FluentButton>
+                </div>
             }
 
-            Debug log:<br />
-            <textarea rows="7" style="width:80%">@result</textarea>
-
-        </FluentStack>
+            @if (!string.IsNullOrWhiteSpace(result))
+            {
+                <div>
+                    <p class="debug-log-label">Debug Log</p>
+                    <div class="debug-log">@result</div>
+                </div>
+            }
+        </div>
     </FluentCard>
 
     @if (needsMetaMask)
     {
-        <Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
+        <Metamask SelectedAccountTruncateLength="15" ConnectText="Connect Wallet" InstallMetamaskText="Install MetaMask" />
     }
 
     @if (!string.IsNullOrEmpty(errorMessage))

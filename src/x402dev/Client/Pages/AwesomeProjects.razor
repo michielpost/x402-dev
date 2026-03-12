@@ -2,53 +2,51 @@
 
 <PageTitle>x402dev - Awesome x402 Projects</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
-    <h1>Awesome x402 Projects</h1>
-    <p>
-        Discover and explore innovative projects built with the x402 payment protocol. 
-        This curated list showcases applications, tools, and services that leverage x402 
-        for seamless micro-payments and resource monetization.
+<div class="page-header">
+    <span class="page-eyebrow">Community</span>
+    <h1>Awesome Projects</h1>
+    <p class="page-desc">
+        Discover innovative applications, tools, and services built on the x402 payment protocol —
+        curated by the community.
     </p>
-
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
-        <FluentAnchor Appearance="Appearance.Accent" 
-                      Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" 
-                      Target="_blank" 
+    <div class="page-header-actions">
+        <FluentAnchor Appearance="Appearance.Accent"
+                      Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md"
+                      Target="_blank"
                       Rel="noopener">
-            Edit on GitHub
+            View on GitHub
         </FluentAnchor>
-    </FluentStack>
+    </div>
+</div>
 
-    @if(Text == null)
-    {
-        <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
-            <p><em>Loading projects...</em></p>
-            <FluentProgress></FluentProgress>
-        </FluentStack>
-    }
-    else
-    {
+@if (Text == null)
+{
+    <div class="page-loading">
+        <FluentProgressRing />
+        <span>Loading projects…</span>
+    </div>
+}
+else
+{
+    <div class="md-content">
+        @(Text)
+    </div>
+}
+
+<FluentCard Class="page-cta-card" Style="padding: 0; overflow: hidden;">
+    <div class="page-cta-inner">
         <div>
-            @(Text)
+            <h3>Want to add your project?</h3>
+            <p>Built something with x402? Share it with the community by submitting a pull request.</p>
         </div>
-    }
-
-    <FluentCard>
-        <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
-            <h4>Want to add your project?</h4>
-            <p>
-                Have you built something awesome with x402? Share it with the community! 
-                Submit a pull request to add your project to this list.
-            </p>
-            <FluentAnchor Appearance="Appearance.Accent" 
-                          Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" 
-                          Target="_blank" 
-                          Rel="noopener">
-                Make a PR to add your project
-            </FluentAnchor>
-        </FluentStack>
-    </FluentCard>
-</FluentStack>
+        <FluentAnchor Appearance="Appearance.Accent"
+                      Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md"
+                      Target="_blank"
+                      Rel="noopener">
+            Submit a Pull Request
+        </FluentAnchor>
+    </div>
+</FluentCard>
 
 @code {
     MarkupString? Text = null;

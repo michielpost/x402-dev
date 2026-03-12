@@ -29,59 +29,82 @@
 <PageTitle>x402dev - Signature Builder</PageTitle>
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
-    <h1>Signature Builder</h1>
-    <p>
-        Build and test custom x402 payment signatures. This tool helps you create properly formatted
-        PAYMENT-SIGNATURE headers for authenticating requests to x402-protected resources. Configure payment
-        parameters, network settings, and resource URLs to generate signed headers ready for use.
-    </p>
+    <div class="page-header">
+        <span class="page-eyebrow">Developer Tool</span>
+        <h1>Signature Builder</h1>
+        <p class="page-desc">
+            Create properly formatted <code>PAYMENT-SIGNATURE</code> headers for x402-protected resources.
+            Configure payment parameters, choose a network, and generate a signed header ready to use.
+        </p>
+    </div>
 
     @if (State.Address == null)
     {
-        <div>
-            <FluentButton Appearance="Appearance.Accent" OnClick="GenerateNewPrivateKey">Generate a new Private Key for testing</FluentButton>
-            <br />
-            <br />
-            or connect with MetaMask to use your own account
-            <Metamask SelectedAccountTruncateLength="15" ConnectText="Please Connect" InstallMetamaskText="Please install Metamask" />
-        </div>
+        <FluentCard>
+            <div class="form-section">
+                <p class="form-section-title">Connect Account</p>
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="GenerateNewPrivateKey">Generate Test Private Key</FluentButton>
+                    <span style="font-size:0.875rem; color:var(--neutral-foreground-hint,#888);">or connect with MetaMask</span>
+                </div>
+                <Metamask SelectedAccountTruncateLength="15" ConnectText="Connect Wallet" InstallMetamaskText="Install MetaMask" />
+            </div>
+        </FluentCard>
 
         return;
     }
 
     @if (State.Pkey != null)
     {
-        <div>
-            <FluentButton Appearance="Appearance.Accent" OnClick="GenerateNewPrivateKey">Generate a new Private Key for testing</FluentButton>
-            <br />
-            Generated private key:	@State.Pkey<br />
+        <FluentCard>
+            <div class="form-section">
+                <p class="form-section-title">Test Account</p>
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="GenerateNewPrivateKey">Regenerate Key</FluentButton>
+                </div>
+                <div class="key-display">
+                    <span class="key-display-label">Private Key</span>
+                    <span class="key-display-value">@State.Pkey</span>
+                </div>
+            </div>
+        </FluentCard>
+    }
+
+    <FluentCard>
+        <div class="form-section">
+            <p class="form-section-title">Payment Parameters</p>
+
+            <div class="key-display" style="margin-bottom:0.25rem;">
+                <span class="key-display-label">Address</span>
+                <span class="key-display-value">@State.Address</span>
+            </div>
+
+            <FluentSelect TOption="NetworkOption" Items="@NetworkOptions" @bind-SelectedOption="@State.SelectedNetworkOption" OptionValue="@(item => item.Value)">
+                <OptionTemplate>
+                    @context.Name
+                </OptionTemplate>
+            </FluentSelect>
+
+            @if (State.SelectedNetworkOption?.Value == ulong.MaxValue.ToString())
+            {
+                <FluentTextField @bind-Value="@State.CustomNetworkId" Placeholder="Enter custom network ID" />
+            }
+
+            <FluentTextField @bind-Value="@State.Network" Placeholder="Network" Style="width:100%;">Network</FluentTextField>
+            <FluentTextField @bind-Value="@State.TokenName" Placeholder="Token Name" Style="width:100%;">Token Name</FluentTextField>
+            <FluentTextField @bind-Value="@State.TokenVersion" Placeholder="Token Version" Style="width:100%;">Token Version</FluentTextField>
+            <FluentTextField @bind-Value="@State.TokenContractAddress" Placeholder="Token Contract Address" Style="width:100%;">Token Contract Address</FluentTextField>
+            <FluentTextField @bind-Value="@State.PayTo" Placeholder="Pay To Address" Style="width:100%;">Pay To</FluentTextField>
+            <FluentNumberField @bind-Value="@State.Amount" Placeholder="Amount" Style="width:100%;">Amount</FluentNumberField>
+            <FluentTextField @bind-Value="@State.Resource" Placeholder="https://example.com/protected" Style="width:100%;">Resource URL</FluentTextField>
+            <FluentNumberField @bind-Value="@State.ValidAfter" Style="width:100%;">Add minutes to valid after</FluentNumberField>
+            <FluentNumberField @bind-Value="@State.ValidBefore" Style="width:100%;">Add minutes to valid before</FluentNumberField>
+
+            <div>
+                <FluentButton Appearance="Appearance.Accent" OnClick="Submit">Generate Signature</FluentButton>
+            </div>
         </div>
-    }
-
-    Address: @State.Address <br />
-
-    <FluentSelect TOption="NetworkOption" Items="@NetworkOptions" @bind-SelectedOption="@State.SelectedNetworkOption" OptionValue="@(item => item.Value)">
-        <OptionTemplate>
-            @context.Name
-        </OptionTemplate>
-    </FluentSelect>
-
-    @if (State.SelectedNetworkOption?.Value == ulong.MaxValue.ToString())
-    {
-        <FluentTextField @bind-Value="@State.CustomNetworkId" Placeholder="Enter custom network ID" />
-    }
-
-    <FluentTextField @bind-Value="@State.Network" Placeholder="Network">Network</FluentTextField>
-    <FluentTextField @bind-Value="@State.TokenName" Placeholder="Token Name">Token Name</FluentTextField>
-    <FluentTextField @bind-Value="@State.TokenVersion" Placeholder="Token Version">Token Version</FluentTextField>
-    <FluentTextField @bind-Value="@State.TokenContractAddress" Placeholder="Token Contract Address">Token Contract Address</FluentTextField>
-    <FluentTextField @bind-Value="@State.PayTo" Placeholder="Pay To Address">Pay To</FluentTextField>
-    <FluentNumberField @bind-Value="@State.Amount" Placeholder="Amount">Amount</FluentNumberField>
-    <FluentTextField @bind-Value="@State.Resource" Placeholder="Resource">Resource URL</FluentTextField>
-    <FluentNumberField @bind-Value="@State.ValidAfter">Add minutes to valid after</FluentNumberField>
-    <FluentNumberField @bind-Value="@State.ValidBefore">Add minutes to valid before</FluentNumberField>
-
-    <FluentButton Appearance="Appearance.Accent" OnClick="Submit">Generate Signature</FluentButton>
+    </FluentCard>
 
     @if (!string.IsNullOrEmpty(State.Base64Header))
     {
@@ -100,7 +123,8 @@
     @if (!string.IsNullOrEmpty(State.Base64Header))
     {
         <FluentCard>
-            <FluentStack Orientation="Orientation.Vertical" HorizontalGap="10">
+            <div class="form-section">
+                <p class="form-section-title">Test the Generated Signature</p>
                 <FluentTextField @bind-Value="@url"
                                  Style="width: 100%;"
                                  Placeholder="Enter URL to test"
@@ -108,25 +132,26 @@
 
                 <FluentTextField Value="@State.Base64Header"
                                  Style="width: 100%;"
-                                 ReadOnly=true
-                                 Placeholder="Generate a signature using the Signature Builder..."
-                                 Required="true">PAYMENT-SIGNATURE Header</FluentTextField>
+                                 ReadOnly="true">
+                    PAYMENT-SIGNATURE Header
+                </FluentTextField>
 
                 @if (isLoading)
                 {
-                    <FluentProgressRing />
-                    <span>Loading...</span>
+                    <div style="display:flex; align-items:center; gap:0.6rem;">
+                        <FluentProgressRing />
+                        <span style="font-size:0.875rem; color:var(--neutral-foreground-hint,#888);">Fetching…</span>
+                    </div>
                 }
                 else
                 {
-
-                    <FluentButton Appearance="Appearance.Accent"
-                                  OnClick="FetchResource"
-                                  Disabled="@isLoading">
-                        <span>Fetch</span>
-                    </FluentButton>
+                    <div>
+                        <FluentButton Appearance="Appearance.Accent"
+                                      OnClick="FetchResource"
+                                      Disabled="@isLoading">Fetch Resource</FluentButton>
+                    </div>
                 }
-            </FluentStack>
+            </div>
         </FluentCard>
     }
 
