@@ -69,6 +69,13 @@
         }
     </div>
 }
+else if(messages == null)
+{
+    <div class="msg-empty">
+        <FluentIcon Value="@(new Icons.Regular.Size48.Chat())" />
+        <p>Loading messages...</p>
+    </div>
+}
 else
 {
     <div class="msg-empty">
