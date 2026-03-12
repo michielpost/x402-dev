@@ -4,65 +4,78 @@
 
 @if (messages?.Any() == true)
 {
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="1" Class="messages-container">
+    <div class="msg-feed">
         @foreach (var msg in messages)
         {
-            <FluentCard Style="padding: 1rem; max-width: 600px;">
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
-                    <FluentStack Orientation="Orientation.Horizontal" VerticalGap="0">
-                        <FluentAnchor
-                            Href=@($"https://basescan.org/address/{msg.Payer}")
-                            Target="_blank"
-                            Rel="noopener">
-                            @TruncateAddress(msg.Payer)
-                        </FluentAnchor>
-                    </FluentStack>
+            <FluentCard Class="msg-card">
+                <div class="msg-header">
+                    <div class="msg-avatar" style="@GetAvatarStyle(msg.Name ?? msg.Payer)">
+                        <span>@GetInitial(msg.Name ?? msg.Payer)</span>
+                    </div>
+                    <div class="msg-meta">
+                        <div class="msg-name-row">
+                            <span class="msg-name">@(string.IsNullOrWhiteSpace(msg.Name) ? "Anonymous" : msg.Name)</span>
+                            @if (!string.IsNullOrWhiteSpace(msg.Link))
+                            {
+                                <FluentAnchor
+                                    Href="@msg.Link"
+                                    Target="_blank"
+                                    Rel="noopener"
+                                    Appearance="Appearance.Stealth"
+                                    Class="msg-website"
+                                    IconEnd="@(new Icons.Regular.Size16.ArrowUpRight())">
+                                    Website
+                                </FluentAnchor>
+                            }
+                        </div>
+                        <div class="msg-sub-row">
+                            <FluentAnchor
+                                Href="@($"https://basescan.org/address/{msg.Payer}")"
+                                Target="_blank"
+                                Rel="noopener"
+                                Appearance="Appearance.Stealth"
+                                Class="msg-address">
+                                @TruncateAddress(msg.Payer)
+                            </FluentAnchor>
+                            <span class="msg-dot" aria-hidden="true">·</span>
+                            <span class="msg-date">@FormatDate(msg.CreatedDateTime)</span>
+                        </div>
+                    </div>
+                </div>
 
-                    <p>
-                        <b>@msg.Name</b>
-                    </p>
+                <div class="msg-body">
+                    <p class="msg-text">@msg.Message</p>
+                </div>
 
-                    @if (!string.IsNullOrWhiteSpace(msg.Link))
+                <div class="msg-footer">
+                    @if (!string.IsNullOrWhiteSpace(msg.Network))
                     {
-                        <FluentAnchor
-                            Href=@msg.Link
-                            Target="_blank"
-                            Rel="noopener"
-                            Appearance="Appearance.Stealth"
-                            IconEnd="@(new Icons.Regular.Size24.ArrowAutofitUp())">
-                            Website
-                        </FluentAnchor>
-
+                        <FluentBadge Fill="neutral" Color="neutral" Class="msg-badge">@msg.Network</FluentBadge>
                     }
-                </FluentStack>
-
-                <FluentDivider />
-
-                <p Style="margin-top: 0.75rem;">
-                    @msg.Message
-                </p>
-
-                <FluentDivider />
-
-                <FluentAnchor
-                    Style="margin-top: 0.75rem; display: inline-block;"
-                    Href=@($"https://basescan.org/tx/{msg.Transaction}")
-                    Target="_blank"
-                    Rel="noopener">
-                    @msg.Transaction
-                </FluentAnchor>
+                    @if (!string.IsNullOrWhiteSpace(msg.Asset) && !string.IsNullOrWhiteSpace(msg.Value))
+                    {
+                        <FluentBadge Fill="accent" Color="accent" Class="msg-badge msg-badge-accent">@msg.Value @msg.Asset</FluentBadge>
+                    }
+                    <FluentAnchor
+                        Class="msg-tx"
+                        Href="@($"https://basescan.org/tx/{msg.Transaction}")"
+                        Target="_blank"
+                        Rel="noopener"
+                        Appearance="Appearance.Stealth">
+                        @TruncateHash(msg.Transaction)
+                    </FluentAnchor>
+                </div>
             </FluentCard>
         }
-    </FluentStack>
+    </div>
 }
 else
 {
-    <FluentMessageBar Intent="MessageIntent.Info" Style="max-width: 600px;">
-        No messages posted yet.
-    </FluentMessageBar>
+    <div class="msg-empty">
+        <FluentIcon Value="@(new Icons.Regular.Size48.Chat())" />
+        <p>No messages posted yet. Be the first!</p>
+    </div>
 }
-
-
 
 @code {
     private IEnumerable<PublicMessage>? messages;
@@ -91,8 +104,49 @@ else
         if (string.IsNullOrWhiteSpace(address))
             return string.Empty;
 
-        return address.Length > 6
-            ? $"{address[..3]}...{address[^3..]}"
+        return address.Length > 12
+            ? $"{address[..6]}...{address[^4..]}"
             : address;
+    }
+
+    private static string TruncateHash(string? hash)
+    {
+        if (string.IsNullOrWhiteSpace(hash))
+            return string.Empty;
+
+        return hash.Length > 16
+            ? $"{hash[..8]}...{hash[^6..]}"
+            : hash;
+    }
+
+    private static string GetInitial(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        return name.Trim()[0].ToString().ToUpperInvariant();
+    }
+
+    private static string FormatDate(DateTime dt)
+    {
+        var diff = DateTime.UtcNow - dt.ToUniversalTime();
+        return diff.TotalSeconds < 60  ? "just now"
+             : diff.TotalMinutes < 60  ? $"{(int)diff.TotalMinutes}m ago"
+             : diff.TotalHours < 24    ? $"{(int)diff.TotalHours}h ago"
+             : diff.TotalDays < 7      ? $"{(int)diff.TotalDays}d ago"
+             : dt.ToString("MMM d, yyyy");
+    }
+
+    private static readonly string[] AvatarColors =
+    [
+        "#0078d4", "#107c10", "#a4262c", "#8764b8",
+        "#038387", "#ca5010", "#004e8c", "#498205",
+    ];
+
+    private static string GetAvatarStyle(string? seed)
+    {
+        if (string.IsNullOrWhiteSpace(seed))
+            return $"background:{AvatarColors[0]};";
+
+        var idx = Math.Abs(seed.GetHashCode()) % AvatarColors.Length;
+        return $"background:{AvatarColors[idx]};";
     }
 }
