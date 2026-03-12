@@ -14,7 +14,6 @@ namespace x402dev.Services
         ILogger<ContentService> logger,
         ILoggerFactory loggerFactory)
     {
-        private readonly string projectsCacheKey = "projects";
         private readonly string facilitatorsCacheKey = "facilitators";
         private readonly string facilitatorsETagCacheKey = "facilitators-etag";
         private readonly string githubBase = "https://raw.githubusercontent.com/michielpost/x402-dev/refs/heads/master/";
@@ -25,11 +24,7 @@ namespace x402dev.Services
             var facilitatorJson = await GetContentAsync("facilitators.json");
             var facilitators = System.Text.Json.JsonSerializer.Deserialize<List<FacilitatorData>>(facilitatorJson);
 
-            var projects = await GetContentAsync("Projects.md");
-
-
             memoryCache.Set(facilitatorsCacheKey, facilitators);
-            memoryCache.Set(projectsCacheKey, projects);
 
             Task.Run(() => UpdateFromGithub());
         }
@@ -74,12 +69,7 @@ namespace x402dev.Services
                     await TestFacilitators();
 
                 }
-
-                var projects = await httpClient.GetStringAsync(githubBase + "Projects.md");
-                if (!string.IsNullOrWhiteSpace(projects))
-                {
-                    memoryCache.Set(projectsCacheKey, projects);
-                }
+               
             }
             catch (Exception ex)
             {
@@ -87,18 +77,6 @@ namespace x402dev.Services
                 logger.LogError(ex, "Error updating content from GitHub");
             }
 
-        }
-
-        public async Task<string> GetProjects()
-        {
-            var cached = GetFromCache<string>(projectsCacheKey);
-            if (cached is not null)
-            {
-                return cached;
-            }
-
-            await Initialize();
-            return GetFromCache<string>(projectsCacheKey) ?? string.Empty;
         }
 
         public async Task<List<FacilitatorData>> GetFacilitators()
