@@ -70,7 +70,7 @@ public class Program
         var baseAddress = builder.HostEnvironment.BaseAddress;
 
 #if RELEASE
-        baseAddress = "https://api.x402dev.com";
+        baseAddress = "https://api2.x402dev.com";
 #endif
         ConfigureServices(builder.Services, baseAddress);
 
