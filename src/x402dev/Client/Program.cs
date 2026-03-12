@@ -118,7 +118,6 @@ public class Program
         .AddHttpMessageHandler(() => new GrpcWebHandler(GrpcWebMode.GrpcWeb));
 
         services.AddGrpcService<IFacilitatorGrpcService>(baseAddress);
-        services.AddGrpcService<IContentGrpcService>(baseAddress);
         services.AddGrpcService<IPublicMessageGrpcService>(baseAddress);
 
 

@@ -15,6 +15,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Markdig" Version="1.1.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.4" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.0" />
@@ -28,7 +29,11 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared\x402dev.Shared.csproj" />
+	<ProjectReference Include="..\Shared\x402dev.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<EmbeddedResource Include="..\..\..\Projects.md" LogicalName="projects.md" />
   </ItemGroup>
 
 </Project>

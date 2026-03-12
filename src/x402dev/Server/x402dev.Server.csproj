@@ -39,12 +39,6 @@
 		</Content>
 	</ItemGroup>
 
-	<ItemGroup>
-		<Content Include="..\..\..\Projects.md" Link="Content\Projects.md">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\x402dev.Database\x402dev.Database.csproj" />
     <ProjectReference Include="..\..\x402dev.Services\x402dev.Services.csproj" />

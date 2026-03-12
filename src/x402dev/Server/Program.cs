@@ -200,7 +200,6 @@ app.UseRateLimiter();
 
 app.UseGrpcWeb();
 app.MapGrpcService<FacilitatorGrpcService>().EnableGrpcWeb();
-app.MapGrpcService<ContentGrpcService>().EnableGrpcWeb();
 app.MapGrpcService<PublicMessageGrpcService>().EnableGrpcWeb();
 
 app.UseSwagger();

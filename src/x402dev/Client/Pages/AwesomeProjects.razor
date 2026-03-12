@@ -1,6 +1,4 @@
 ﻿@page "/awesome-projects"
-@using x402dev.Shared.Interfaces
-@inject IContentGrpcService ContentGrpcService
 
 <PageTitle>x402dev - Awesome x402 Projects</PageTitle>
 
@@ -13,12 +11,12 @@
     </p>
 
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
-        <FluentButton Appearance="Appearance.Accent" 
+        <FluentAnchor Appearance="Appearance.Accent" 
                       Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" 
                       Target="_blank" 
                       Rel="noopener">
             Edit on GitHub
-        </FluentButton>
+        </FluentAnchor>
     </FluentStack>
 
     @if(Text == null)
@@ -42,12 +40,12 @@
                 Have you built something awesome with x402? Share it with the community! 
                 Submit a pull request to add your project to this list.
             </p>
-            <FluentButton Appearance="Appearance.Accent" 
+            <FluentAnchor Appearance="Appearance.Accent" 
                           Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md" 
                           Target="_blank" 
                           Rel="noopener">
                 Make a PR to add your project
-            </FluentButton>
+            </FluentAnchor>
         </FluentStack>
     </FluentCard>
 </FluentStack>
@@ -55,15 +53,14 @@
 @code {
     MarkupString? Text = null;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        if (OperatingSystem.IsBrowser())
+        using var stream = typeof(AwesomeProjects).Assembly.GetManifestResourceStream("projects.md");
+        if (stream != null)
         {
-            var result = await ContentGrpcService.GetContent();
-            if (result?.Text != null)
-            {
-                Text = (MarkupString)result.Text;
-            }
+            using var reader = new StreamReader(stream);
+            var html = Markdig.Markdown.ToHtml(reader.ReadToEnd());
+            Text = (MarkupString)html;
         }
     }
 }
