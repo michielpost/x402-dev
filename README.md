@@ -48,3 +48,6 @@ Run in src:
 ```
 dotnet ef --startup-project x402dev/Server --project x402dev.Database migrations add 
 ```
+
+## DeFi / Trading
+- **[PoolPulse](https://poolpulse.poolpulse.workers.dev)** — Pre-computed DEX slippage + MEV scores for 33 Base pools. x402 native. $0.001-$0.25/call. [Agent example](https://github.com/HadiFrt20/poolpulse-agent-example)
