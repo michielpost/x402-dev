@@ -21,6 +21,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [SIBYL](https://sibylcap.com) - Autonomous crypto intelligence agent on Base - token scoring, rug/honeypot detection, builder value analysis via x402 micropayments
 - [PoolPulse](https://poolpulse.poolpulse.workers.dev) - Pre-trade DEX execution signals for autonomous DeFi agents on Base — CLMM slippage, MEV scoring, routing hints for 33 Uniswap V3 + Aerodrome pools. x402 micropayments ($0.001–$0.25 USDC). [OpenAPI](https://poolpulse.poolpulse.workers.dev/openapi.json) | [Examples](https://github.com/HadiFrt20/poolpulse-agent-example)
 - [MoltGuard](https://api.moltrust.ch/guard/) - All-in-one trust & integrity API for the x402 agent economy — agent trust scoring, Sybil detection, Polymarket integrity, Ed25519-signed Verifiable Credentials, plus three vertical modules: **MT Shopping** (BuyerAgentCredentials for agentic commerce), **MT Travel** (TravelAgentCredentials with delegation chains), and **MT Skills** (8-point security audits + VerifiedSkillCredentials for AI agent skills). 19 endpoints, x402 micropayments on Base. [MCP](https://api.moltrust.ch/mcp) | [Docs](https://moltrust.ch/moltguard.html)
+- [API Factory x402](https://github.com/Br0ski777/x402-agent-tools) - 100 production-ready x402 APIs for AI agents across crypto, B2B, SEO, security. npm SDK: x402-agent-tools (103 tools).
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
