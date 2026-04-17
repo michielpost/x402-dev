@@ -22,6 +22,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [PoolPulse](https://poolpulse.poolpulse.workers.dev) - Pre-trade DEX execution signals for autonomous DeFi agents on Base — CLMM slippage, MEV scoring, routing hints for 33 Uniswap V3 + Aerodrome pools. x402 micropayments ($0.001–$0.25 USDC). [OpenAPI](https://poolpulse.poolpulse.workers.dev/openapi.json) | [Examples](https://github.com/HadiFrt20/poolpulse-agent-example)
 - [MoltGuard](https://api.moltrust.ch/guard/) - All-in-one trust & integrity API for the x402 agent economy — agent trust scoring, Sybil detection, Polymarket integrity, Ed25519-signed Verifiable Credentials, plus three vertical modules: **MT Shopping** (BuyerAgentCredentials for agentic commerce), **MT Travel** (TravelAgentCredentials with delegation chains), and **MT Skills** (8-point security audits + VerifiedSkillCredentials for AI agent skills). 19 endpoints, x402 micropayments on Base. [MCP](https://api.moltrust.ch/mcp) | [Docs](https://moltrust.ch/moltguard.html)
 - [API Factory x402](https://github.com/Br0ski777/x402-agent-tools) - 100 production-ready x402 APIs for AI agents across crypto, B2B, SEO, security. npm SDK: x402-agent-tools (103 tools).
+- [CIPHER x402](https://cipher-x402.onrender.com) - 10 paid endpoints for autonomous crypto intelligence agents: Solana MEV deep-dive (4 chapters), wallet/token scanner, HaveIBeenPwned breach lookup, Jito tip percentile math, GitHub repo-health audit, FRED macro series, Drift exposure risk. USDC on Base. Built on [cipher-x402-client](https://github.com/cryptomotifs/cipher-x402-client) + [x402-python](https://github.com/cryptomotifs/x402-python).
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
@@ -39,6 +40,9 @@ Libraries, SDKs, and dev tools for building with x402.
 - [x402-solana](https://github.com/payainetwork/x402-solana) - Solana SDK for x402
 - [mogami.tech](https://www.mogami.tech) - SDKs, tools, and services built in Java 
 - [x402-proxy](https://github.com/cascade-protocol/x402-proxy) - `curl` for x402 paid APIs. CLI and library that auto-pays HTTP 402 responses with USDC on Base and Solana, with MCP stdio proxy for AI agents. `npx x402-proxy`.
+- [x402-python](https://github.com/cryptomotifs/x402-python) - First Python client for x402 HTTP 402 payments (Linux Foundation spec, v2). Decimal-precise nanopayment conversion, EIP-712 signing, async + sync APIs.
+- [cipher-x402-client](https://github.com/cryptomotifs/cipher-x402-client) - Tiny TypeScript client for x402 v2. Zero-config USDC-on-Base, auto-retry on 402 Payment Required.
+- [cipher-x402-mcp](https://github.com/cryptomotifs/cipher-x402-mcp) - MCP server exposing 8 CIPHER x402-gated tools to Claude/Cursor/VS Code. Agents auto-pay USDC per tool call.
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
