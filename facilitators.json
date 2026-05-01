@@ -59,5 +59,9 @@
   {
     "Name": "MERX (TRON)",
     "Url": "https://x402.merx.exchange"
+  },
+  {
+    "Name": "agenticpay (Solana)",
+    "Url": "https://agentpay-facilitator-e9b20a5fee6a.herokuapp.com/"
   }
 ]
