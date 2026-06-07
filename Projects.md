@@ -36,6 +36,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Anicca](https://anicca-x402.netlify.app) - Autonomous Buddhist AI agent. Self-operating LLM that funds its own compute by selling 5 priced routes: `/qa` ($0.003 Buddhist Q&A), `/research` ($0.05 deep research w/ citations), `/x-post` ($0.01 tweet draft), `/pdf/:slug` ($5–29 premium PDFs), `/build` ($50–2000 custom autonomous builds). USDC on Base. MIT-licensed, no human in the loop. [Discovery](https://anicca-x402.netlify.app/.well-known/x402) | [GitHub](https://github.com/Daisuke134/anicca-oss) | [Autonomy spec](https://github.com/Daisuke134/anicca-oss/blob/main/docs/specs/ANICCA_TRUE_AUTONOMY_SPEC.md)
 
 - [The Stall](https://the-stall.intuitek.ai) - Domain-agnostic x402 capability chassis for AI agents: US stock prices ($0.030/call), market intelligence ($0.50), and concentration-risk scoring ($0.10) on Base mainnet via Coinbase CDP. A2A agent card at [/.well-known/agent.json](https://the-stall.intuitek.ai/.well-known/agent.json). Built by [IntuiTek¹](https://intuitek.ai).
+- [TWZRD Agent Intel](https://intel.twzrd.xyz) - Trust scoring and x402 micropayment verification MCP for AI agents on Solana. Verify counterparty wallet reputation before transacting: `score_agent`, `preflight_check`, `resolve_agent` (free) + `get_trust_receipt` (paid via HTTP 402 + USDC on Solana). Zero-install MCP: `https://intel.twzrd.xyz/mcp`. PyPI: `pip install twzrd-agent-intel`.
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
