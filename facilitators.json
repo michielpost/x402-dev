@@ -63,5 +63,9 @@
   {
     "Name": "agenticpay (Solana)",
     "Url": "https://agentpay-facilitator-e9b20a5fee6a.herokuapp.com/"
+  },
+  {
+    "Name": "xpay",
+    "Url": "https://facilitator.xpay.sh"
   }
 ]
