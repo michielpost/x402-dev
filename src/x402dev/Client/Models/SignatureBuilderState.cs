@@ -14,7 +14,7 @@
         public string? PayTo { get; set; } = "0x209693Bc6afc0C5328bA36FaF03C514EF312287C";
         public ulong Amount { get; set; } = 10000;
         public string? Network { get; set; } = "eip155:84532";
-        public string? Resource { get; set; } = "https://www.x402.org/protected";
+        public string? Resource { get; set; } = "https://x402-dotnet.azurewebsites.net/resource/middleware";
         public string? Base64Header { get; set; }
         public string? HeaderJson { get; set; }
         public int LineCount { get; set; } = 10;

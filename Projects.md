@@ -65,7 +65,7 @@ Libraries, SDKs, and dev tools for building with x402.
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
 - [x402 Cloudflare Playground](https://playground.x402.cloudflare.com/) - Run and test x402 flows in Cloudflare Workers  
-- [x402 Test Page](https://www.x402.org/protected) - x402 test payment
+- [x402 Test Page](https://x402-dotnet.azurewebsites.net/resource/middleware) - x402 test payment
 - [x402 Conole](https://console.mogami.tech/) - debugger
 
 ## x402 Learning & Community Resources

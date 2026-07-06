@@ -30,7 +30,7 @@
             <p class="form-section-title">Request</p>
             <FluentTextField @bind-Value="@url"
                              Style="width: 100%;"
-                             Placeholder="https://www.x402.org/protected"
+                             Placeholder="https://x402-dotnet.azurewebsites.net/resource/middleware"
                              Required="true">URL</FluentTextField>
 
             <FluentTextField @bind-Value="@paymentHeader"
@@ -119,7 +119,7 @@
 </FluentStack>
 
     @code {
-    private string url = "https://www.x402.org/protected";
+    private string url = "https://x402-dotnet.azurewebsites.net/resource/middleware";
     private string? paymentHeader;
     private string? headers;
     private string? result;
