@@ -54,6 +54,26 @@ else
 			</div>
 		</TemplateColumn>
 
+		<TemplateColumn Title="Schemes" Align="Align.Start">
+			<div class="fac-networks">
+				@foreach (var scheme in (context.Schemes ?? new()).OrderBy(x => x))
+				{
+					<FluentBadge Appearance="Appearance.Accent" Circular="true">@scheme</FluentBadge>
+				}
+			</div>
+		</TemplateColumn>
+
+		<TemplateColumn Title="Discovery" Sortable="true" Align="Align.Start" SortBy="@(GridSort<Facilitator>.ByDescending(f => f.SupportsDiscovery))">
+			@if (context.SupportsDiscovery)
+			{
+				<FluentBadge Appearance="Appearance.Accent" Circular="true">Bazaar</FluentBadge>
+			}
+			else
+			{
+				<span class="fac-note">—</span>
+			}
+		</TemplateColumn>
+
 		<TemplateColumn Title="Last Checked" Sortable="true" Align="Align.Start" SortBy="@(GridSort<Facilitator>.ByDescending(f => f.Checked))">
 			@if (context.Checked.HasValue)
 			{

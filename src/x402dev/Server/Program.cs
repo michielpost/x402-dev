@@ -7,6 +7,7 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
 using System.Threading.RateLimiting;
 using x402;
+using x402.Channels;
 using x402.Coinbase;
 using x402.Coinbase.Models;
 using x402dev.Database;
@@ -125,6 +126,9 @@ else
     builder.Services.AddX402().WithCoinbaseFacilitator(builder.Configuration);
 }
 
+// Payment channels for the batch-settlement scheme (used by /demo/batch-settlement)
+builder.Services.AddX402ChannelManager();
+
 
 //Background Hosted Services
 builder.Services.AddHostedService<ContentSyncBackgroundService>();
@@ -158,6 +162,20 @@ using (var scope = app.Services.CreateScope())
 
 var contentService = app.Services.GetRequiredService<ContentService>();
 await contentService.Initialize();
+
+// The ChannelManager batches batch-settlement vouchers into periodic on-chain settlements
+// and refunds unused balances of idle channels.
+var channelManager = app.Services.GetRequiredService<ChannelManager>();
+channelManager.Start(new ChannelManagerOptions
+{
+    ClaimIntervalSecs = 60,
+    SettleIntervalSecs = 120,
+    RefundIntervalSecs = 180,
+    MaxClaimsPerBatch = 100,
+    SelectRefundChannels = (channels, ctx) =>
+        channels.Where(ch => ch.Balance > 0 && ctx.Now - ch.LastRequestTimestamp >= TimeSpan.FromMinutes(5)),
+});
+app.Lifetime.ApplicationStopping.Register(() => channelManager.StopAsync(flush: true).GetAwaiter().GetResult());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

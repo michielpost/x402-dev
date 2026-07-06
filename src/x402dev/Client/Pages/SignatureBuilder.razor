@@ -90,6 +90,19 @@
                 <FluentTextField @bind-Value="@State.CustomNetworkId" Placeholder="Enter custom network ID" />
             }
 
+            <FluentSelect TOption="SchemeOption" Label="Payment Scheme" Items="@SchemeOptions" @bind-SelectedOption="@State.SelectedSchemeOption" OptionValue="@(item => item.Value)">
+                <OptionTemplate>
+                    @context.Name
+                </OptionTemplate>
+            </FluentSelect>
+
+            @if (State.SelectedSchemeOption?.Value != "exact")
+            {
+                <p style="margin:0; font-size:0.8rem; color:var(--neutral-foreground-hint,#888);">
+                    With the <code>@State.SelectedSchemeOption?.Value</code> scheme the amount is the maximum you authorize — the server settles only the actual usage.
+                </p>
+            }
+
             <FluentTextField @bind-Value="@State.Network" Placeholder="Network" Style="width:100%;">Network</FluentTextField>
             <FluentTextField @bind-Value="@State.TokenName" Placeholder="Token Name" Style="width:100%;">Token Name</FluentTextField>
             <FluentTextField @bind-Value="@State.TokenVersion" Placeholder="Token Version" Style="width:100%;">Token Version</FluentTextField>
@@ -223,6 +236,20 @@
         new NetworkOption(ulong.MaxValue.ToString(), "Other")
     };
 
+    private List<SchemeOption> SchemeOptions = new()
+    {
+        new SchemeOption("exact", "exact — pay the advertised price"),
+        new SchemeOption("upto", "upto — authorize a max, pay actual usage"),
+        new SchemeOption("batch-settlement", "batch-settlement — vouchers on a payment channel")
+    };
+
+    private PaymentScheme SelectedScheme => State.SelectedSchemeOption?.Value switch
+    {
+        "upto" => PaymentScheme.Upto,
+        "batch-settlement" => PaymentScheme.BatchSettlement,
+        _ => PaymentScheme.Exact
+    };
+
     protected static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
@@ -314,7 +341,7 @@
 
             var requirements = new PaymentRequirements
             {
-                Scheme = PaymentScheme.Exact,
+                Scheme = SelectedScheme,
                 Network = State.Network ?? string.Empty,
                 Amount = State.Amount.ToString(),
                 Asset = State.TokenContractAddress ?? string.Empty,

@@ -2,11 +2,14 @@
 {
     public record NetworkOption(string Value, string Name);
 
+    public record SchemeOption(string Value, string Name);
+
     public class SignatureBuilderState
     {
         public string? Pkey { get; set; }
         public string? Address { get; set; }
         public NetworkOption SelectedNetworkOption { get; set; } = new NetworkOption(84532.ToString(), "eip155:84532");
+        public SchemeOption SelectedSchemeOption { get; set; } = new SchemeOption("exact", "exact — pay the advertised price");
         public string? CustomNetworkId { get; set; }
         public string? TokenName { get; set; } = "USDC";
         public string? TokenVersion { get; set; } = "2";

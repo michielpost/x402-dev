@@ -6,6 +6,7 @@
 @using x402.Client.EVM
 @using x402.Client.Events
 @using x402.Client.v2
+@using x402.Core.Enums
 @using x402.Core.Interfaces
 @using x402.Core.Models.v2
 @using x402dev.Server.Models
@@ -32,6 +33,13 @@
                              Style="width: 100%;"
                              Placeholder="https://x402-dotnet.azurewebsites.net/resource/middleware"
                              Required="true">URL</FluentTextField>
+
+            <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <span style="font-size:0.875rem; color:var(--neutral-foreground-hint,#888);">Example endpoints:</span>
+                <FluentButton Appearance="Appearance.Outline" OnClick="@(() => url = ExactExampleUrl)">exact</FluentButton>
+                <FluentButton Appearance="Appearance.Outline" OnClick="@(() => url = UptoExampleUrl)">upto</FluentButton>
+                <FluentButton Appearance="Appearance.Outline" OnClick="@(() => url = BatchExampleUrl)">batch-settlement</FluentButton>
+            </div>
 
             <FluentTextField @bind-Value="@paymentHeader"
                              Style="width: 100%;"
@@ -119,7 +127,11 @@
 </FluentStack>
 
     @code {
-    private string url = "https://x402-dotnet.azurewebsites.net/resource/middleware";
+    private const string ExactExampleUrl = "https://x402-dotnet.azurewebsites.net/resource/middleware";
+    private const string UptoExampleUrl = "https://api2.x402dev.com/demo/upto";
+    private const string BatchExampleUrl = "https://api2.x402dev.com/demo/batch-settlement";
+
+    private string url = ExactExampleUrl;
     private string? paymentHeader;
     private string? headers;
     private string? result;
@@ -198,6 +210,9 @@
         {
             WriteResultLine($"Received x402 requirements for network: {string.Join(", ", networks)}");
         }
+
+        var schemes = eventArgs.PaymentRequiredResponse.Accepts.Select(x => x.Scheme).Distinct().ToList();
+        WriteResultLine($"Offered payment scheme(s): {string.Join(", ", schemes)}");
 
         var network = networks.First();
 
@@ -291,7 +306,12 @@
         }
         else
         {
-            WriteResultLine($"Payment selected: {eventArgs.PaymentRequirements.Amount} {eventArgs.PaymentRequirements.Asset} on {eventArgs.PaymentRequirements.Network}");
+            WriteResultLine($"Payment selected: {eventArgs.PaymentRequirements.Amount} {eventArgs.PaymentRequirements.Asset} on {eventArgs.PaymentRequirements.Network} (scheme: {eventArgs.PaymentRequirements.Scheme})");
+
+            if (eventArgs.PaymentRequirements.Scheme != PaymentScheme.Exact)
+            {
+                WriteResultLine("The amount is the authorized maximum — the server settles only the actual usage.");
+            }
         }
     }
 

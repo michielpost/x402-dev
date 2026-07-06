@@ -15,6 +15,7 @@ namespace x402dev.Services.Models
         public DateTimeOffset? NextCheck { get; set; }
 
         public List<FacilitatorKind> Kinds { get; set; } = new();
+        public bool SupportsDiscovery { get; set; }
         public bool HasError { get; set; }
         public string? ErrorMessage { get; set; }
         public int ErrorCount { get; set; }

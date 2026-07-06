@@ -21,7 +21,9 @@ namespace x402dev.Server.Services
                 ErrorCount = f.ErrorCount,
                 ErrorMessage = f.ErrorMessage,
                 HasError = f.HasError,
-                Kinds = f.Kinds.Select(x => x.Network).ToList(),
+                Kinds = f.Kinds.Select(x => x.Network).Distinct().ToList(),
+                Schemes = f.Kinds.Select(x => x.Scheme).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList(),
+                SupportsDiscovery = f.SupportsDiscovery,
                 NextCheck = f.NextCheck.GetValueOrDefault().DateTime
             }).ToList();
         }
