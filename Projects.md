@@ -2,6 +2,7 @@
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
 
+- [AgentServices](https://agentservices.to) - Paid data APIs for AI agents with x402 USDC micropayments on Base. 54 services, 97 paths, 41 x402-paid endpoints, 37 MCP tools. Market data, financial intelligence, onchain analytics, and inference APIs. [OpenAPI](https://api.agentservices.to/openapi.json) | [Discovery](https://agentservices.to/.well-known/x402) | [MCP](https://api.agentservices.to/mcp)
 - [402links](https://402links.com/) - Monetize any link with HTTP 402  
 - [Crest Counterparty Intelligence](https://crestsystems.ai/intelligence) - Counterparty and credit intelligence for the x402 agent economy: vet who your agent is about to pay (real service vs relayer vs treasury vs buyer), wallet risk, a pre-action risk gate, and an agent credit bureau. Reads the settlement graph at the intent layer. x402 micropayments on Base, no API keys. [OpenAPI](https://data.crestsystems.ai/openapi.json) | [Discovery](https://data.crestsystems.ai/.well-known/x402) | [MCP](https://data.crestsystems.ai/mcp)
 - [proxy402](https://proxy402.com/) - Monetize any link in seconds  
