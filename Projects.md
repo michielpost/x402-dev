@@ -2,6 +2,7 @@
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
 
+- [patternfetch](https://patternfetch.com) - Market-state briefs for US stocks, ETFs and crypto spot: chart patterns returned with a backtested base rate, sample size and lift against a pattern-free baseline, plus support/resistance, regime and RSI/EMA. Keyless demo endpoint, x402 USDC on Base for credit top-up. [Discovery](https://patternfetch.com/.well-known/x402.json) | [MCP](https://patternfetch.com/mcp)
 - [AgentServices](https://agentservices.to) - Paid data APIs for AI agents with x402 USDC micropayments on Base. 54 services, 97 paths, 41 x402-paid endpoints, 37 MCP tools. Market data, financial intelligence, onchain analytics, and inference APIs. [OpenAPI](https://api.agentservices.to/openapi.json) | [Discovery](https://agentservices.to/.well-known/x402) | [MCP](https://api.agentservices.to/mcp)
 - [402links](https://402links.com/) - Monetize any link with HTTP 402  
 - [Crest Counterparty Intelligence](https://crestsystems.ai/intelligence) - Counterparty and credit intelligence for the x402 agent economy: vet who your agent is about to pay (real service vs relayer vs treasury vs buyer), wallet risk, a pre-action risk gate, and an agent credit bureau. Reads the settlement graph at the intent layer. x402 micropayments on Base, no API keys. [OpenAPI](https://data.crestsystems.ai/openapi.json) | [Discovery](https://data.crestsystems.ai/.well-known/x402) | [MCP](https://data.crestsystems.ai/mcp)
