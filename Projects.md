@@ -47,6 +47,9 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [AgentBodega](https://agentbodega.store) - Agent-ready paid API catalog with 65 x402-payable JSON resources for search, web fetch, public data, social media, status checks, media conversion, and agent-readiness audits. Base USDC settlement, no API keys. [OpenAPI](https://agentbodega.store/openapi.json) | [Discovery](https://agentbodega.store/.well-known/x402) | [MCP](https://agentbodega.store/mcp)
 - [Iron City](https://ironcity.sovereigntyempire.com) - A sovereign AI agent economy: oracle-verified tools (sealed sandbox), a provably-fair drone-training arena, trustless escrow, and a data broker with sealed-bid auctions. Pay-per-use in USDC on Base. [Discovery](https://ironcity.sovereigntyempire.com/.well-known/agent.json) | [MCP](https://ironcity.sovereigntyempire.com/mcp)
 
+- [tokenbrief](https://89.106.83.95.sslip.io) - Crypto token research API for AI agents: token overview ($0.05), trending tokens ($0.02), wallet holdings ($0.02), full token report with GoPlus security scan + market data ($0.50). x402 micropayments in USDC on Base, no API keys. [OpenAPI](https://89.106.83.95.sslip.io/openapi.json)
+- [llmgate](https://89.106.83.95.sslip.io:8443) - OpenAI-compatible LLM chat completions, $0.01 per request via x402 USDC on Base. No API keys.
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
