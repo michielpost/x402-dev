@@ -67,6 +67,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [cipher-x402-client](https://github.com/cryptomotifs/cipher-x402-client) - Tiny TypeScript client for x402 v2. Zero-config USDC-on-Base, auto-retry on 402 Payment Required.
 - [cipher-x402-mcp](https://github.com/cryptomotifs/cipher-x402-mcp) - MCP server exposing 8 CIPHER x402-gated tools to Claude/Cursor/VS Code. Agents auto-pay USDC per tool call.
 - [agenticpay](https://github.com/krystiangw/agenticpay) - Open-source TypeScript x402 stack for MCP on Solana: SDK, CLI, paywall middleware, **first OSS self-hostable facilitator**, Eliza plugin. Hosted devnet endpoint, live Claude Opus demo paying autonomously. MIT. npm: `@agenticpay/{sdk,cli,mcp-server,facilitator,eliza-plugin}`.
+- [Hilt Pay](https://www.hilt.so/x402) - Payment-to-access infrastructure for x402 V2 challenge and retry flows on Solana USDC, with settlement verification, receipts, entitlements, atomic usage consumption, webhooks, SDKs, MCP, and A2A discovery.
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
