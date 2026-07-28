@@ -2,6 +2,11 @@
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
 
+- [Token Risk](https://5-9-107-124.nip.io) - Read-only contract-risk API for
+  Base and Ethereum agents. Reports bytecode, upgradeability, owner/admin,
+  mint, pause, blacklist, fee, and honeypot indicators. $0.02-$0.05 USDC per
+  call on Base; no API key or signup. [Discovery](https://5-9-107-124.nip.io/.well-known/x402.json)
+  | [OpenAPI](https://5-9-107-124.nip.io/openapi.json)
 - [patternfetch](https://patternfetch.com) - Market-state briefs for US stocks, ETFs and crypto spot: chart patterns returned with a backtested base rate, sample size and lift against a pattern-free baseline, plus support/resistance, regime and RSI/EMA. Keyless demo endpoint, x402 USDC on Base for credit top-up. [Discovery](https://patternfetch.com/.well-known/x402.json) | [MCP](https://patternfetch.com/mcp)
 - [AgentServices](https://agentservices.to) - Paid data APIs for AI agents with x402 USDC micropayments on Base. 54 services, 97 paths, 41 x402-paid endpoints, 37 MCP tools. Market data, financial intelligence, onchain analytics, and inference APIs. [OpenAPI](https://api.agentservices.to/openapi.json) | [Discovery](https://agentservices.to/.well-known/x402) | [MCP](https://api.agentservices.to/mcp)
 - [402links](https://402links.com/) - Monetize any link with HTTP 402  
