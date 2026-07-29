@@ -10,6 +10,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Gatepay](https://gatepay.cloud/) - Monetize any digital content with crypto payments  
 - [httpayer](https://www.httpayer.com/) - Automated x402 payments for Web2, Web3 and AI Agents
 - [GPT-5.5 x402 API Gateway](https://gpt55.558686.xyz) - OpenAI-compatible GPT-5.5 chat completions and text tools with x402 USDC on Base; $0.0001 compact chat, long/max-output tiers, exact + token-metered upto settlement. [OpenAPI](https://gpt55.558686.xyz/openapi.json) | [Discovery](https://gpt55.558686.xyz/.well-known/x402)
+- [InsumerAPI](https://insumermodel.com/ai-agent-verification-api/) - Signed on-chain condition checks for AI agents: token balances, NFT ownership, EAS attestations, and agent standing (ERC-8004, ERC-7710) across 38 chains, pay-per-call over x402 in USDC on Base, no API key. [OpenAPI](https://api.insumermodel.com/openapi.json) | [Discovery](https://insumermodel.com/.well-known/x402)
 - [snack.money](https://snack.money) - Send micropayments  
 - [MCPay](https://mcpay.tech/) - Payments for MCPs  
 - [Daydreams Router](https://router.daydreams.systems/) - Generate images, videos, and LLMs in one flow with USDC  
