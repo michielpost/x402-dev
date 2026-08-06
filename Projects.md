@@ -1,6 +1,7 @@
 
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
+- [agent-tools.net](https://agent-tools.net) - Pay-per-call API marketplace for AI agents (page extraction, structured scraping, URL/status checks, robots.txt checks), $0.001-$0.01 USDC per call on Base. Third parties can list their own tool in the directory via a flat x402 listing fee — no accounts needed on either side. [Directory](https://agent-tools.net/directory) | [Agent Card](https://agent-tools.net/.well-known/agent.json) | [GitHub](https://github.com/karucosu/agent-tools)
 
 - [patternfetch](https://patternfetch.com) - Market-state briefs for US stocks, ETFs and crypto spot: chart patterns returned with a backtested base rate, sample size and lift against a pattern-free baseline, plus support/resistance, regime and RSI/EMA. Keyless demo endpoint, x402 USDC on Base for credit top-up. [Discovery](https://patternfetch.com/.well-known/x402.json) | [MCP](https://patternfetch.com/mcp)
 - [AgentServices](https://agentservices.to) - Paid data APIs for AI agents with x402 USDC micropayments on Base. 54 services, 97 paths, 41 x402-paid endpoints, 37 MCP tools. Market data, financial intelligence, onchain analytics, and inference APIs. [OpenAPI](https://api.agentservices.to/openapi.json) | [Discovery](https://agentservices.to/.well-known/x402) | [MCP](https://api.agentservices.to/mcp)
