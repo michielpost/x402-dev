@@ -76,6 +76,8 @@ Libraries, SDKs, and dev tools for building with x402.
 - [cipher-x402-mcp](https://github.com/cryptomotifs/cipher-x402-mcp) - MCP server exposing 8 CIPHER x402-gated tools to Claude/Cursor/VS Code. Agents auto-pay USDC per tool call.
 - [agenticpay](https://github.com/krystiangw/agenticpay) - Open-source TypeScript x402 stack for MCP on Solana: SDK, CLI, paywall middleware, **first OSS self-hostable facilitator**, Eliza plugin. Hosted devnet endpoint, live Claude Opus demo paying autonomously. MIT. npm: `@agenticpay/{sdk,cli,mcp-server,facilitator,eliza-plugin}`.
 - [Hilt Pay](https://www.hilt.so/x402) - Payment-to-access infrastructure for x402 V2 challenge and retry flows on Solana USDC, with settlement verification, receipts, entitlements, atomic usage consumption, webhooks, SDKs, MCP, and A2A discovery.
+- [bridgenode-llm](https://pypi.org/project/bridgenode-llm) - Python SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
+- [@bridgenode/llm](https://www.npmjs.com/package/@bridgenode/llm) - TypeScript SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
