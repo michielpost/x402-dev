@@ -52,6 +52,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Bug Bounty Intelligence](https://api.mergefix.com/api/bug-intel) - Smart contract security scanner for AI agents, trained on 27,681 real accepted findings from Sherlock and Code4rena audit competitions. 5 USDC per scan on Base.
 - [DeFi Signal API](https://api.mergefix.com) - Live Morpho/Aave liquidation and lending intelligence from production bot infrastructure continuously scanning 2,586 Morpho Blue borrowers and 19,000+ Aave V3 positions on Base and Arbitrum. $0.002-$0.010 USDC per call.
 
+- [BridgeNode](https://bridgenode.cc) - OpenAI-compatible AI chat completions (DeepSeek V4 Flash) with x402 micropayments on Solana: pay per request in USDC, no API keys, no signup. From $0.002/request. [OpenAPI](https://bridgenode.cc/openapi.json) | [Discovery](https://bridgenode.cc/.well-known/x402) | [MCP](https://bridgenode.cc/mcp) | [llms.txt](https://bridgenode.cc/llms.txt)
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
