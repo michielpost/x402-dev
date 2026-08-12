@@ -78,6 +78,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [Hilt Pay](https://www.hilt.so/x402) - Payment-to-access infrastructure for x402 V2 challenge and retry flows on Solana USDC, with settlement verification, receipts, entitlements, atomic usage consumption, webhooks, SDKs, MCP, and A2A discovery.
 - [bridgenode-llm](https://pypi.org/project/bridgenode-llm) - Python SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
 - [@bridgenode/llm](https://www.npmjs.com/package/@bridgenode/llm) - TypeScript SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
+- [stipend](https://github.com/stipend-sh/stipend) - Non-custodial USDC wallet on Base for AI agents, in Python. Buyer-side x402 auto-pay signed as EIP-3009 (no gas needed), with per-transaction, per-day and per-counterparty caps and a destination allowlist enforced in code before signing. Local stdio MCP server, 7 tools.
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
