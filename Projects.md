@@ -54,6 +54,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [DeFi Signal API](https://api.mergefix.com) - Live Morpho/Aave liquidation and lending intelligence from production bot infrastructure continuously scanning 2,586 Morpho Blue borrowers and 19,000+ Aave V3 positions on Base and Arbitrum. $0.002-$0.010 USDC per call.
 - [Israel Tariff x402 API](https://github.com/HassanEwida/israel-tariff-x402) - Pay-per-call access to normalized Israeli customs tariff data from the official Israel Tax Authority open dataset. Base mainnet, 0.0025 USDC per successful lookup. [Live endpoint](https://israel-tariff-x402.onrender.com/il/tariff/:code)
 - [BridgeNode](https://bridgenode.cc) - OpenAI-compatible AI chat completions (DeepSeek V4 Flash) with x402 micropayments on Solana: pay per request in USDC, no API keys, no signup. From $0.002/request. [OpenAPI](https://bridgenode.cc/openapi.json) | [Discovery](https://bridgenode.cc/.well-known/x402) | [MCP](https://bridgenode.cc/mcp) | [llms.txt](https://bridgenode.cc/llms.txt)
+- [Colombia TRM](https://x402.lagaceta.net/trm) - Official Superintendencia Financiera daily USD/COP (datos.gov.co mcec-87by), $0.005 USDC on Base. [Discovery](https://x402.lagaceta.net/.well-known/x402) | [OpenAPI](https://x402.lagaceta.net/openapi.json) | [GitHub](https://github.com/unicentrocucuta/pe-x402-gateway)
 
 
 ## x402 Developer Tools & SDKs
