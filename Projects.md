@@ -80,6 +80,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [Hilt Pay](https://www.hilt.so/x402) - Payment-to-access infrastructure for x402 V2 challenge and retry flows on Solana USDC, with settlement verification, receipts, entitlements, atomic usage consumption, webhooks, SDKs, MCP, and A2A discovery.
 - [bridgenode-llm](https://pypi.org/project/bridgenode-llm) - Python SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
 - [@bridgenode/llm](https://www.npmjs.com/package/@bridgenode/llm) - TypeScript SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
+- [@bridgenode/mcp](https://www.npmjs.com/package/@bridgenode/mcp) - MCP server wrapper for BridgeNode: stdio MCP server with automatic x402 payments on Solana USDC (gasless, no API keys, pay per request). One-command install for Claude Code / Cursor.
 - [stipend](https://github.com/stipend-sh/stipend) - Non-custodial USDC wallet on Base for AI agents, in Python. Buyer-side x402 auto-pay signed as EIP-3009 (no gas needed), with per-transaction, per-day and per-counterparty caps and a destination allowlist enforced in code before signing. Local stdio MCP server, 7 tools.
 
 ## x402 Developer Sandboxes & Testing
@@ -91,7 +92,8 @@ Tools and playgrounds to experiment and prototype with x402.
 ## x402 Learning & Community Resources
 Educational content, directories, and resource hubs.
 
-- [awesome-x402](https://github.com/Merit-Systems/awesome-x402) - Curated list of x402-related projects  
+- [awesome-x402](https://github.com/Merit-Systems/awesome-x402) - Curated list of x402-related projects
+- [BridgeNode skill](https://bridgenode.cc/skill.md) - Agent skill for pay-per-request LLM inference via x402: installable skill with usage, endpoints and payment flow for AI agents.  
 - [Firecrawl](https://www.firecrawl.dev) - Turn websites into LLM-ready data (useful for x402 + agentic use cases)  
 - [x402 Ecosystem](https://www.x402.org/ecosystem) - Overview of all ecosystem participants  
 - [x402 on Coingecko](https://www.coingecko.com/en/categories/x402-ecosystem) - Top x402 Ecosystem Coins by Market Cap
