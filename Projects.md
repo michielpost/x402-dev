@@ -57,6 +57,9 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Colombia TRM](https://x402.lagaceta.net/trm) - Official Superintendencia Financiera daily USD/COP (datos.gov.co mcec-87by), $0.005 USDC on Base. [Discovery](https://x402.lagaceta.net/.well-known/x402) | [OpenAPI](https://x402.lagaceta.net/openapi.json) | [GitHub](https://github.com/unicentrocucuta/pe-x402-gateway)
 
 
+- [tokenbrief](https://89.106.83.95.sslip.io) - Crypto token research API for AI agents: token overview ($0.05), trending tokens ($0.02), wallet holdings ($0.02), full token report with GoPlus security scan + market data ($0.50). x402 micropayments in USDC on Base, no API keys. [OpenAPI](https://89.106.83.95.sslip.io/openapi.json)
+- [llmgate](https://89.106.83.95.sslip.io:8443) - OpenAI-compatible LLM chat completions, $0.01 per request via x402 USDC on Base. No API keys.
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
