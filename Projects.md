@@ -41,6 +41,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [xcache.io](https://www.xcache.io/) - Create your own cache, no account required, just pay with x402
 
 
+- [Munchausen Lab Analytics](https://munchausen-x402.munlab.workers.dev) - Pay-per-call market intelligence APIs for AI agents: real-time quotes, LLM analysis and research reports, web extraction, fact-checking, token rug-pull safety scores. x402 USDC on Base, $0.10-$2.50 per call, no API keys. [OpenAPI](https://munchausen-x402.munlab.workers.dev/openapi.yaml) | [Discovery](https://munchausen-x402.munlab.workers.dev/.well-known/x402)
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
