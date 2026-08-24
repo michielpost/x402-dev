@@ -67,5 +67,9 @@
   {
     "Name": "xpay",
     "Url": "https://facilitator.xpay.sh"
+  },
+  {
+    "Name": "ArisPay",
+    "Url": "https://facilitator.arispay.app"
   }
 ]
