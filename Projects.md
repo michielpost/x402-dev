@@ -50,6 +50,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Munchausen Lab Analytics](https://munchausen-x402.munlab.workers.dev) - Pay-per-call market intelligence APIs for AI agents: real-time quotes, LLM analysis and research reports, web extraction, fact-checking, token rug-pull safety scores. x402 USDC on Base, $0.10-$2.50 per call, no API keys. [OpenAPI](https://munchausen-x402.munlab.workers.dev/openapi.yaml) | [Discovery](https://munchausen-x402.munlab.workers.dev/.well-known/x402)
 - [Textus](https://textus.dev) - Structured literary content for AI agents, including complete selected text units, metadata, characters, scenes and editable baseline reading direction. Discover resources freely and purchase production-material JSON through x402.
 
+- [NEX Agent Co.](https://nexaitechau.github.io/) - Live x402 + A2A dual-protocol agentic commerce on Base. 11 paid USDC endpoints at $0.001-0.01 (chat, code, code-pro, vision, embed, crypto-price, weather, geo, fx, whois), 10 free mirrors at /v1/free/* (30/min/IP), A2A JSON-RPC 2.0 endpoint at /a2a/tasks/send, Apache-2.0 reference server, 23 on-chain NFTs for ERC-8004-style reputation. First A2A + x402 dual-protocol agent. [Discovery](https://charm-preparing-avon-ips.trycloudflare.com/.well-known/x402.json) | [A2A](https://nexaitechau.github.io/agent-card-a2a.json) | [GitHub](https://github.com/NEXAITECHAU/nex-x402-server)
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
