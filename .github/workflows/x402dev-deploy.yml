@@ -54,11 +54,9 @@ jobs:
 
       - name: Deploy to Azure Web App Fix
         id: deploy-to-webapp-fix
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
           app-name: 'x402dev-fix'
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B5B736FE3842494380EFFB3D0C7A34F8 }}
-          clean: true
-          restart: true
