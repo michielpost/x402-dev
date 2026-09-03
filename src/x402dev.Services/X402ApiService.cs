@@ -33,7 +33,7 @@ namespace x402dev.Services
 
             var apis = await dbContext.X402Apis
                 .Where(x => x.LastCheckDateTime != null)
-                .OrderBy(x => x.Domain)
+                .OrderByDescending(x => x.LastCheckDateTime)
                 .ThenBy(x => x.Url)
                 .Take(max)
                 .ToListAsync();
@@ -92,7 +92,8 @@ namespace x402dev.Services
 
             var apis = await dbContext.X402Apis
                 .Where(x => x.LastCheckDateTime != null && x.Domain == domain)
-                .OrderBy(x => x.Url)
+                .OrderByDescending(x => x.LastCheckDateTime)
+                .ThenBy(x => x.Url)
                 .Take(max)
                 .ToListAsync();
 
@@ -108,7 +109,7 @@ namespace x402dev.Services
                 .Where(x => x.LastCheckDateTime == null
                     || (x.LastErrorDateTime != null
                         && (!x.LastSuccessDateTime.HasValue || x.LastErrorDateTime > x.LastSuccessDateTime)))
-                .OrderBy(x => x.Domain)
+                .OrderByDescending(x => x.LastCheckDateTime)
                 .ThenBy(x => x.Url)
                 .Take(max)
                 .ToListAsync();
@@ -195,7 +196,7 @@ namespace x402dev.Services
                 };
             }
 
-            return ordered ?? query.OrderBy(x => x.Domain).ThenBy(x => x.Url);
+            return ordered ?? query.OrderByDescending(x => x.LastCheckDateTime).ThenBy(x => x.Url);
         }
 
         private static int NormalizeTake(int take)

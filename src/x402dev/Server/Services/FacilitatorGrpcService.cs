@@ -16,7 +16,7 @@ namespace x402dev.Server.Services
                 Name = f.Name,
                 Url = f.Url,
                 NeedsApiKey = f.NeedsApiKey,
-                Checked = f.Checked.GetValueOrDefault().DateTime,
+                Checked = DateTime.SpecifyKind(f.Checked.GetValueOrDefault().DateTime, DateTimeKind.Utc),
                 Comments = f.Comments,
                 ErrorCount = f.ErrorCount,
                 ErrorMessage = f.ErrorMessage,
@@ -24,7 +24,7 @@ namespace x402dev.Server.Services
                 Kinds = f.Kinds.Select(x => x.Network).Distinct().ToList(),
                 Schemes = f.Kinds.Select(x => x.Scheme).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList(),
                 SupportsDiscovery = f.SupportsDiscovery,
-                NextCheck = f.NextCheck.GetValueOrDefault().DateTime
+                NextCheck = DateTime.SpecifyKind(f.NextCheck.GetValueOrDefault().DateTime, DateTimeKind.Utc)
             }).ToList();
         }
     }

@@ -134,7 +134,7 @@ else
 
     private static string FormatDate(DateTime dt)
     {
-        var diff = DateTime.UtcNow - dt.ToUniversalTime();
+        var diff = DateTime.UtcNow - dt;
         return diff.TotalSeconds < 60  ? "just now"
              : diff.TotalMinutes < 60  ? $"{(int)diff.TotalMinutes}m ago"
              : diff.TotalHours < 24    ? $"{(int)diff.TotalHours}h ago"
