@@ -328,6 +328,33 @@ namespace x402dev.Services
         }
 
         /// <summary>
+        /// Schedules all APIs that are currently in an error state for an
+        /// immediate re-check. Returns the number of re-scheduled entries.
+        /// </summary>
+        public async Task<int> RetryErrorApisAsync()
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            var erroredApis = await dbContext.X402Apis
+                .Where(x => x.LastErrorDateTime != null
+                    && (!x.LastSuccessDateTime.HasValue || x.LastErrorDateTime > x.LastSuccessDateTime))
+                .ToListAsync();
+
+            if (erroredApis.Count == 0)
+            {
+                return 0;
+            }
+
+            foreach (var api in erroredApis)
+            {
+                api.NextCheckDateTime = now;
+            }
+
+            await dbContext.SaveChangesAsync();
+            return erroredApis.Count;
+        }
+
+        /// <summary>
         /// Deletes all x402 API entries that have never had a successful check,
         /// or whose last successful check is older than the given number of days.
         /// Returns the number of deleted entries.
@@ -519,70 +546,101 @@ namespace x402dev.Services
             return (apis.Count, domains, networks);
         }
 
+        /// <summary>
+        /// Methods tried in order when the stored HttpMethod is not known yet.
+        /// The first method returning a valid 402 response is recorded on the entity.
+        /// </summary>
+        private static readonly string[] MethodsToTry = ["GET", "POST", "PUT", "DELETE"];
+
         private async Task CheckApiAsync(X402Api api, HttpClient httpClient)
         {
             api.LastCheckDateTime = DateTimeOffset.UtcNow;
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-            try
+            var methods = string.IsNullOrWhiteSpace(api.HttpMethod)
+                ? MethodsToTry
+                : [api.HttpMethod!];
+
+            foreach (var method in methods)
             {
-                using var response = await httpClient.GetAsync(api.Url, HttpCompletionOption.ResponseHeadersRead);
-                stopwatch.Stop();
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-                if (response.StatusCode != System.Net.HttpStatusCode.PaymentRequired)
+                try
                 {
-                    MarkError(api, $"Expected HTTP 402 Payment Required but received {(int)response.StatusCode}.");
+                    using var request = new HttpRequestMessage(new HttpMethod(method), api.Url);
+                    if (method is "POST" or "PUT")
+                    {
+                        request.Content = new StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    }
+
+                    using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                    stopwatch.Stop();
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.PaymentRequired)
+                    {
+                        MarkError(api, $"Expected HTTP 402 Payment Required but received {(int)response.StatusCode} (using {method}).");
+                        continue; // try the next method
+                    }
+
+                    // Valid 402: remember which method works and always reuse it on future checks.
+                    api.HttpMethod = method;
+                    await RecordPaymentRequiredAsync(api, response, stopwatch);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error checking x402 API {Url} using {Method}", api.Url, method);
+                    MarkError(api, ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parses a successful 402 response (v2 header or v1 body) and stores the result.
+        /// </summary>
+        private async Task RecordPaymentRequiredAsync(X402Api api, HttpResponseMessage response, System.Diagnostics.Stopwatch stopwatch)
+        {
+            string? rawJson;
+            var (paymentRequired, headerJson, parseError) = ParsePaymentRequired(response);
+
+            if (paymentRequired != null)
+            {
+                rawJson = headerJson;
+                api.Version = paymentRequired.X402Version.ToString();
+                api.Description = !string.IsNullOrWhiteSpace(paymentRequired.Resource.Description)
+                    ? Truncate(paymentRequired.Resource.Description, 1024)
+                    : Truncate(paymentRequired.Resource.ServiceName, 1024);
+                api.ServiceName = Truncate(paymentRequired.Resource.ServiceName, 64);
+                api.PaymentsJson = JsonSerializer.Serialize(
+                    paymentRequired.Accepts.Select(a => new
+                    {
+                        network = a.Network,
+                        amount = a.Amount,
+                        asset = a.Asset
+                    }), JsonOptions);
+            }
+            else
+            {
+                // Fall back to x402 v1: the 402 response body is plain JSON (not a base64 header).
+                var (v1RawJson, v1Version, v1Requirements, v1Error) = await ParseV1PaymentRequiredAsync(response);
+
+                if (v1Requirements == null)
+                {
+                    MarkError(api, v1Error ?? parseError ?? "Could not parse the PAYMENT-REQUIRED response.");
                     return;
                 }
 
-                string? rawJson;
-                var (paymentRequired, headerJson, parseError) = ParsePaymentRequired(response);
-
-                if (paymentRequired != null)
-                {
-                    rawJson = headerJson;
-                    api.Version = paymentRequired.X402Version.ToString();
-                    api.Description = !string.IsNullOrWhiteSpace(paymentRequired.Resource.Description)
-                        ? Truncate(paymentRequired.Resource.Description, 1024)
-                        : Truncate(paymentRequired.Resource.ServiceName, 1024);
-                    api.ServiceName = Truncate(paymentRequired.Resource.ServiceName, 64);
-                    api.PaymentsJson = JsonSerializer.Serialize(
-                        paymentRequired.Accepts.Select(a => new
-                        {
-                            network = a.Network,
-                            amount = a.Amount,
-                            asset = a.Asset
-                        }), JsonOptions);
-                }
-                else
-                {
-                    // Fall back to x402 v1: the 402 response body is plain JSON (not a base64 header).
-                    var (v1RawJson, v1Version, v1Requirements, v1Error) = await ParseV1PaymentRequiredAsync(response);
-
-                    if (v1Requirements == null)
-                    {
-                        MarkError(api, v1Error ?? parseError ?? "Could not parse the PAYMENT-REQUIRED response.");
-                        return;
-                    }
-
-                    rawJson = v1RawJson;
-                    api.Version = v1Version;
-                    api.Description = null;
-                    api.ServiceName = null;
-                    api.PaymentsJson = JsonSerializer.Serialize(v1Requirements, JsonOptions);
-                }
-
-                api.ErrorMessage = null;
-                api.RawJsonResponse = rawJson;
-                api.LatencyMs = (int)stopwatch.ElapsedMilliseconds;
-                api.LastSuccessDateTime = DateTimeOffset.UtcNow;
-                api.LastErrorDateTime = null;
+                rawJson = v1RawJson;
+                api.Version = v1Version;
+                api.Description = null;
+                api.ServiceName = null;
+                api.PaymentsJson = JsonSerializer.Serialize(v1Requirements, JsonOptions);
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error checking x402 API {Url}", api.Url);
-                MarkError(api, ex.Message);
-            }
+
+            api.ErrorMessage = null;
+            api.RawJsonResponse = rawJson;
+            api.LatencyMs = (int)stopwatch.ElapsedMilliseconds;
+            api.LastSuccessDateTime = DateTimeOffset.UtcNow;
+            api.LastErrorDateTime = null;
         }
 
         /// <summary>

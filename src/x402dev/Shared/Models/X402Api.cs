@@ -44,6 +44,7 @@ namespace x402dev.Shared.Models
         public string? ErrorMessage { get; set; }
         public string? RawJsonResponse { get; set; }
         public int? LatencyMs { get; set; }
+        public string? HttpMethod { get; set; }
     }
 
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]

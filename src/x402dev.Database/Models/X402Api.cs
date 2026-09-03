@@ -36,6 +36,13 @@ namespace x402dev.Database.Models
         public string? ErrorMessage { get; set; }
 
         /// <summary>
+        /// HTTP method that produced a valid 402 response. Empty until detected,
+        /// then the check always reuses this method (GET, POST, PUT or DELETE).
+        /// </summary>
+        [MaxLength(10)]
+        public string? HttpMethod { get; set; }
+
+        /// <summary>
         /// Duration of the last successful check in milliseconds.
         /// </summary>
         public int? LatencyMs { get; set; }

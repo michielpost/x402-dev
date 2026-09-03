@@ -139,7 +139,8 @@ namespace x402dev.Server.Services
                     && (!api.LastSuccessDateTime.HasValue || api.LastErrorDateTime > api.LastSuccessDateTime),
                 ErrorMessage = api.ErrorMessage,
                 RawJsonResponse = api.RawJsonResponse,
-                LatencyMs = api.LatencyMs
+                LatencyMs = api.LatencyMs,
+                HttpMethod = api.HttpMethod
             };
         }
 

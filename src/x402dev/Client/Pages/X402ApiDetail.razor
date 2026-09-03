@@ -74,6 +74,17 @@ else
 			<div class="detail-label">Version</div>
 			<div class="detail-value">@(string.IsNullOrWhiteSpace(api.Version) ? "—" : api.Version)</div>
 
+			<div class="detail-label">HTTP method</div>
+			<div class="detail-value">@(string.IsNullOrWhiteSpace(api.HttpMethod) ? "—" : api.HttpMethod)</div>
+
+			<div class="detail-label">Curl example</div>
+			<div class="detail-value">
+				<code>@CurlCommand</code>
+				<FluentButton Appearance="Appearance.Lightweight" Class="copy-btn" OnClick="@(() => CopyToClipboard(CurlCommand, "curl"))" title="Copy curl command">
+					@(copiedKey == "curl" ? "Copied!" : "Copy")
+				</FluentButton>
+			</div>
+
 			<div class="detail-label">Response time</div>
 			<div class="detail-value">@(api.LatencyMs.HasValue ? $"{api.LatencyMs.Value} ms" : "—")</div>
 
@@ -164,6 +175,10 @@ else
 	private bool found;
 	private string? prettyJson;
 	private string? copiedKey;
+
+	private string CurlCommand =>
+		api == null ? string.Empty :
+		$"curl -i -X {(string.IsNullOrWhiteSpace(api.HttpMethod) ? "GET" : api.HttpMethod)} '{api.Url}'";
 
 	private async Task CopyToClipboard(string text, string key)
 	{

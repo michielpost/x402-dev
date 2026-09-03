@@ -93,6 +93,31 @@ namespace x402dev.Server.Controllers
             return Ok(new { deleted });
         }
 
+        /// <summary>
+        /// Schedules all APIs that are currently in an error state for an immediate re-check.
+        /// Admin only: requires the secret configured under AdminApi:Secret.
+        /// Returns the number of re-scheduled entries.
+        /// </summary>
+        [HttpPost("retry-errors")]
+        public async Task<IActionResult> RetryErrors([FromBody] AdminX402ApiRetryErrorsRequest request)
+        {
+            var configuredSecret = configuration["AdminApi:Secret"];
+
+            if (string.IsNullOrEmpty(configuredSecret))
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new { error = "Admin API is not configured." });
+            }
+
+            if (request is null || string.IsNullOrWhiteSpace(request.Secret) || !SecretMatches(configuredSecret, request.Secret))
+            {
+                return Unauthorized(new { error = "Invalid secret." });
+            }
+
+            var reScheduled = await x402ApiService.RetryErrorApisAsync();
+
+            return Ok(new { reScheduled });
+        }
+
         private static bool SecretMatches(string expected, string provided)
         {
             return CryptographicOperations.FixedTimeEquals(
@@ -109,6 +134,11 @@ namespace x402dev.Server.Controllers
     }
 
     public record AdminX402ApiCleanupRequest
+    {
+        public string? Secret { get; set; }
+    }
+
+    public record AdminX402ApiRetryErrorsRequest
     {
         public string? Secret { get; set; }
     }
