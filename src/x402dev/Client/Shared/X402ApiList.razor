@@ -1,18 +1,21 @@
 @using x402dev.Shared.Models
+@using x402dev.Shared.Interfaces
 @implements IDisposable
 @inject NavigationManager Navigation
+@inject IX402ApiGrpcService X402ApiGrpcService
 
 <div class="api-list">
 	@if (ShowSearch)
 	{
 		<div class="api-list-toolbar">
 			<FluentSearch @bind-Value="searchText"
+						  @bind-Value:after="OnSearchChanged"
 						  Placeholder="Search by url or description…"
 						  aria-label="Search x402 APIs" />
 		</div>
 	}
 
-	<FluentDataGrid Id="x402apilist" Items="@FilteredItems" TGridItem="X402Api" AutoFit="true" MultiLine="true" ShowHover="true" OnRowClick="OnRowClicked" Pagination="@pagination">
+	<FluentDataGrid @ref="grid" Id="x402apilist" ItemsProvider="@LoadItems" TGridItem="X402Api" AutoFit="true" MultiLine="true" ShowHover="true" OnRowClick="OnRowClicked" Pagination="@pagination">
 		<TemplateColumn Title="Status" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByAscending(a => a.HasError))">
 			<span class="fac-status @(context.HasError ? "fac-status--offline" : "fac-status--online")">
 				<span class="fac-status-dot"></span>
@@ -75,14 +78,16 @@
 </div>
 
 @code {
-	[Parameter, EditorRequired] public IQueryable<X402Api>? Items { get; set; }
 	[Parameter] public bool ShowSearch { get; set; } = true;
 	[Parameter] public bool ShowDomainColumn { get; set; } = true;
 	[Parameter] public string? ExcludeUrl { get; set; }
-	[Parameter] public int PageSize { get; set; } = 100;
+	[Parameter] public string? Domain { get; set; }
+	[Parameter] public ListMode Mode { get; set; } = ListMode.All;
+	[Parameter] public int PageSize { get; set; } = 20;
 
 	private string searchText = string.Empty;
 	private PaginationState pagination = new();
+	private FluentDataGrid<X402Api>? grid;
 
 	protected override void OnInitialized()
 	{
@@ -93,31 +98,45 @@
 
 	private void OnTotalItemCountChanged(object? sender, int? count) => InvokeAsync(StateHasChanged);
 
-	private IQueryable<X402Api>? FilteredItems
+	private async Task OnSearchChanged()
 	{
-		get
+		if (grid != null)
 		{
-			if (Items == null)
-			{
-				return null;
-			}
+			await grid.RefreshDataAsync();
+		}
+	}
 
-			var items = Items;
+	private async ValueTask<GridItemsProviderResult<X402Api>> LoadItems(GridItemsProviderRequest<X402Api> request)
+	{
+		var grpcRequest = new GetX402ApisPagedRequest
+		{
+			Skip = request.StartIndex,
+			Take = request.Count ?? pagination.ItemsPerPage,
+			Search = string.IsNullOrWhiteSpace(searchText) ? null : searchText.Trim(),
+			Domain = Domain,
+			ExcludeUrl = ExcludeUrl
+		};
 
-			if (!string.IsNullOrEmpty(ExcludeUrl))
-			{
-				items = items.Where(a => a.Url != ExcludeUrl);
-			}
+		foreach (var sort in request.GetSortByProperties())
+		{
+			grpcRequest.SortBy.Add(sort.Direction == SortDirection.Descending ? $"-{sort.PropertyName}" : sort.PropertyName);
+		}
 
-			var term = searchText?.Trim();
-			if (string.IsNullOrEmpty(term))
-			{
-				return items;
-			}
+		var result = Mode == ListMode.Problems
+			? await X402ApiGrpcService.GetX402ApisWithProblemsPaged(grpcRequest)
+			: await X402ApiGrpcService.GetX402ApisPaged(grpcRequest);
 
-			return items.Where(a =>
-				(a.Url != null && a.Url.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
-				(a.Description != null && a.Description.Contains(term, StringComparison.OrdinalIgnoreCase)));
+		return GridItemsProviderResult.From(result.Items, result.TotalCount);
+	}
+
+	/// <summary>
+	/// Reloads the current page from the server (e.g. after adding an API).
+	/// </summary>
+	public async Task RefreshAsync()
+	{
+		if (grid != null)
+		{
+			await grid.RefreshDataAsync();
 		}
 	}
 

@@ -2,6 +2,15 @@ using ProtoBuf;
 
 namespace x402dev.Shared.Models
 {
+    /// <summary>
+    /// Which server-side list the <see cref="X402Api"/> grid shows.
+    /// </summary>
+    public enum ListMode
+    {
+        All,
+        Problems
+    }
+
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
     public record X402ApiPaymentRequirement
     {
@@ -76,5 +85,27 @@ namespace x402dev.Shared.Models
         public int TotalDomains { get; set; }
         public int TotalNetworks { get; set; }
         public int TotalErrors { get; set; }
+    }
+
+    [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
+    public record GetX402ApisPagedRequest
+    {
+        public int Skip { get; set; }
+        public int Take { get; set; }
+        public string? Search { get; set; }
+        public string? Domain { get; set; }
+        public string? ExcludeUrl { get; set; }
+
+        /// <summary>
+        /// Property names to sort by, e.g. "Url" or "-LastCheck" (dash = descending).
+        /// </summary>
+        public List<string> SortBy { get; set; } = new();
+    }
+
+    [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
+    public record GetX402ApisPagedResult
+    {
+        public List<X402Api> Items { get; set; } = new();
+        public int TotalCount { get; set; }
     }
 }

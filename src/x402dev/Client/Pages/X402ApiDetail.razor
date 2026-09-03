@@ -145,21 +145,14 @@ else
 	</FluentCard>
 
 
-	@if (domainApis == null)
-	{
-		<div class="page-loading">
-			<FluentProgressRing />
-			<span>Loading APIs…</span>
-		</div>
-	}
-	else if (domainApis.Count() > 1)
+	@if (hasOtherDomainApis)
 	{
 		<div class="page-header" Style="margin-top: 2rem;">
 			<span class="page-eyebrow">@api.Domain</span>
 			<h2>Other APIs on this domain</h2>
 		</div>
 
-		<X402ApiList Items="@domainApis" ShowSearch="false" ShowDomainColumn="false" ExcludeUrl="@api.Url" />
+		<X402ApiList Domain="@api.Domain" ExcludeUrl="@api.Url" ShowSearch="false" ShowDomainColumn="false" />
 	}
 }
 
@@ -167,7 +160,7 @@ else
 	[SupplyParameterFromQuery(Name = "url")] public string? UrlParam { get; set; }
 
 	private X402Api? api;
-	private IQueryable<X402Api>? domainApis;
+	private bool hasOtherDomainApis;
 	private bool found;
 	private string? prettyJson;
 	private string? copiedKey;
@@ -204,8 +197,13 @@ else
 		if (api != null)
 		{
 			prettyJson = PrettyJson(api.RawJsonResponse);
-			var domainResult = await X402ApiGrpcService.GetX402ApisByDomain(new GetX402ApisByDomainRequest { Domain = api.Domain });
-			domainApis = domainResult.AsQueryable();
+			var domainResult = await X402ApiGrpcService.GetX402ApisPaged(new GetX402ApisPagedRequest
+			{
+				Domain = api.Domain,
+				ExcludeUrl = api.Url,
+				Take = 1
+			});
+			hasOtherDomainApis = domainResult.TotalCount > 0;
 		}
 	}
 

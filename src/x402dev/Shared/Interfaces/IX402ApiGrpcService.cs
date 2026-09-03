@@ -9,7 +9,10 @@ namespace x402dev.Shared.Interfaces
     public interface IX402ApiGrpcService
     {
         [OperationContract]
-        Task<List<X402Api>> GetX402Apis(CallContext context = default);
+        Task<GetX402ApisPagedResult> GetX402ApisPaged(GetX402ApisPagedRequest request, CallContext context = default);
+
+        [OperationContract]
+        Task<GetX402ApisPagedResult> GetX402ApisWithProblemsPaged(GetX402ApisPagedRequest request, CallContext context = default);
 
         [OperationContract]
         Task<AddX402ApiResult> AddX402Api(AddX402ApiRequest request, CallContext context = default);

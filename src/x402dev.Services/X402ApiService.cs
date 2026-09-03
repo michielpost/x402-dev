@@ -41,6 +41,35 @@ namespace x402dev.Services
             return apis.Where(x => IsVisible(x, now)).ToList();
         }
 
+        /// <summary>
+        /// Server-side paged list of checked APIs, with optional search, domain and
+        /// exclude-url filters plus sorting. Runs as a single DB query per page.
+        /// </summary>
+        public async Task<(List<X402Api> Items, int TotalCount)> GetCheckedX402ApisPagedAsync(
+            int skip, int take, string? search = null, string? domain = null, string? excludeUrl = null, List<string>? sortBy = null)
+        {
+            var cutoff = DateTimeOffset.UtcNow.AddHours(-48);
+
+            var query = dbContext.X402Apis
+                .Where(x => x.LastCheckDateTime != null)
+                .Where(x => !x.LastErrorDateTime.HasValue
+                    || (x.LastSuccessDateTime.HasValue && x.LastErrorDateTime <= x.LastSuccessDateTime)
+                    || (x.LastSuccessDateTime.HasValue && x.LastSuccessDateTime > cutoff));
+
+            query = ApplyFilters(query, search, domain, excludeUrl);
+
+            var totalCount = await query.CountAsync();
+
+            query = ApplySorting(query, sortBy);
+
+            var items = await query
+                .Skip(Math.Max(0, skip))
+                .Take(NormalizeTake(take))
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
         public Task<X402Api?> GetX402ApiByIdAsync(int id)
         {
             return dbContext.X402Apis.FirstOrDefaultAsync(x => x.Id == id);
@@ -84,6 +113,93 @@ namespace x402dev.Services
                 .Take(max)
                 .ToListAsync();
         }
+
+        /// <summary>
+        /// Server-side paged variant of <see cref="GetProblemX402ApisAsync"/>.
+        /// </summary>
+        public async Task<(List<X402Api> Items, int TotalCount)> GetProblemX402ApisPagedAsync(
+            int skip, int take, string? search = null, List<string>? sortBy = null)
+        {
+            var query = dbContext.X402Apis
+                .Where(x => x.LastCheckDateTime == null
+                    || (x.LastErrorDateTime != null
+                        && (!x.LastSuccessDateTime.HasValue || x.LastErrorDateTime > x.LastSuccessDateTime)));
+
+            query = ApplyFilters(query, search, null, null);
+
+            var totalCount = await query.CountAsync();
+
+            query = ApplySorting(query, sortBy);
+
+            var items = await query
+                .Skip(Math.Max(0, skip))
+                .Take(NormalizeTake(take))
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
+        private static IQueryable<X402Api> ApplyFilters(IQueryable<X402Api> query, string? search, string? domain, string? excludeUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(domain))
+            {
+                var domainLower = domain.Trim().ToLowerInvariant();
+                query = query.Where(x => x.Domain.ToLower() == domainLower);
+            }
+
+            if (!string.IsNullOrWhiteSpace(excludeUrl))
+            {
+                var normalizedExcludeUrl = excludeUrl.Trim();
+                if (Uri.TryCreate(normalizedExcludeUrl, UriKind.Absolute, out var excludeUri))
+                {
+                    normalizedExcludeUrl = excludeUri.GetLeftPart(UriPartial.Path);
+                }
+                var excludeLower = normalizedExcludeUrl.ToLowerInvariant();
+                query = query.Where(x => x.Url.ToLower() != excludeLower);
+            }
+
+            var term = search?.Trim();
+            if (!string.IsNullOrEmpty(term))
+            {
+                var termLower = term.ToLowerInvariant();
+                query = query.Where(x =>
+                    x.Url.ToLower().Contains(termLower) ||
+                    (x.Description != null && x.Description.ToLower().Contains(termLower)));
+            }
+
+            return query;
+        }
+
+        private static IQueryable<X402Api> ApplySorting(IQueryable<X402Api> query, List<string>? sortBy)
+        {
+            IOrderedQueryable<X402Api>? ordered = null;
+
+            if (sortBy is { Count: > 0 })
+            {
+                var entry = sortBy[0];
+                var descending = entry.StartsWith('-');
+                var property = descending ? entry[1..] : entry;
+
+                ordered = property switch
+                {
+                    "HasError" => descending
+                        ? query.OrderByDescending(x => x.LastErrorDateTime != null
+                            && (!x.LastSuccessDateTime.HasValue || x.LastErrorDateTime > x.LastSuccessDateTime))
+                        : query.OrderBy(x => x.LastErrorDateTime != null
+                            && (!x.LastSuccessDateTime.HasValue || x.LastErrorDateTime > x.LastSuccessDateTime)),
+                    "Url" => descending ? query.OrderByDescending(x => x.Url) : query.OrderBy(x => x.Url),
+                    "Domain" => descending ? query.OrderByDescending(x => x.Domain) : query.OrderBy(x => x.Domain),
+                    "Version" => descending ? query.OrderByDescending(x => x.Version) : query.OrderBy(x => x.Version),
+                    "LastCheck" => descending ? query.OrderByDescending(x => x.LastCheckDateTime) : query.OrderBy(x => x.LastCheckDateTime),
+                    _ => null
+                };
+            }
+
+            return ordered ?? query.OrderBy(x => x.Domain).ThenBy(x => x.Url);
+        }
+
+        private static int NormalizeTake(int take)
+            => take <= 0 ? 20 : Math.Min(take, 200);
 
         /// <summary>
         /// APIs with an error are hidden once their last successful check is older than 48 hours.

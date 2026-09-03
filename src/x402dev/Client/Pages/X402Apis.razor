@@ -23,17 +23,7 @@
 	}
 </div>
 
-@if (apis == null)
-{
-	<div class="page-loading">
-		<FluentProgressRing />
-		<span>Loading x402 APIs…</span>
-	</div>
-}
-else
-{
-	<X402ApiList Items="@apis" />
-}
+<X402ApiList />
 
 <FluentCard Style="margin-top: 1.5rem;">
 	<h3>Add an x402 API endpoint</h3>
@@ -81,7 +71,6 @@ else
 </FluentCard>
 
 @code {
-	private IQueryable<X402Api>? apis;
 	private X402ApiStats? stats;
 	private string newUrl = string.Empty;
 	private string? addMessage;
@@ -103,13 +92,6 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		await LoadApisAsync();
-	}
-
-	private async Task LoadApisAsync()
-	{
-		var result = await X402ApiGrpcService.GetX402Apis();
-		apis = result.AsQueryable();
 		stats = await X402ApiGrpcService.GetX402ApiStats();
 	}
 
@@ -137,7 +119,7 @@ else
 			if (result.Success)
 			{
 				newUrl = string.Empty;
-				await LoadApisAsync();
+				stats = await X402ApiGrpcService.GetX402ApiStats();
 			}
 		}
 		catch (Exception ex)

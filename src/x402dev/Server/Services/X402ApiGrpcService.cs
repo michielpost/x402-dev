@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Nethereum.Signer;
 using ProtoBuf.Grpc;
 using System.Text.Json;
@@ -13,11 +12,28 @@ namespace x402dev.Server.Services
     {
         private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
-        public async Task<List<X402ApiModel>> GetX402Apis(CallContext context = default)
+        public async Task<Shared.Models.GetX402ApisPagedResult> GetX402ApisPaged(Shared.Models.GetX402ApisPagedRequest request, CallContext context = default)
         {
-            var apis = await x402ApiService.GetCheckedX402ApisAsync();
+            var (items, totalCount) = await x402ApiService.GetCheckedX402ApisPagedAsync(
+                request.Skip, request.Take, request.Search, request.Domain, request.ExcludeUrl, request.SortBy);
 
-            return apis.Select(Map).ToList();
+            return new Shared.Models.GetX402ApisPagedResult
+            {
+                Items = items.Select(Map).ToList(),
+                TotalCount = totalCount
+            };
+        }
+
+        public async Task<Shared.Models.GetX402ApisPagedResult> GetX402ApisWithProblemsPaged(Shared.Models.GetX402ApisPagedRequest request, CallContext context = default)
+        {
+            var (items, totalCount) = await x402ApiService.GetProblemX402ApisPagedAsync(
+                request.Skip, request.Take, request.Search, request.SortBy);
+
+            return new Shared.Models.GetX402ApisPagedResult
+            {
+                Items = items.Select(Map).ToList(),
+                TotalCount = totalCount
+            };
         }
 
         public async Task<Shared.Models.AddX402ApiResult> AddX402Api(Shared.Models.AddX402ApiRequest request, CallContext context = default)
