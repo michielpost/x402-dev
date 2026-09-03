@@ -39,7 +39,7 @@ namespace x402dev.Server.Controllers
         /// The API is disabled when no secret is configured.
         /// </summary>
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery] string? secret, [FromQuery] string? url, [FromQuery] string? domain)
+        public async Task<IActionResult> Delete([FromBody] AdminX402ApiDeleteRequest request)
         {
             var configuredSecret = configuration["AdminApi:Secret"];
 
@@ -48,20 +48,20 @@ namespace x402dev.Server.Controllers
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, new { error = "Admin API is not configured." });
             }
 
-            if (string.IsNullOrWhiteSpace(secret) || !SecretMatches(configuredSecret, secret))
+            if (request is null || string.IsNullOrWhiteSpace(request.Secret) || !SecretMatches(configuredSecret, request.Secret))
             {
                 return Unauthorized(new { error = "Invalid secret." });
             }
 
-            var hasUrl = !string.IsNullOrWhiteSpace(url);
-            var hasDomain = !string.IsNullOrWhiteSpace(domain);
+            var hasUrl = !string.IsNullOrWhiteSpace(request.Url);
+            var hasDomain = !string.IsNullOrWhiteSpace(request.Domain);
 
             if (hasUrl == hasDomain)
             {
                 return BadRequest(new { error = "Provide exactly one of url or domain." });
             }
 
-            var deleted = await x402ApiService.DeleteX402ApisAsync(hasUrl ? url : null, hasDomain ? domain : null);
+            var deleted = await x402ApiService.DeleteX402ApisAsync(hasUrl ? request.Url : null, hasDomain ? request.Domain : null);
 
             return deleted == 0
                 ? NotFound(new { error = "No matching entries found." })
@@ -74,7 +74,7 @@ namespace x402dev.Server.Controllers
         /// Admin only: requires the secret configured under AdminApi:Secret.
         /// </summary>
         [HttpDelete("cleanup")]
-        public async Task<IActionResult> Cleanup([FromQuery] string? secret)
+        public async Task<IActionResult> Cleanup([FromBody] AdminX402ApiCleanupRequest request)
         {
             var configuredSecret = configuration["AdminApi:Secret"];
 
@@ -83,7 +83,7 @@ namespace x402dev.Server.Controllers
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, new { error = "Admin API is not configured." });
             }
 
-            if (string.IsNullOrWhiteSpace(secret) || !SecretMatches(configuredSecret, secret))
+            if (request is null || string.IsNullOrWhiteSpace(request.Secret) || !SecretMatches(configuredSecret, request.Secret))
             {
                 return Unauthorized(new { error = "Invalid secret." });
             }
@@ -99,5 +99,17 @@ namespace x402dev.Server.Controllers
                 Encoding.UTF8.GetBytes(expected),
                 Encoding.UTF8.GetBytes(provided));
         }
+    }
+
+    public record AdminX402ApiDeleteRequest
+    {
+        public string? Secret { get; set; }
+        public string? Url { get; set; }
+        public string? Domain { get; set; }
+    }
+
+    public record AdminX402ApiCleanupRequest
+    {
+        public string? Secret { get; set; }
     }
 }
