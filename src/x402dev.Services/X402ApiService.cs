@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -22,6 +23,9 @@ namespace x402dev.Services
 
         /// <summary>Maximum number of URLs one client (IP) may add per rolling hour.</summary>
         public const int MaxAddsPerHourPerIp = 10;
+
+        /// <summary>Matches dashed IP addresses like 204-168-208-32 inside a domain name.</summary>
+        private static readonly Regex DashedIpRegex = new(@"\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}", RegexOptions.Compiled);
 
         public async Task<List<X402Api>> GetCheckedX402ApisAsync(int max = 500)
         {
@@ -121,6 +125,16 @@ namespace x402dev.Services
             // Strip query string and fragment so the same resource cannot be registered twice.
             var normalizedUrl = uri.GetLeftPart(UriPartial.Path);
 
+            if (IPAddress.TryParse(uri.Host, out _))
+            {
+                return (null, "URLs with an IP address in the domain are not allowed.");
+            }
+
+            if (DashedIpRegex.IsMatch(uri.Host))
+            {
+                return (null, "URLs with an IP-like pattern (e.g. 204-168-208-32) in the domain are not allowed.");
+            }
+
             if (!string.IsNullOrEmpty(clientIp) && !IsRateLimitExempt(clientIp) && !TryAllowAdd(clientIp))
             {
                 return (null, $"Too many URLs added. Try again later (max {MaxAddsPerHourPerIp} per hour).");
@@ -158,6 +172,66 @@ namespace x402dev.Services
             await dbContext.SaveChangesAsync();
 
             return (api, null);
+        }
+
+        /// <summary>
+        /// Deletes x402 API entries. Exactly one of url / domain must be provided;
+        /// when a domain is given all entries for that domain are removed.
+        /// Returns the number of deleted entries.
+        /// </summary>
+        public async Task<int> DeleteX402ApisAsync(string? url, string? domain)
+        {
+            IQueryable<X402Api> query = dbContext.X402Apis;
+
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                var normalizedUrl = url.Trim();
+                if (Uri.TryCreate(normalizedUrl, UriKind.Absolute, out var uri))
+                {
+                    // Match the normalization used when adding (no query/fragment).
+                    normalizedUrl = uri.GetLeftPart(UriPartial.Path);
+                }
+                var urlLower = normalizedUrl.ToLowerInvariant();
+                query = query.Where(x => x.Url.ToLower() == urlLower);
+            }
+            else
+            {
+                var domainLower = domain!.Trim().ToLowerInvariant();
+                query = query.Where(x => x.Domain.ToLower() == domainLower);
+            }
+
+            var apis = await query.ToListAsync();
+            if (apis.Count == 0)
+            {
+                return 0;
+            }
+
+            dbContext.X402Apis.RemoveRange(apis);
+            await dbContext.SaveChangesAsync();
+            return apis.Count;
+        }
+
+        /// <summary>
+        /// Deletes all x402 API entries that have never had a successful check,
+        /// or whose last successful check is older than the given number of days.
+        /// Returns the number of deleted entries.
+        /// </summary>
+        public async Task<int> CleanupStaleX402ApisAsync(int days = 7)
+        {
+            var cutoff = DateTimeOffset.UtcNow.AddDays(-days);
+
+            var staleApis = await dbContext.X402Apis
+                .Where(x => x.LastSuccessDateTime == null || x.LastSuccessDateTime < cutoff)
+                .ToListAsync();
+
+            if (staleApis.Count == 0)
+            {
+                return 0;
+            }
+
+            dbContext.X402Apis.RemoveRange(staleApis);
+            await dbContext.SaveChangesAsync();
+            return staleApis.Count;
         }
 
         /// <summary>

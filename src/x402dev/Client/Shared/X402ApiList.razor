@@ -1,4 +1,5 @@
 @using x402dev.Shared.Models
+@implements IDisposable
 @inject NavigationManager Navigation
 
 <div class="api-list">
@@ -11,7 +12,7 @@
 		</div>
 	}
 
-	<FluentDataGrid Id="x402apilist" Items="@FilteredItems" TGridItem="X402Api" AutoFit="true" MultiLine="true" ShowHover="true" OnRowClick="OnRowClicked">
+	<FluentDataGrid Id="x402apilist" Items="@FilteredItems" TGridItem="X402Api" AutoFit="true" MultiLine="true" ShowHover="true" OnRowClick="OnRowClicked" Pagination="@pagination">
 		<TemplateColumn Title="Status" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByAscending(a => a.HasError))">
 			<span class="fac-status @(context.HasError ? "fac-status--offline" : "fac-status--online")">
 				<span class="fac-status-dot"></span>
@@ -66,6 +67,11 @@
 			}
 		</TemplateColumn>
 	</FluentDataGrid>
+
+	@if ((pagination.TotalItemCount ?? 0) > pagination.ItemsPerPage)
+	{
+		<FluentPaginator State="@pagination" />
+	}
 </div>
 
 @code {
@@ -73,8 +79,19 @@
 	[Parameter] public bool ShowSearch { get; set; } = true;
 	[Parameter] public bool ShowDomainColumn { get; set; } = true;
 	[Parameter] public string? ExcludeUrl { get; set; }
+	[Parameter] public int PageSize { get; set; } = 100;
 
 	private string searchText = string.Empty;
+	private PaginationState pagination = new();
+
+	protected override void OnInitialized()
+	{
+		pagination = new PaginationState { ItemsPerPage = PageSize };
+		pagination.TotalItemCountChanged += OnTotalItemCountChanged;
+		base.OnInitialized();
+	}
+
+	private void OnTotalItemCountChanged(object? sender, int? count) => InvokeAsync(StateHasChanged);
 
 	private IQueryable<X402Api>? FilteredItems
 	{
@@ -120,5 +137,10 @@
 			 : diff.TotalHours < 24    ? $"{(int)diff.TotalHours}h ago"
 			 : diff.TotalDays < 7      ? $"{(int)diff.TotalDays}d ago"
 			 : dt.ToString("MMM d, yyyy");
+	}
+
+	public void Dispose()
+	{
+		pagination.TotalItemCountChanged -= OnTotalItemCountChanged;
 	}
 }
