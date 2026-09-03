@@ -243,17 +243,6 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapMcp("/mcp");
 
-// Simple REST API to register a new x402 API endpoint by URL.
-app.MapPost("/api/x402-apis", async (x402dev.Shared.Models.AddX402ApiRequest request, X402ApiService x402ApiService, HttpContext httpContext) =>
-{
-    var clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
-    var (api, error) = await x402ApiService.AddX402ApiAsync(request?.Url ?? string.Empty, clientIp);
-
-    return api == null
-        ? Results.BadRequest(new { error })
-        : Results.Created($"/x402-apis/detail?url={Uri.EscapeDataString(api.Url)}", new { api.Url, api.Domain });
-});
-
 app.MapFallbackToFile("index.html");
 
 app.Run();
