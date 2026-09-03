@@ -12,6 +12,7 @@ using x402.Coinbase;
 using x402.Coinbase.Models;
 using x402dev.Database;
 using x402dev.Server.HostedServices;
+using x402dev.Server.Mcp;
 using x402dev.Server.Services;
 using x402dev.Services;
 
@@ -106,11 +107,16 @@ builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
+builder.Services.AddHttpContextAccessor();
+
+// MCP server exposing the x402 API registry (streamable HTTP at /mcp).
+builder.Services.AddMcpServer()
+    .WithHttpTransport()
+    .WithToolsFromAssembly();
 
 builder.Services.AddSingleton<ContentService>();
 builder.Services.AddScoped<PublicMessagesService>();
-
-builder.Services.AddScoped<PublicMessagesService>();
+builder.Services.AddScoped<X402ApiService>();
 
 
 builder.Services.Configure<CoinbaseOptions>(builder.Configuration.GetSection(nameof(CoinbaseOptions)));
@@ -133,6 +139,7 @@ builder.Services.AddX402ChannelManager();
 //Background Hosted Services
 builder.Services.AddHostedService<ContentSyncBackgroundService>();
 builder.Services.AddHostedService<FacilitatorTestBackgroundService>();
+builder.Services.AddHostedService<X402ApiCheckBackgroundService>();
 
 
 
@@ -222,6 +229,7 @@ app.UseRateLimiter();
 app.UseGrpcWeb();
 app.MapGrpcService<FacilitatorGrpcService>().EnableGrpcWeb();
 app.MapGrpcService<PublicMessageGrpcService>().EnableGrpcWeb();
+app.MapGrpcService<X402ApiGrpcService>().EnableGrpcWeb();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -233,6 +241,19 @@ app.UseSwaggerUI(c =>
 
 app.MapRazorPages();
 app.MapControllers();
+app.MapMcp("/mcp");
+
+// Simple REST API to register a new x402 API endpoint by URL.
+app.MapPost("/api/x402-apis", async (x402dev.Shared.Models.AddX402ApiRequest request, X402ApiService x402ApiService, HttpContext httpContext) =>
+{
+    var clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
+    var (api, error) = await x402ApiService.AddX402ApiAsync(request?.Url ?? string.Empty, clientIp);
+
+    return api == null
+        ? Results.BadRequest(new { error })
+        : Results.Created($"/x402-apis/detail?url={Uri.EscapeDataString(api.Url)}", new { api.Url, api.Domain });
+});
+
 app.MapFallbackToFile("index.html");
 
 app.Run();

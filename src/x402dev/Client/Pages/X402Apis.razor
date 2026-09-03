@@ -1,0 +1,153 @@
+﻿@page "/x402-apis"
+@inject IX402ApiGrpcService X402ApiGrpcService
+@inject NavigationManager Navigation
+@using x402dev.Shared.Interfaces
+@using x402dev.Shared.Models
+
+<PageTitle>x402dev - x402 APIs</PageTitle>
+
+<div class="page-header">
+	<span class="page-eyebrow">x402 Network</span>
+	<h1>x402 APIs</h1>
+	<p class="page-desc">
+		x402-protected API endpoints. Each endpoint is checked periodically and its
+		payment requirements (network, amount, asset) are recorded automatically.
+	</p>
+	@if (stats != null)
+	{
+		<div class="api-stats">
+			<FluentBadge Appearance="Appearance.Neutral" Circular="true">@stats.TotalApis APIs</FluentBadge>
+			<FluentBadge Appearance="Appearance.Neutral" Circular="true">@stats.TotalDomains domains</FluentBadge>
+			<FluentBadge Appearance="Appearance.Neutral" Circular="true">@stats.TotalNetworks networks</FluentBadge>
+		</div>
+	}
+</div>
+
+@if (apis == null)
+{
+	<div class="page-loading">
+		<FluentProgressRing />
+		<span>Loading x402 APIs…</span>
+	</div>
+}
+else
+{
+	<X402ApiList Items="@apis" />
+}
+
+<FluentCard Style="margin-top: 1.5rem;">
+	<h3>Add an x402 API endpoint</h3>
+	<p class="page-desc">
+		Submit an x402-protected URL. It will be checked automatically and added to the list.
+	</p>
+	<FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8">
+		<FluentTextField @bind-Value="@newUrl"
+						 Style="width: 420px; max-width: 100%;"
+						 Placeholder="https://api.example.com/protected-resource"
+						 aria-label="API URL"
+						 Required="true" />
+		<FluentButton Appearance="Appearance.Accent" OnClick="AddApi" Disabled="@isAdding">Add</FluentButton>
+	</FluentStack>
+
+	@if (!string.IsNullOrEmpty(addMessage))
+	{
+		<FluentMessageBar Intent="@AddIntent"
+						  Style="margin-top: 0.5rem;">
+			@addMessage
+		</FluentMessageBar>
+	}
+</FluentCard>
+
+<FluentCard Style="margin-top: 1.5rem;">
+	<h3>Use with AI agents (MCP)</h3>
+	<p class="page-desc">
+		This registry is also available as an MCP (Model Context Protocol) server, so AI
+		assistants and agents can search for x402 services and register new ones themselves.
+		Connect an MCP client to the endpoint below.
+	</p>
+
+	<div class="detail-grid">
+		<span class="detail-label">Endpoint</span>
+		<span><code>@McpUrl</code></span>
+		<span class="detail-label">Tools</span>
+		<span>
+			<code>add_x402_api(url)</code> — register a new x402 service by URL.<br />
+			<code>search_x402_apis(query?, max?)</code> — search verified services by url, domain, name or description.
+		</span>
+	</div>
+
+	<p class="page-desc" style="margin-top: 1rem;">Example client configuration:</p>
+	<pre class="code-block">@ExampleConfig</pre>
+</FluentCard>
+
+@code {
+	private IQueryable<X402Api>? apis;
+	private X402ApiStats? stats;
+	private string newUrl = string.Empty;
+	private string? addMessage;
+	private bool addSuccess;
+	private bool isAdding;
+	private MessageIntent AddIntent => addSuccess ? MessageIntent.Success : MessageIntent.Error;
+
+	private string McpUrl => new Uri(new Uri("https://api2.x402dev.com"), "mcp").ToString();
+
+	private string ExampleConfig => $$"""
+		{
+		  "mcpServers": {
+		    "x402-registry": {
+		      "url": "{{McpUrl}}"
+		    }
+		  }
+		}
+		""";
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadApisAsync();
+	}
+
+	private async Task LoadApisAsync()
+	{
+		var result = await X402ApiGrpcService.GetX402Apis();
+		apis = result.AsQueryable();
+		stats = await X402ApiGrpcService.GetX402ApiStats();
+	}
+
+	private async Task AddApi()
+	{
+		if (string.IsNullOrWhiteSpace(newUrl))
+		{
+			addSuccess = false;
+			addMessage = "Please enter a URL.";
+			return;
+		}
+
+		try
+		{
+			isAdding = true;
+			addMessage = null;
+
+			var result = await X402ApiGrpcService.AddX402Api(new AddX402ApiRequest { Url = newUrl.Trim() });
+
+			addSuccess = result.Success;
+			addMessage = result.Success
+				? "URL added. It will be checked within a few minutes."
+				: result.Error ?? "The URL could not be added.";
+
+			if (result.Success)
+			{
+				newUrl = string.Empty;
+				await LoadApisAsync();
+			}
+		}
+		catch (Exception ex)
+		{
+			addSuccess = false;
+			addMessage = $"Error: {ex.Message}";
+		}
+		finally
+		{
+			isAdding = false;
+		}
+	}
+}

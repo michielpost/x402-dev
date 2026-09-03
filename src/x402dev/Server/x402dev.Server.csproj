@@ -11,6 +11,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Markdig" Version="1.3.2" />
+		<PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="10.0.1" />
 		<PackageReference Include="x402" Version="2.2.0">
 			<TreatAsUsed>true</TreatAsUsed>

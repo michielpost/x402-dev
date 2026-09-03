@@ -30,6 +30,29 @@ body {
     width: 100%;
 }
 
+/* FluentUI DataGrids force inline "height: 100%; grid-template-rows: auto 1fr" on the
+   <table> when empty or loading, stretching the empty row to fill the whole page.
+   Cap it to its content so short pages don't turn into a wall of whitespace. */
+.content table.fluent-data-grid:has(.empty-content-row, .loading-content-row) {
+    height: max-content !important;
+}
+
+/* FluentDataGrid gives every cell an inline height of 32px, which clips any
+   multi-line cell content (e.g. resolved value + raw hint below it). */
+.fluent-data-grid td:has(.fac-note) {
+    height: auto !important;
+}
+
+.fluent-data-grid td .fac-note {
+    overflow-wrap: anywhere;
+}
+
+/* The FAST fluent-card element defaults to height: var(--card-height, 100%), which
+   stretches cards to fill the whole content column. Size them to their content. */
+.content fluent-card {
+    height: auto;
+}
+
 .alert {
     border: 1px dashed var(--accent-fill-rest);
     padding: 5px;
@@ -781,7 +804,15 @@ footer {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--neutral-foreground-hint, #888);
-    margin-bottom: 0.35rem;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.debug-log-label .copy-btn {
+    margin-bottom: 0;
 }
 
 /* ── Key Display ───────────────────────────────────────────── */
@@ -946,6 +977,34 @@ footer {
     color: var(--neutral-foreground-hint, #888);
 }
 
+/* ── x402 API list + detail ───────────────────────────────────── */
+.api-list-toolbar {
+    margin-bottom: 0.5rem;
+    max-width: 420px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: minmax(140px, max-content) 1fr;
+    gap: 0.45rem 1.25rem;
+    align-items: baseline;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--neutral-foreground-hint, #888);
+    font-size: 0.88rem;
+}
+
+.detail-value {
+    word-break: break-word;
+}
+
+.detail-error {
+    color: #d13438;
+    white-space: pre-wrap;
+}
+
 /* ══════════════════════════════════════════════════════════════
    MARKDOWN CONTENT
    ══════════════════════════════════════════════════════════════ */
@@ -1036,3 +1095,53 @@ footer {
 
     .md-content tr:last-child td { border-bottom: none; }
 
+
+.api-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.copy-btn {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.5rem;
+    vertical-align: middle;
+}
+
+.debug-log-label .copy-btn {
+    margin-left: 0;
+    flex-shrink: 0;
+}
+
+.feature-card--wide {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(120deg, var(--accent-fill-rest, #0b6ec4) 0%, var(--accent-fill-hover, #0f548c) 100%);
+    color: #fff;
+    border: none;
+}
+
+.feature-card--wide .feature-card-icon {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+
+.feature-card--wide .feature-card-title {
+    color: #fff;
+    font-size: 1.15rem;
+}
+
+.feature-card--wide .feature-card-desc {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.debug-log pre {
+    margin: 0;
+}

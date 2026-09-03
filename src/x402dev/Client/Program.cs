@@ -119,6 +119,7 @@ public class Program
 
         services.AddGrpcService<IFacilitatorGrpcService>(baseAddress);
         services.AddGrpcService<IPublicMessageGrpcService>(baseAddress);
+        services.AddGrpcService<IX402ApiGrpcService>(baseAddress);
 
 
     }

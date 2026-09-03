@@ -1,0 +1,124 @@
+@using x402dev.Shared.Models
+@inject NavigationManager Navigation
+
+<div class="api-list">
+	@if (ShowSearch)
+	{
+		<div class="api-list-toolbar">
+			<FluentSearch @bind-Value="searchText"
+						  Placeholder="Search by url or description…"
+						  aria-label="Search x402 APIs" />
+		</div>
+	}
+
+	<FluentDataGrid Id="x402apilist" Items="@FilteredItems" TGridItem="X402Api" AutoFit="true" MultiLine="true" ShowHover="true" OnRowClick="OnRowClicked">
+		<TemplateColumn Title="Status" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByAscending(a => a.HasError))">
+			<span class="fac-status @(context.HasError ? "fac-status--offline" : "fac-status--online")">
+				<span class="fac-status-dot"></span>
+				@(context.HasError ? "Error" : "OK")
+			</span>
+		</TemplateColumn>
+
+		<TemplateColumn Title="API" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByAscending(a => a.Url))">
+			<span class="fac-url">@context.Url</span>
+			@if (!string.IsNullOrWhiteSpace(context.ServiceName))
+			{
+				<p class="fac-note">@context.ServiceName</p>
+			}
+		</TemplateColumn>
+
+		@if (ShowDomainColumn)
+		{
+			<PropertyColumn Title="Domain" Property="@(a => a.Domain)" Sortable="true" Align="Align.Start" />
+		}
+
+		<TemplateColumn Title="Description" Align="Align.Start">
+			@if (!string.IsNullOrWhiteSpace(context.Description))
+			{
+				<span>@context.Description</span>
+			}
+			else
+			{
+				<span class="fac-note">—</span>
+			}
+		</TemplateColumn>
+
+		<TemplateColumn Title="Payments" Align="Align.Start">
+			<div class="fac-networks">
+				@foreach (var req in (context.Requirements ?? new()).Distinct().Take(10))
+				{
+					<FluentBadge Appearance="Appearance.Neutral" Circular="true">@(req.NetworkName ?? req.Network)</FluentBadge>
+					<span class="fac-note">@(req.AmountFormatted ?? req.Amount) @(req.AssetName ?? req.Asset)</span>
+				}
+			</div>
+		</TemplateColumn>
+
+		<PropertyColumn Title="Version" Property="@(a => a.Version)" Sortable="true" Align="Align.Start" />
+
+		<TemplateColumn Title="Last Check" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByDescending(a => a.LastCheck))">
+			@if (context.LastCheck.HasValue)
+			{
+				<span class="fac-checked">@FormatDate(context.LastCheck.Value)</span>
+			}
+			@if (context.HasError && !string.IsNullOrWhiteSpace(context.ErrorMessage))
+			{
+				<p class="fac-note">@context.ErrorMessage</p>
+			}
+		</TemplateColumn>
+	</FluentDataGrid>
+</div>
+
+@code {
+	[Parameter, EditorRequired] public IQueryable<X402Api>? Items { get; set; }
+	[Parameter] public bool ShowSearch { get; set; } = true;
+	[Parameter] public bool ShowDomainColumn { get; set; } = true;
+	[Parameter] public string? ExcludeUrl { get; set; }
+
+	private string searchText = string.Empty;
+
+	private IQueryable<X402Api>? FilteredItems
+	{
+		get
+		{
+			if (Items == null)
+			{
+				return null;
+			}
+
+			var items = Items;
+
+			if (!string.IsNullOrEmpty(ExcludeUrl))
+			{
+				items = items.Where(a => a.Url != ExcludeUrl);
+			}
+
+			var term = searchText?.Trim();
+			if (string.IsNullOrEmpty(term))
+			{
+				return items;
+			}
+
+			return items.Where(a =>
+				(a.Url != null && a.Url.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+				(a.Description != null && a.Description.Contains(term, StringComparison.OrdinalIgnoreCase)));
+		}
+	}
+
+	private void OnRowClicked(FluentDataGridRow<X402Api> row)
+	{
+		if (row.Item is { } api)
+		{
+			Navigation.NavigateTo($"x402-apis/detail?url={Uri.EscapeDataString(api.Url)}");
+		}
+	}
+
+	private static string FormatDate(DateTime dt)
+	{
+		var diff = DateTime.UtcNow - dt.ToUniversalTime();
+		return diff.TotalSeconds < 60  ? "just now"
+			 : diff.TotalMinutes < 60  ? $"{(int)diff.TotalMinutes}m ago"
+			 : diff.TotalHours < 24    ? $"{(int)diff.TotalHours}h ago"
+			 : diff.TotalDays < 7      ? $"{(int)diff.TotalDays}d ago"
+			 : dt.ToString("MMM d, yyyy");
+	}
+}

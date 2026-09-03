@@ -1,0 +1,234 @@
+@page "/x402-apis/detail"
+@inject IX402ApiGrpcService X402ApiGrpcService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@using System.Text.Json
+@using x402dev.Shared.Interfaces
+@using x402dev.Shared.Models
+
+<PageTitle>x402dev - API details</PageTitle>
+
+@if (api == null)
+{
+	<div class="page-loading">
+		<FluentProgressRing />
+		<span>Loading API details…</span>
+	</div>
+}
+else if (!found)
+{
+	<div class="page-header">
+		<span class="page-eyebrow">x402 Network</span>
+		<h1>API not found</h1>
+		<p class="page-desc">This x402 API endpoint does not exist (or has not been checked yet).</p>
+		<div class="page-header-actions">
+			<FluentButton Appearance="Appearance.Lightweight" OnClick="@(() => Navigation.NavigateTo("x402-apis"))">Back to all APIs</FluentButton>
+		</div>
+	</div>
+}
+else
+{
+	<div class="page-header">
+		<span class="page-eyebrow">x402 API</span>
+		<h1>@(string.IsNullOrWhiteSpace(api.ServiceName) ? api.Domain : api.ServiceName)</h1>
+		<p class="page-desc">
+			<a href="@api.Url" class="fac-url" target="_blank" rel="noopener">@api.Url</a>
+		</p>
+		<div class="page-header-actions">
+			<span class="fac-status @(api.HasError ? "fac-status--offline" : "fac-status--online")">
+				<span class="fac-status-dot"></span>
+				@(api.HasError ? "Error" : "OK")
+			</span>
+		</div>
+	</div>
+
+	<FluentCard>
+		<h3>Details</h3>
+		<div class="detail-grid">
+			<div class="detail-label">URL</div>
+			<div class="detail-value">
+				<a href="@api.Url" class="fac-url" target="_blank" rel="noopener">@api.Url</a>
+				<FluentButton Appearance="Appearance.Lightweight" Class="copy-btn" OnClick="@(() => CopyToClipboard(api.Url, "url"))" title="Copy URL">
+					@(copiedKey == "url" ? "Copied!" : "Copy")
+				</FluentButton>
+			</div>
+
+			<div class="detail-label">Domain</div>
+			<div class="detail-value">@api.Domain</div>
+
+			<div class="detail-label">Description</div>
+			<div class="detail-value">
+				@if (!string.IsNullOrWhiteSpace(api.Description))
+				{
+					<span>@api.Description</span>
+				}
+				else
+				{
+					<span class="fac-note">—</span>
+				}
+			</div>
+
+			<div class="detail-label">Service name</div>
+			<div class="detail-value">@(string.IsNullOrWhiteSpace(api.ServiceName) ? "—" : api.ServiceName)</div>
+
+			<div class="detail-label">Version</div>
+			<div class="detail-value">@(string.IsNullOrWhiteSpace(api.Version) ? "—" : api.Version)</div>
+
+			<div class="detail-label">Response time</div>
+			<div class="detail-value">@(api.LatencyMs.HasValue ? $"{api.LatencyMs.Value} ms" : "—")</div>
+
+			<div class="detail-label">Added</div>
+			<div class="detail-value">@FormatDateTime(api.Added)</div>
+
+			<div class="detail-label">Last check</div>
+			<div class="detail-value">@(api.LastCheck.HasValue ? FormatDateTime(api.LastCheck.Value) : "—")</div>
+
+			<div class="detail-label">Next check</div>
+			<div class="detail-value">@(api.NextCheck.HasValue ? FormatDateTime(api.NextCheck.Value) : "—")</div>
+
+			<div class="detail-label">Last success</div>
+			<div class="detail-value">@(api.LastSuccess.HasValue ? FormatDateTime(api.LastSuccess.Value) : "—")</div>
+
+			<div class="detail-label">Last error</div>
+			<div class="detail-value">@(api.LastError.HasValue ? FormatDateTime(api.LastError.Value) : "—")</div>
+
+			@if (!string.IsNullOrWhiteSpace(api.ErrorMessage))
+			{
+				<div class="detail-label">Error</div>
+				<div class="detail-value detail-error">@api.ErrorMessage</div>
+			}
+		</div>
+	</FluentCard>
+
+	<FluentCard Style="margin-top: 1rem;">
+		<h3>Payment methods</h3>
+		@if (api.Requirements?.Count > 0)
+		{
+			<FluentDataGrid Id="x402apidetailpay" Items="@(api.Requirements.AsQueryable())" TGridItem="X402ApiPaymentRequirement" AutoFit="true">
+				<TemplateColumn Title="Network" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.NetworkName ?? r.Network))">
+					<span>@(context.NetworkName ?? context.Network)</span>
+					<p class="fac-note">@context.Network</p>
+				</TemplateColumn>
+				<TemplateColumn Title="Amount" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.AmountFormatted ?? r.Amount))">
+					<span>@(context.AmountFormatted ?? context.Amount) @(context.AssetName ?? context.Asset)</span>
+					<p class="fac-note">@context.Amount</p>
+				</TemplateColumn>
+				<TemplateColumn Title="Asset / Contract" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.AssetName ?? r.Asset))">
+					<span>@(context.AssetName ?? context.Asset)</span>
+					<p class="fac-note fac-url">@context.Asset</p>
+				</TemplateColumn>
+			</FluentDataGrid>
+		}
+		else
+		{
+			<p class="fac-note">No payment requirements recorded.</p>
+		}
+	</FluentCard>
+
+	<FluentCard Style="margin-top: 1rem;">
+		<h3>Raw JSON response</h3>
+		@if (!string.IsNullOrWhiteSpace(prettyJson))
+		{
+			<div class="debug-log">
+				<div class="debug-log-label">
+					<FluentButton Appearance="Appearance.Lightweight" Class="copy-btn" OnClick="@(() => CopyToClipboard(api.RawJsonResponse ?? prettyJson, "json"))" title="Copy JSON">
+						@(copiedKey == "json" ? "Copied!" : "Copy")
+					</FluentButton>
+				</div>
+				<pre>@prettyJson</pre>
+			</div>
+		}
+		else
+		{
+			<p class="fac-note">No raw response recorded.</p>
+		}
+	</FluentCard>
+
+
+	@if (domainApis == null)
+	{
+		<div class="page-loading">
+			<FluentProgressRing />
+			<span>Loading APIs…</span>
+		</div>
+	}
+	else if (domainApis.Count() > 1)
+	{
+		<div class="page-header" Style="margin-top: 2rem;">
+			<span class="page-eyebrow">@api.Domain</span>
+			<h2>Other APIs on this domain</h2>
+		</div>
+
+		<X402ApiList Items="@domainApis" ShowSearch="false" ShowDomainColumn="false" ExcludeUrl="@api.Url" />
+	}
+}
+
+@code {
+	[SupplyParameterFromQuery(Name = "url")] public string? UrlParam { get; set; }
+
+	private X402Api? api;
+	private IQueryable<X402Api>? domainApis;
+	private bool found;
+	private string? prettyJson;
+	private string? copiedKey;
+
+	private async Task CopyToClipboard(string text, string key)
+	{
+		await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+		copiedKey = key;
+		StateHasChanged();
+		_ = ResetCopiedKeyAsync(key);
+	}
+
+	private async Task ResetCopiedKeyAsync(string key)
+	{
+		await Task.Delay(2000);
+		if (copiedKey == key)
+		{
+			copiedKey = null;
+			StateHasChanged();
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (string.IsNullOrWhiteSpace(UrlParam))
+		{
+			return;
+		}
+
+		var result = await X402ApiGrpcService.GetX402ApiDetail(new GetX402ApiDetailRequest { Url = UrlParam });
+		found = result.Found;
+		api = result.Api;
+
+		if (api != null)
+		{
+			prettyJson = PrettyJson(api.RawJsonResponse);
+			var domainResult = await X402ApiGrpcService.GetX402ApisByDomain(new GetX402ApisByDomainRequest { Domain = api.Domain });
+			domainApis = domainResult.AsQueryable();
+		}
+	}
+
+	private static string PrettyJson(string? json)
+	{
+		if (string.IsNullOrWhiteSpace(json))
+		{
+			return string.Empty;
+		}
+
+		try
+		{
+			using var doc = JsonDocument.Parse(json);
+			return JsonSerializer.Serialize(doc.RootElement, new JsonSerializerOptions { WriteIndented = true });
+		}
+		catch (JsonException)
+		{
+			return json;
+		}
+	}
+
+	private static string FormatDateTime(DateTime dt)
+	{
+		return dt.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'");
+	}
+}
