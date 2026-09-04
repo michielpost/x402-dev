@@ -192,6 +192,7 @@ namespace x402dev.Services
                     "Domain" => descending ? query.OrderByDescending(x => x.Domain) : query.OrderBy(x => x.Domain),
                     "Version" => descending ? query.OrderByDescending(x => x.Version) : query.OrderBy(x => x.Version),
                     "LastCheck" => descending ? query.OrderByDescending(x => x.LastCheckDateTime) : query.OrderBy(x => x.LastCheckDateTime),
+                    "Added" => descending ? query.OrderByDescending(x => x.AddedDateTime) : query.OrderBy(x => x.AddedDateTime),
                     _ => null
                 };
             }

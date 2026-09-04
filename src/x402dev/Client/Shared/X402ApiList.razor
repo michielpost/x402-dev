@@ -69,6 +69,10 @@
 				<p class="fac-note">@context.ErrorMessage</p>
 			}
 		</TemplateColumn>
+
+		<TemplateColumn Title="Added" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByDescending(a => a.Added))">
+			<span class="fac-checked">@FormatDate(context.Added)</span>
+		</TemplateColumn>
 	</FluentDataGrid>
 
 	@if ((pagination.TotalItemCount ?? 0) > pagination.ItemsPerPage)
