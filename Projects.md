@@ -56,6 +56,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 
 - [NEX Agent Co.](https://nexaitechau.github.io/) - Live x402 + A2A dual-protocol agentic commerce on Base. 11 paid USDC endpoints at $0.001-0.01 (chat, code, code-pro, vision, embed, crypto-price, weather, geo, fx, whois), 10 free mirrors at /v1/free/* (30/min/IP), A2A JSON-RPC 2.0 endpoint at /a2a/tasks/send, Apache-2.0 reference server, 23 on-chain NFTs for ERC-8004-style reputation. First A2A + x402 dual-protocol agent. [A2A](https://nexaitechau.github.io/agent-card-a2a.json) | [GitHub](https://github.com/NEXAITECHAU/nex-x402-server)
 
+- [sigtap Agent Tools](https://sigtap-outreach-api.sigtap.workers.dev/) - 12 pay-per-call outreach + utility APIs for AI agents: cold-email grader and generator, deliverability (SPF/DKIM/DMARC/MX), hashing, UUID/ULID batch, slug (latin+Cyrillic), regex tester, JWT decode, JSON flatten/CSV, crypto price, domain age, weather. $0.0005-$0.01 USDC per call on Base via x402, no API keys; free truncated preview of every tool at /preview/<path>. Hosted MCP server with the same tools. [OpenAPI](https://sigtap-outreach-api.sigtap.workers.dev/openapi.json) | [llms.txt](https://sigtap-outreach-api.sigtap.workers.dev/llms.txt) | [llms-full.txt](https://sigtap-outreach-api.sigtap.workers.dev/llms-full.txt) | [MCP](https://sigtap-mcp.sigtap.workers.dev/mcp)
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
