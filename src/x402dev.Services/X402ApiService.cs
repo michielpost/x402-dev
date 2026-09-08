@@ -27,6 +27,9 @@ namespace x402dev.Services
         /// <summary>Matches dashed IP addresses like 204-168-208-32 inside a domain name.</summary>
         private static readonly Regex DashedIpRegex = new(@"\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}", RegexOptions.Compiled);
 
+        /// <summary>Domain substrings that are never allowed to register.</summary>
+        private static readonly string[] BlockedDomainSubstrings = ["netlify", "trycloudflare"];
+
         public async Task<List<X402Api>> GetCheckedX402ApisAsync(int max = 500)
         {
             var now = DateTimeOffset.UtcNow;
@@ -251,6 +254,12 @@ namespace x402dev.Services
             if (DashedIpRegex.IsMatch(uri.Host))
             {
                 return (null, "URLs with an IP-like pattern (e.g. 204-168-208-32) in the domain are not allowed.");
+            }
+
+            var blocked = BlockedDomainSubstrings.FirstOrDefault(b => uri.Host.Contains(b, StringComparison.OrdinalIgnoreCase));
+            if (blocked != null)
+            {
+                return (null, $"Domains containing '{blocked}' are not allowed.");
             }
 
             if (!string.IsNullOrEmpty(clientIp) && !IsRateLimitExempt(clientIp) && !TryAllowAdd(clientIp))
