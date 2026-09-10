@@ -58,6 +58,9 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 
 - [sigtap Agent Tools](https://sigtap-outreach-api.sigtap.workers.dev/) - 12 pay-per-call outreach + utility APIs for AI agents: cold-email grader and generator, deliverability (SPF/DKIM/DMARC/MX), hashing, UUID/ULID batch, slug (latin+Cyrillic), regex tester, JWT decode, JSON flatten/CSV, crypto price, domain age, weather. $0.0005-$0.01 USDC per call on Base via x402, no API keys; free truncated preview of every tool at /preview/<path>. Hosted MCP server with the same tools. [OpenAPI](https://sigtap-outreach-api.sigtap.workers.dev/openapi.json) | [llms.txt](https://sigtap-outreach-api.sigtap.workers.dev/llms.txt) | [llms-full.txt](https://sigtap-outreach-api.sigtap.workers.dev/llms-full.txt) | [MCP](https://sigtap-mcp.sigtap.workers.dev/mcp)
 
+- [tokenbrief](https://89.106.83.95.sslip.io) - Crypto token research API for AI agents: token overview ($0.05), trending tokens ($0.02), wallet holdings ($0.02), full token report with GoPlus security scan + market data ($0.50). x402 micropayments in USDC on Base, no API keys. [OpenAPI](https://89.106.83.95.sslip.io/openapi.json)
+- [llmgate](https://89.106.83.95.sslip.io:8443) - OpenAI-compatible LLM chat completions, $0.01 per request via x402 USDC on Base. No API keys.
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
