@@ -25,7 +25,7 @@
 		<PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
 		<PackageReference Include="x402.Client.EVM" Version="2.3.0" />
 		<PackageReference Include="Nethereum.Metamask.Blazor" Version="6.1.0" />
-		<PackageReference Include="BlazorWasmPreRendering.Build" Version="8.0.2" />
+		<PackageReference Include="BlazorWasmPreRendering.Build" Version="10.0.0" />
 	</ItemGroup>
 
   <ItemGroup>
