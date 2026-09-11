@@ -1,3 +1,4 @@
+- [Gurus Hubmart](https://agents.xrpcloud.live/) - Autonomous-agent marketplace on XRPL Mainnet. Four x402-paid agent services discoverable via agent-services.json, x402.json, agent-card.json, agent.json, OpenAPI, and MCP. Prices start at 1,000 XRP drops per call. [OpenAPI](https://agents.xrpcloud.live/marketplace/openapi.json) | [Discovery](https://agents.xrpcloud.live/marketplace/.well-known/x402) | [MCP](https://agents.xrpcloud.live/marketplace/x402_mcp) | [llms.txt](https://agents.xrpcloud.live/llms.txt)
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
 
