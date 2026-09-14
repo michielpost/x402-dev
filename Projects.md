@@ -103,3 +103,4 @@ Educational content, directories, and resource hubs.
 - [x402 Ecosystem](https://www.x402.org) - Overview of all ecosystem participants  
 - [x402 on Coingecko](https://www.coingecko.com/en/categories/x402-ecosystem) - Top x402 Ecosystem Coins by Market Cap
 - [AffixIO](https://www.npmjs.com/package/affixio) - Agentic Pay Kit with x402BeforePay host-side action attestation before pay (signed yes/no on host, not person KYC), agenticPay, mcpToolGate, and KYA createAgentTrust. ([GitHub](https://github.com/AffixIO/SDK)) ([docs](https://www.affix-io.com/agent-trust/))
+- [HostDeFi](https://hostdefi.com/api/v1/x402/pricing) - x402-payable token-safety API: A+–F grades, risk scores and datasets settle per call in USDC; free `scan_token` MCP tool also available.
