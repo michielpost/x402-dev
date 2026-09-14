@@ -54,7 +54,9 @@ else
 			</div>
 
 			<div class="detail-label">Domain</div>
-			<div class="detail-value">@api.Domain</div>
+			<div class="detail-value">
+				<a href="x402-apis?domain=@(Uri.EscapeDataString(api.Domain))" class="fac-url">@api.Domain</a>
+			</div>
 
 			<div class="detail-label">Description</div>
 			<div class="detail-value">

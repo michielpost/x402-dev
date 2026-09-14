@@ -23,7 +23,7 @@
 	}
 </div>
 
-<X402ApiList />
+<X402ApiList Domain="@DomainParam" />
 
 <FluentCard Style="margin-top: 1.5rem;">
 	<h3>Add an x402 API endpoint</h3>
@@ -71,6 +71,8 @@
 </FluentCard>
 
 @code {
+	[SupplyParameterFromQuery(Name = "domain")] public string? DomainParam { get; set; }
+
 	private X402ApiStats? stats;
 	private string newUrl = string.Empty;
 	private string? addMessage;
