@@ -74,6 +74,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [Hilt Pay](https://www.hilt.so/x402) - Payment-to-access infrastructure for x402 V2 challenge and retry flows on Solana USDC, with settlement verification, receipts, entitlements, atomic usage consumption, webhooks, SDKs, MCP, and A2A discovery.
 - [mcp-go-x402](https://github.com/mark3labs/mcp-go-x402) - Go SDK for MCP x402  
 - [mogami.tech](https://www.mogami.tech) - SDKs, tools, and services built in Java 
+- [openai-agents-nano](https://github.com/PANDeveloper001/openai-agents-nano-x402) - Python client that pays any x402-priced HTTP endpoint in self-custodied Nano (XNO) from an OpenAI Agents SDK agent, via the feeless402 client. Feel-free and instant.
 - [stipend](https://github.com/stipend-sh/stipend) - Non-custodial USDC wallet on Base for AI agents, in Python. Buyer-side x402 auto-pay signed as EIP-3009 (no gas needed), with per-transaction, per-day and per-counterparty caps and a destination allowlist enforced in code before signing. Local stdio MCP server, 7 tools.
 - [thirdweb](https://thirdweb.com) - Infrastructure for AI Agents (supports x402 integrations)  
 - [x402 dotnet library](https://github.com/michielpost/x402-dotnet)  
