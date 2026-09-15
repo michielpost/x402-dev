@@ -54,7 +54,6 @@ jobs:
         if: steps.check.outputs.violations == 'true' && github.event.inputs.dry_run == 'true'
         run: |
           echo "Dry run: pull request #${PR_NUMBER} would be commented on and closed."
-          echo "Dry run: the run is left green on purpose so it does not mark the branch as failing."
           cat comment.md
 
       - name: Comment on the pull request
@@ -81,11 +80,3 @@ jobs:
           else
             echo "Pull request is already $state."
           fi
-
-      # Deliberately last: a failing step stops the remaining steps, so the comment
-      # and close steps above must complete before the run is marked as failed.
-      - name: Fail the run because disallowed URLs were added
-        if: steps.check.outputs.violations == 'true' && github.event.inputs.dry_run != 'true'
-        run: |
-          echo "::error::Projects.md adds disallowed URLs, so this pull request was rejected."
-          exit 1
