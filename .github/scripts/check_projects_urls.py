@@ -6,8 +6,8 @@ src/x402dev.Services/X402ApiService.cs (AddX402ApiAsync):
 
   * hosts that are a literal IP address are not allowed
   * hosts containing a dashed IP pattern (e.g. 204-168-208-32) are not allowed
-  * hosts containing a blocked domain substring (netlify, trycloudflare, workers.dev)
-    are not allowed
+  * hosts containing a blocked domain substring (netlify, trycloudflare, workers.dev,
+    sslip.io) are not allowed
 
 Usage:
     check_projects_urls.py <diff-file> <comment-outfile>
@@ -27,7 +27,7 @@ import sys
 from urllib.parse import urlsplit
 
 TARGET_FILE = "Projects.md"
-BLOCKED_DOMAIN_SUBSTRINGS = ("netlify", "trycloudflare", "workers.dev")
+BLOCKED_DOMAIN_SUBSTRINGS = ("netlify", "trycloudflare", "workers.dev", "sslip.io")
 DASHED_IP_REGEX = re.compile(r"\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}")
 URL_REGEX = re.compile(r"https?://[^\s)<>\"'`]+", re.IGNORECASE)
 MARKER = "<!-- projects-md-url-check -->"
