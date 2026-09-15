@@ -28,7 +28,7 @@ namespace x402dev.Services
         private static readonly Regex DashedIpRegex = new(@"\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}", RegexOptions.Compiled);
 
         /// <summary>Domain substrings that are never allowed to register.</summary>
-        private static readonly string[] BlockedDomainSubstrings = ["netlify", "trycloudflare"];
+        private static readonly string[] BlockedDomainSubstrings = ["netlify", "trycloudflare", "workers.dev"];
 
         public async Task<List<X402Api>> GetCheckedX402ApisAsync(int max = 500)
         {
