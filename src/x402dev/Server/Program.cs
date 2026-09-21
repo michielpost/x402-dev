@@ -7,10 +7,12 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
 using System.Threading.RateLimiting;
 using x402;
+using x402.Channels;
 using x402.Coinbase;
 using x402.Coinbase.Models;
 using x402dev.Database;
 using x402dev.Server.HostedServices;
+using x402dev.Server.Mcp;
 using x402dev.Server.Services;
 using x402dev.Services;
 
@@ -105,11 +107,16 @@ builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
+builder.Services.AddHttpContextAccessor();
+
+// MCP server exposing the x402 API registry (streamable HTTP at /mcp).
+builder.Services.AddMcpServer()
+    .WithHttpTransport()
+    .WithToolsFromAssembly();
 
 builder.Services.AddSingleton<ContentService>();
 builder.Services.AddScoped<PublicMessagesService>();
-
-builder.Services.AddScoped<PublicMessagesService>();
+builder.Services.AddScoped<X402ApiService>();
 
 
 builder.Services.Configure<CoinbaseOptions>(builder.Configuration.GetSection(nameof(CoinbaseOptions)));
@@ -125,10 +132,14 @@ else
     builder.Services.AddX402().WithCoinbaseFacilitator(builder.Configuration);
 }
 
+// Payment channels for the batch-settlement scheme (used by /demo/batch-settlement)
+builder.Services.AddX402ChannelManager();
+
 
 //Background Hosted Services
 builder.Services.AddHostedService<ContentSyncBackgroundService>();
 builder.Services.AddHostedService<FacilitatorTestBackgroundService>();
+builder.Services.AddHostedService<X402ApiCheckBackgroundService>();
 
 
 
@@ -158,6 +169,20 @@ using (var scope = app.Services.CreateScope())
 
 var contentService = app.Services.GetRequiredService<ContentService>();
 await contentService.Initialize();
+
+// The ChannelManager batches batch-settlement vouchers into periodic on-chain settlements
+// and refunds unused balances of idle channels.
+var channelManager = app.Services.GetRequiredService<ChannelManager>();
+channelManager.Start(new ChannelManagerOptions
+{
+    ClaimIntervalSecs = 60,
+    SettleIntervalSecs = 120,
+    RefundIntervalSecs = 180,
+    MaxClaimsPerBatch = 100,
+    SelectRefundChannels = (channels, ctx) =>
+        channels.Where(ch => ch.Balance > 0 && ctx.Now - ch.LastRequestTimestamp >= TimeSpan.FromMinutes(5)),
+});
+app.Lifetime.ApplicationStopping.Register(() => channelManager.StopAsync(flush: true).GetAwaiter().GetResult());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -204,6 +229,7 @@ app.UseRateLimiter();
 app.UseGrpcWeb();
 app.MapGrpcService<FacilitatorGrpcService>().EnableGrpcWeb();
 app.MapGrpcService<PublicMessageGrpcService>().EnableGrpcWeb();
+app.MapGrpcService<X402ApiGrpcService>().EnableGrpcWeb();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -215,6 +241,8 @@ app.UseSwaggerUI(c =>
 
 app.MapRazorPages();
 app.MapControllers();
+app.MapMcp("/mcp");
+
 app.MapFallbackToFile("index.html");
 
 app.Run();

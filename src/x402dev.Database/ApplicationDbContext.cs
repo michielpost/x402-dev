@@ -7,6 +7,7 @@ namespace x402dev.Database;
 public class ApplicationDbContext : DbContext
 {
     public DbSet<PublicMessage> PublicMessages { get; set; }
+    public DbSet<X402Api> X402Apis { get; set; }
 
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

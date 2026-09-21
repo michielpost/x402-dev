@@ -2,11 +2,14 @@
 {
     public record NetworkOption(string Value, string Name);
 
+    public record SchemeOption(string Value, string Name);
+
     public class SignatureBuilderState
     {
         public string? Pkey { get; set; }
         public string? Address { get; set; }
         public NetworkOption SelectedNetworkOption { get; set; } = new NetworkOption(84532.ToString(), "eip155:84532");
+        public SchemeOption SelectedSchemeOption { get; set; } = new SchemeOption("exact", "exact — pay the advertised price");
         public string? CustomNetworkId { get; set; }
         public string? TokenName { get; set; } = "USDC";
         public string? TokenVersion { get; set; } = "2";
@@ -14,7 +17,7 @@
         public string? PayTo { get; set; } = "0x209693Bc6afc0C5328bA36FaF03C514EF312287C";
         public ulong Amount { get; set; } = 10000;
         public string? Network { get; set; } = "eip155:84532";
-        public string? Resource { get; set; } = "https://www.x402.org/protected";
+        public string? Resource { get; set; } = "https://x402-dotnet.azurewebsites.net/resource/middleware";
         public string? Base64Header { get; set; }
         public string? HeaderJson { get; set; }
         public int LineCount { get; set; } = 10;

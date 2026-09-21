@@ -50,6 +50,9 @@ namespace x402dev.Server.Controllers
                     Resource = new ResourceInfoBasic
                     {
                         Description = "Publish a public message on x402dev.com",
+                        ServiceName = "x402dev Public Messages",
+                        Tags = new List<string> { "messages", "social", "publish" },
+                        IconUrl = "https://www.x402dev.com/x402-button-small.png",
                     },
                     Discoverable = true
                 },
@@ -153,6 +156,9 @@ namespace x402dev.Server.Controllers
                     Resource = new ResourceInfoBasic
                     {
                         Description = "Publish a public message on x402dev.com",
+                        ServiceName = "x402dev Public Messages",
+                        Tags = new List<string> { "messages", "social", "publish" },
+                        IconUrl = "https://www.x402dev.com/x402-button-small.png",
                     },
                     Discoverable = true
                 },

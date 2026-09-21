@@ -14,6 +14,8 @@ namespace x402dev.Shared.Models
         public DateTime? NextCheck { get; set; }
 
         public List<string> Kinds { get; set; } = new();
+        public List<string> Schemes { get; set; } = new();
+        public bool SupportsDiscovery { get; set; }
         public bool HasError { get; set; }
         public string? ErrorMessage { get; set; }
         public int ErrorCount { get; set; }

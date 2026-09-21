@@ -139,6 +139,17 @@ namespace x402dev.Services
 
                         facilitator.Kinds = supportedResponse.Kinds;
                         facilitator.ErrorCount = 0;
+
+                        //Check if the facilitator supports the discovery layer (Bazaar)
+                        try
+                        {
+                            var discoveryResponse = await facilitatorClient.DiscoveryAsync(limit: 1);
+                            facilitator.SupportsDiscovery = discoveryResponse != null;
+                        }
+                        catch
+                        {
+                            facilitator.SupportsDiscovery = false;
+                        }
                     }
                     catch (Exception ex)
                     {

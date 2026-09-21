@@ -14,7 +14,7 @@ namespace x402dev.Server.Services
             return result.Select(pm => new PublicMessage
             {
                 Asset = pm.Asset,
-                CreatedDateTime = pm.CreatedDateTime.DateTime,
+                CreatedDateTime = DateTime.SpecifyKind(pm.CreatedDateTime.DateTime, DateTimeKind.Utc),
                 Link = pm.Link,
                 Message = pm.Message,
                 Name = pm.Name,

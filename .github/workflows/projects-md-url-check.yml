@@ -1,0 +1,82 @@
+name: Validate Projects.md URLs
+
+# Uses pull_request_target so the job has a write token even for fork pull requests.
+# Only the pull request diff is read here - no code from the pull request is checked
+# out or executed.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'Projects.md'
+
+  # Manual runs are useful for validating an existing pull request. The workflow
+  # file must be present on the default branch before this trigger can be used.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to validate
+        required: true
+        type: string
+      dry_run:
+        description: Only report violations (do not comment or close the pull request)
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  validate-urls:
+    runs-on: ubuntu-latest
+
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+      REPO: ${{ github.repository }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+
+      - name: Validate URLs added to Projects.md
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr diff "$PR_NUMBER" --repo "$REPO" > pr.diff
+          python3 .github/scripts/check_projects_urls.py pr.diff comment.md
+
+      - name: Dry-run summary
+        if: steps.check.outputs.violations == 'true' && github.event.inputs.dry_run == 'true'
+        run: |
+          echo "Dry run: pull request #${PR_NUMBER} would be commented on and closed."
+          cat comment.md
+
+      - name: Comment on the pull request
+        if: steps.check.outputs.violations == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq '.[] | select(.body | contains("<!-- projects-md-url-check -->")) | .id' || true)
+          if [ -z "$existing" ]; then
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file comment.md
+          else
+            echo "A validation comment already exists; skipping."
+          fi
+
+      - name: Close the pull request
+        if: steps.check.outputs.violations == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json state --jq .state)
+          if [ "$state" = "OPEN" ]; then
+            gh pr close "$PR_NUMBER" --repo "$REPO"
+          else
+            echo "Pull request is already $state."
+          fi
