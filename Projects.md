@@ -2,7 +2,8 @@
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
 
-- [402links](https://402links.com/) - Monetize any link with HTTP 402  
+- [402links](https://402links.com/) - Monetize any link with HTTP 402  - [Royal Agentic Enterprises — RAE x402 Fleet](https://dispatch-x402.fly.dev) - 9 production x402 v2 services on Base mainnet (14 paid routes: consumer-debt dispute packs, project/agent scaffolding, outreach email scoring, image generation & editing, US consumer-rights law lookup, skill discovery, market signals, and natural-language service routing). $0.01–$5.00 USDC per call; no API keys, no signup. Each service publishes `/.well-known/x402.json` and an OpenAPI 3 spec. [Discovery](https://dispatch-x402.fly.dev/.well-known/x402.json) | [OpenAPI](https://dispatch-x402.fly.dev/openapi.json)
+
 - [proxy402](https://proxy402.com/) - Monetize any link in seconds  
 - [Gatepay](https://gatepay.cloud/) - Monetize any digital content with crypto payments  
 - [httpayer](https://www.httpayer.com/) - Automated x402 payments for Web2, Web3 and AI Agents
