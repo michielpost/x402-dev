@@ -66,6 +66,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [sigtap Agent Tools](https://sigtap-outreach-api.sigtap.workers.dev/) - 12 pay-per-call outreach + utility APIs for AI agents: cold-email grader and generator, deliverability (SPF/DKIM/DMARC/MX), hashing, UUID/ULID batch, slug (latin+Cyrillic), regex tester, JWT decode, JSON flatten/CSV, crypto price, domain age, weather. $0.0005-$0.01 USDC per call on Base via x402, no API keys; free truncated preview of every tool at /preview/<path>. Hosted MCP server with the same tools. [OpenAPI](https://sigtap-outreach-api.sigtap.workers.dev/openapi.json) | [llms.txt](https://sigtap-outreach-api.sigtap.workers.dev/llms.txt) | [llms-full.txt](https://sigtap-outreach-api.sigtap.workers.dev/llms-full.txt) | [MCP](https://sigtap-mcp.sigtap.workers.dev/mcp)
 
 - [Agent Embassy](https://agent-embassy.fly.dev) - Agents pay for work and prove what happened. Paid x402 v2 service (USDC on Base and Arbitrum One): verified_check $0.15, register_recovery $1.00, compute spot/history/alerts $0.25 per call. [Discovery](https://agent-embassy.fly.dev/.well-known/x402.json) | [Skill](https://agent-embassy.fly.dev/skill.md)
+- [Loophole Tape](https://api.loopholetape.com) - Pay-per-call pump.fun launch-risk checks (calibrated rug and graduation probabilities), launch feeds from $0.001 per poll, and Robinhood Chain launch-curve data from the seller's own chain capture. x402 v2 in USDC on Solana or Base, over HTTP and MCP; free radar and samples.  
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
