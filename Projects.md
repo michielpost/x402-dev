@@ -69,6 +69,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Agent Embassy](https://agent-embassy.fly.dev) - Agents pay for work and prove what happened. Paid x402 v2 service (USDC on Base and Arbitrum One): verified_check $0.15, register_recovery $1.00, compute spot/history/alerts $0.25 per call. [Discovery](https://agent-embassy.fly.dev/.well-known/x402.json) | [Skill](https://agent-embassy.fly.dev/skill.md)
 - [Loophole Tape](https://api.loopholetape.com) - Pay-per-call pump.fun launch-risk checks (calibrated rug and graduation probabilities), launch feeds from $0.001 per poll, and Robinhood Chain launch-curve data from the seller's own chain capture. x402 v2 in USDC on Solana or Base, over HTTP and MCP; free radar and samples.  
 
+- [AurasPay Agentic Payments](https://auraspay.com/agentic-payments) - Merchant commerce APIs and MCP with route-scoped x402 payments on Base USDC and AurasPay-owned, unaudited 99/1 split settlement; existing payment links use a separate custom scheme.
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
