@@ -117,3 +117,5 @@ Educational content, directories, and resource hubs.
 - [x402 on Coingecko](https://www.coingecko.com/en/categories/x402-ecosystem) - Top x402 Ecosystem Coins by Market Cap
 - [AffixIO](https://www.npmjs.com/package/affixio) - Agentic Pay Kit with x402BeforePay host-side action attestation before pay (signed yes/no on host, not person KYC), agenticPay, mcpToolGate, and KYA createAgentTrust. ([GitHub](https://github.com/AffixIO/SDK)) ([docs](https://www.affix-io.com/agent-trust/))
 - [HostDeFi](https://hostdefi.com/api/v1/x402/pricing) - x402-payable token-safety API: A+–F grades, risk scores and datasets settle per call in USDC; free `scan_token` MCP tool also available.
+
+- [Vend](https://paypercall.dev/) - Pay-per-call data APIs for AI agents settled in Nano (XNO): clean text/markdown extraction from any URL, web search, IP geolocation, domain intelligence and Nano account info. x402-v2-conformant, no signup/no API keys. 0.0001-0.0005 XNO per call on a fee-free native rail. Full manifest at https://extract.paypercall.dev/.well-known/x402, OpenAPI at /openapi.json.
