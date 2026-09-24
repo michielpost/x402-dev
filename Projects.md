@@ -71,6 +71,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Loophole Tape](https://api.loopholetape.com) - Pay-per-call pump.fun launch-risk checks (calibrated rug and graduation probabilities), launch feeds from $0.001 per poll, and Robinhood Chain launch-curve data from the seller's own chain capture. x402 v2 in USDC on Solana or Base, over HTTP and MCP; free radar and samples.  
 
 - [AurasPay Agentic Payments](https://auraspay.com/agentic-payments) - Merchant commerce APIs and MCP with route-scoped x402 payments on Base USDC and AurasPay-owned, unaudited 99/1 split settlement; existing payment links use a separate custom scheme.
+- [Agent Guard](https://zack-workstation.tail5658d7.ts.net:10000) - Pay-per-call guard endpoints for autonomous agents (x402 v2, USDC on Base): prompt-injection screening, tool-call risk gating, scam/phishing detection, shill-aware crypto sentiment, token rug-pull screening and passage reranking. $0.005-$0.01 per call, failed calls not charged. [OpenAPI](https://zack-workstation.tail5658d7.ts.net:10000/openapi.json) | [llms.txt](https://zack-workstation.tail5658d7.ts.net:10000/llms.txt) | [GitHub](https://github.com/CanadaOrNaw/agent-guard-x402)  
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
