@@ -87,6 +87,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [mcp-go-x402](https://github.com/mark3labs/mcp-go-x402) - Go SDK for MCP x402  
 - [mogami.tech](https://www.mogami.tech) - SDKs, tools, and services built in Java 
 - [openai-agents-nano](https://github.com/PANDeveloper001/openai-agents-nano-x402) - Python client that pays any x402-priced HTTP endpoint in self-custodied Nano (XNO) from an OpenAI Agents SDK agent, via the feeless402 client. Feel-free and instant.
+- [Sato Hub](https://satohub.ai/standards/x402) - Index of x402 tools scored on how open, active and verifiable they are, plus a map of x402 facilitators on Base and a check of which declared x402 endpoints answer HTTP 402 with a parseable payment payload (no payment sent). Free keyless MCP server; Preflight checks a repo, package or endpoint before you connect or pay. [MCP](https://satohub.ai/mcp) | [Endpoint check](https://satohub.ai/x402/verified) | [Facilitators](https://satohub.ai/x402/facilitators)
 - [stipend](https://github.com/stipend-sh/stipend) - Non-custodial USDC wallet on Base for AI agents, in Python. Buyer-side x402 auto-pay signed as EIP-3009 (no gas needed), with per-transaction, per-day and per-counterparty caps and a destination allowlist enforced in code before signing. Local stdio MCP server, 7 tools.
 - [thirdweb](https://thirdweb.com) - Infrastructure for AI Agents (supports x402 integrations)  
 - [x402 dotnet library](https://github.com/michielpost/x402-dotnet)  
