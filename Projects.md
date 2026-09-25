@@ -71,6 +71,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Loophole Tape](https://api.loopholetape.com) - Pay-per-call pump.fun launch-risk checks (calibrated rug and graduation probabilities), launch feeds from $0.001 per poll, and Robinhood Chain launch-curve data from the seller's own chain capture. x402 v2 in USDC on Solana or Base, over HTTP and MCP; free radar and samples.  
 
 - [AurasPay Agentic Payments](https://auraspay.com/agentic-payments) - Merchant commerce APIs and MCP with route-scoped x402 payments on Base USDC and AurasPay-owned, unaudited 99/1 split settlement; existing payment links use a separate custom scheme.
+- [Vend — extract (pay-per-call API)](https://extract.paypercall.dev/api/v1/extract) - Pay-per-call API suite for AI agents (clean web-text extraction, geoip, search and more), settling fee-free in native Nano (XNO) via the x402 v2 exact scheme on `nano:mainnet` — no signup, no API key, zero network fee, sub-second finality. [x402 manifest](https://extract.paypercall.dev/.well-known/x402)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
