@@ -4,6 +4,9 @@
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
 
+- [Bounty Aggregator API](https://bounty-api-ajis.onrender.com/bounties) - Aggregated open bounty listings for AI agents: title, USDC reward, required skills, deadline, source URL. $0.02 USDC/call on Base via x402. [Free demo](https://bounty-api-ajis.onrender.com/demo)
+- [Contract Risk Scanner](https://contract-scanner-zrjr.onrender.com/scan) - Smart-contract risk scanner: submit a contract address or bytecode, receive a risk score with findings. $0.02 USDC/call on Base via x402.
+
 - [402 load network](https://402.load.network/) - The x402 toolkit for ANS-104 dataitems  
 - [402Signal](https://402signal.com) - Checks live x402 routes across Base, Solana, and Algorand before agents spend. $0.003 USDC settles only for a valid live eligible route; normal typed misses are not settled. Seller payment is separate and the agent keeps its wallet. The PQ Trust log targets Algorand MainNet.
 - [Royal Agentic Enterprises — RAE x402 Fleet](https://dispatch-x402.fly.dev) - 9 production x402 v2 services on Base mainnet (14 paid routes: consumer-debt dispute packs, project/agent scaffolding, outreach email scoring, image generation & editing, US consumer-rights law lookup, skill discovery, market signals, and natural-language service routing). $0.01–$5.00 USDC per call; no API keys, no signup. Each service publishes `/.well-known/x402.json` and an OpenAPI 3 spec. [Discovery](https://dispatch-x402.fly.dev/.well-known/x402.json) | [OpenAPI](https://dispatch-x402.fly.dev/openapi.json)
