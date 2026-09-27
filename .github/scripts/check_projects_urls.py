@@ -27,7 +27,7 @@ import sys
 from urllib.parse import urlsplit
 
 TARGET_FILE = "Projects.md"
-BLOCKED_DOMAIN_SUBSTRINGS = ("netlify", "trycloudflare", "workers.dev", "sslip.io")
+BLOCKED_DOMAIN_SUBSTRINGS = ("netlify", "trycloudflare", "workers.dev", "sslip.io", "ts.net")
 DASHED_IP_REGEX = re.compile(r"\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}")
 URL_REGEX = re.compile(r"https?://[^\s)<>\"'`]+", re.IGNORECASE)
 MARKER = "<!-- projects-md-url-check -->"
