@@ -99,6 +99,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [x402 dotnet library](https://github.com/michielpost/x402-dotnet)  
 - [x402 List](https://x402-list.com) - Directory of x402 API services with live uptime monitoring and machine-readable discovery for agents (JSON API, OpenAPI 3.1, llms.txt), plus on-chain-verified settlement volume per facilitator. Free read API and a free MCP server. [API](https://x402-list.com/api/v1/services) | [MCP](https://mcp.x402-list.com/mcp)
 - [x402 specs](https://github.com/coinbase/x402/blob/main/specs/x402-specification-v2.md) - Official specification  
+- [x402-idempotency](https://github.com/IAmNotTheSource/x402-idempotency) - Server-side implementation of the `payment-identifier` extension for x402 resource servers: replays return the original response without charging again, same id with a different request gets 409. Registers as an `@x402/core` extension or wraps any x402 server as Node/fetch middleware. TypeScript, zero runtime dependencies, MIT.
 - [x402-proxy](https://github.com/cascade-protocol/x402-proxy) - `curl` for x402 paid APIs. CLI and library that auto-pays HTTP 402 responses with USDC on Base and Solana, with MCP stdio proxy for AI agents. `npx x402-proxy`.
 - [x402-python](https://github.com/cryptomotifs/x402-python) - First Python client for x402 HTTP 402 payments (Linux Foundation spec, v2). Decimal-precise nanopayment conversion, EIP-712 signing, async + sync APIs.
 - [x402-solana](https://github.com/payainetwork/x402-solana) - Solana SDK for x402
