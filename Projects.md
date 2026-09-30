@@ -70,7 +70,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Textus](https://textus.dev) - Structured literary content for AI agents, including complete selected text units, metadata, characters, scenes and editable baseline reading direction. Discover resources freely and purchase production-material JSON through x402.
 
 - [NEX Agent Co.](https://nexaitechau.github.io/) - Live x402 + A2A dual-protocol agentic commerce on Base. 11 paid USDC endpoints at $0.001-0.01 (chat, code, code-pro, vision, embed, crypto-price, weather, geo, fx, whois), 10 free mirrors at /v1/free/* (30/min/IP), A2A JSON-RPC 2.0 endpoint at /a2a/tasks/send, Apache-2.0 reference server, 23 on-chain NFTs for ERC-8004-style reputation. First A2A + x402 dual-protocol agent. [A2A](https://nexaitechau.github.io/agent-card-a2a.json) | [GitHub](https://github.com/NEXAITECHAU/nex-x402-server)
-
+- [TrollBridge](https://mini-tollbooth.onrender.com) - 15-lane x402 pay-per-call intel feed for AI agents: bounties, prices, yields, web search, token safety, Polymarket odds and more. $0.02–$0.05 USDC/call on Base and Solana, no API keys, no signup. [OpenAPI](https://mini-tollbooth.onrender.com/openapi.json) | [GitHub](https://github.com/eric-tijerina/mini-tollbooth)
 - [sigtap Agent Tools](https://sigtap-outreach-api.sigtap.workers.dev/) - 12 pay-per-call outreach + utility APIs for AI agents: cold-email grader and generator, deliverability (SPF/DKIM/DMARC/MX), hashing, UUID/ULID batch, slug (latin+Cyrillic), regex tester, JWT decode, JSON flatten/CSV, crypto price, domain age, weather. $0.0005-$0.01 USDC per call on Base via x402, no API keys; free truncated preview of every tool at /preview/<path>. Hosted MCP server with the same tools. [OpenAPI](https://sigtap-outreach-api.sigtap.workers.dev/openapi.json) | [llms.txt](https://sigtap-outreach-api.sigtap.workers.dev/llms.txt) | [llms-full.txt](https://sigtap-outreach-api.sigtap.workers.dev/llms-full.txt) | [MCP](https://sigtap-mcp.sigtap.workers.dev/mcp)
 
 - [Agent Embassy](https://agent-embassy.fly.dev) - Agents pay for work and prove what happened. Paid x402 v2 service (USDC on Base and Arbitrum One): verified_check $0.15, register_recovery $1.00, compute spot/history/alerts $0.25 per call. [Discovery](https://agent-embassy.fly.dev/.well-known/x402.json) | [Skill](https://agent-embassy.fly.dev/skill.md)
@@ -80,6 +80,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Vend — extract (pay-per-call API)](https://extract.paypercall.dev/api/v1/extract) - Pay-per-call API suite for AI agents (clean web-text extraction, geoip, search and more), settling fee-free in native Nano (XNO) via the x402 v2 exact scheme on `nano:mainnet` — no signup, no API key, zero network fee, sub-second finality. [x402 manifest](https://extract.paypercall.dev/.well-known/x402)
 
 ## x402 Developer Tools & SDKs
+
 Libraries, SDKs, and dev tools for building with x402.
 
 - [@bridgenode/llm](https://www.npmjs.com/package/@bridgenode/llm) - TypeScript SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
