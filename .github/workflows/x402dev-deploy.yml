@@ -12,6 +12,7 @@ on:
       - 'LICENSE'
       - 'facilitators.json'
       - 'Projects.md'
+      - '.github/scripts/**'
       - 'src/x402dev/Client/**'
       
   workflow_dispatch:
@@ -60,3 +61,9 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B5B736FE3842494380EFFB3D0C7A34F8 }}
+
+      - name: Delete artifact after deploy
+        uses: actions/delete-artifact@v7
+        with:
+          name: .net-app
+          failOnError: false
