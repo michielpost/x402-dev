@@ -63,7 +63,11 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B5B736FE3842494380EFFB3D0C7A34F8 }}
 
       - name: Delete artifact after deploy
-        uses: actions/upload-artifact@v7
-        with:
-          action: delete
-          name: .net-app
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ARTIFACT_ID=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=.net-app" \
+            --jq '.artifacts[] | select(.name == ".net-app" and .expired == false) | .id' | head -n 1)
+          if [ -n "$ARTIFACT_ID" ]; then
+            gh api -X DELETE "repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID"
+          fi
