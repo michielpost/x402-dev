@@ -252,7 +252,7 @@ app.MapFallbackToFile("index.html");
 
 app.Run();
 
-internal static partial class Program
+internal partial class Program
 {
     // Deletes a database's stale -wal/-shm sidecar files if present, but only when
     // no other process currently has the database open. Opening the main file with
