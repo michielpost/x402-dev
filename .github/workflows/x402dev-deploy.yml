@@ -63,7 +63,7 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B5B736FE3842494380EFFB3D0C7A34F8 }}
 
       - name: Delete artifact after deploy
-        uses: actions/delete-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
+          action: delete
           name: .net-app
-          failOnError: false
