@@ -4,7 +4,11 @@ namespace x402dev.Server.HostedServices
 {
     public class X402ApiCheckBackgroundService : IHostedService, IDisposable
     {
+        private static readonly TimeSpan CleanupInterval = TimeSpan.FromHours(24);
+        private const int CleanupWindowDays = 2;
+
         private int isBusy = 0;
+        private DateTimeOffset lastCleanup = DateTimeOffset.MinValue;
         private readonly ILogger<X402ApiCheckBackgroundService> _logger;
         private readonly IServiceProvider services;
         private Timer? _timer;
@@ -42,6 +46,17 @@ namespace x402dev.Server.HostedServices
                             .GetRequiredService<X402ApiService>();
 
                     await scopedProcessingService.CheckDueApisAsync();
+
+                    if (DateTimeOffset.UtcNow - lastCleanup >= CleanupInterval)
+                    {
+                        var deleted = await scopedProcessingService.CleanupStaleX402ApisAsync(CleanupWindowDays);
+                        lastCleanup = DateTimeOffset.UtcNow;
+
+                        if (deleted > 0)
+                        {
+                            _logger.LogInformation($"Deleted {deleted} x402 APIs without success in the last {CleanupWindowDays * 24} hours.");
+                        }
+                    }
                 }
             }
             catch (Exception ex)

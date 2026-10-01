@@ -397,16 +397,18 @@ namespace x402dev.Services
         }
 
         /// <summary>
-        /// Deletes all x402 API entries that have never had a successful check,
-        /// or whose last successful check is older than the given number of days.
-        /// Returns the number of deleted entries.
+        /// Deletes all x402 API entries that had no successful check in the given
+        /// number of days: either never successful, or last success older than the
+        /// cutoff. Entries added within the window are kept so fresh entries get a
+        /// chance to be checked. Returns the number of deleted entries.
         /// </summary>
         public async Task<int> CleanupStaleX402ApisAsync(int days = 7)
         {
             var cutoff = DateTimeOffset.UtcNow.AddDays(-days);
 
             var staleApis = await dbContext.X402Apis
-                .Where(x => x.LastSuccessDateTime == null || x.LastSuccessDateTime < cutoff)
+                .Where(x => x.AddedDateTime < cutoff
+                    && (x.LastSuccessDateTime == null || x.LastSuccessDateTime < cutoff))
                 .ToListAsync();
 
             if (staleApis.Count == 0)
