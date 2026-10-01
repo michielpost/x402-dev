@@ -530,6 +530,12 @@ namespace x402dev.Services
         }
 
         /// <summary>
+        /// Minimum pause between two URL checks, so the background checker never
+        /// hammers endpoints back-to-back.
+        /// </summary>
+        public static readonly TimeSpan MinDelayBetweenChecks = TimeSpan.FromMilliseconds(400);
+
+        /// <summary>
         /// Checks all APIs that are due and updates the check results.
         /// </summary>
         public async Task CheckDueApisAsync()
@@ -547,8 +553,16 @@ namespace x402dev.Services
             var httpClient = httpClientFactory.CreateClient();
             httpClient.Timeout = TimeSpan.FromSeconds(15);
 
-            foreach (var api in dueApis)
+            for (var i = 0; i < dueApis.Count; i++)
             {
+                var api = dueApis[i];
+
+                // At least 400 ms between two checks.
+                if (i > 0)
+                {
+                    await Task.Delay(MinDelayBetweenChecks);
+                }
+
                 await CheckApiAsync(api, httpClient);
                 api.NextCheckDateTime = DateTimeOffset.UtcNow.AddMinutes(Random.Shared.Next(24 * 60, 48 * 60 + 1));
             }
