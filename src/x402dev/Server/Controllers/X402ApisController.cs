@@ -28,9 +28,14 @@ namespace x402dev.Server.Controllers
             var clientIp = HttpContext.Connection.RemoteIpAddress?.ToString();
             var (api, error) = await x402ApiService.AddX402ApiAsync(request?.Url ?? string.Empty, clientIp);
 
-            return api == null
-                ? BadRequest(new { error })
-                : Created($"/x402-apis/detail?url={Uri.EscapeDataString(api.Url)}", new { api.Url, api.Domain });
+            if (api != null)
+            {
+                return Created($"/x402-apis/detail?url={Uri.EscapeDataString(api.Url)}", new { api.Url, api.Domain });
+            }
+
+            return error == X402ApiService.GlobalRateLimitError
+                ? StatusCode(StatusCodes.Status429TooManyRequests, new { error })
+                : BadRequest(new { error });
         }
 
         /// <summary>

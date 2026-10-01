@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Text.Json;
+using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,27 @@ namespace x402dev.Services
 
         /// <summary>Maximum number of URLs one client (IP) may add per rolling hour.</summary>
         public const int MaxAddsPerHourPerIp = 10;
+
+        /// <summary>Global cap on new endpoint submissions: at most one per second, shared by all clients (IP-independent).</summary>
+        public const int MaxAddsPerSecondGlobal = 1;
+
+        /// <summary>Error returned when the global 1-per-second submit limit is exceeded.</summary>
+        public const string GlobalRateLimitError = "Too many submissions. Only one endpoint may be added per second. Please retry shortly.";
+
+        /// <summary>
+        /// Thread-safe token bucket shared across all requests: 1 token replenished
+        /// once per second, so submissions are throttled to at most one per second
+        /// in total, regardless of which IP they come from.
+        /// </summary>
+        private static readonly RateLimiter GlobalAddLimiter = new TokenBucketRateLimiter(new TokenBucketRateLimiterOptions
+        {
+            TokenLimit = MaxAddsPerSecondGlobal,
+            ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+            TokensPerPeriod = MaxAddsPerSecondGlobal,
+            AutoReplenishment = true,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = 0
+        });
 
         /// <summary>Matches dashed IP addresses like 204-168-208-32 inside a domain name.</summary>
         private static readonly Regex DashedIpRegex = new(@"\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}", RegexOptions.Compiled);
@@ -231,11 +253,20 @@ namespace x402dev.Services
 
         /// <summary>
         /// Adds a new x402 API url. Returns the entity or an error message.
-        /// Guards against abuse: SSRF (private/loopback hosts), per-IP rate limiting
-        /// and a maximum number of endpoints per domain.
+        /// Guards against abuse: SSRF (private/loopback hosts), a global 1-per-second
+        /// submit rate limit, per-IP rate limiting and a maximum number of endpoints
+        /// per domain.
         /// </summary>
         public async Task<(X402Api? Api, string? Error)> AddX402ApiAsync(string url, string? clientIp = null)
         {
+            // Global throttle: at most one submission per second in total,
+            // shared across all clients regardless of IP.
+            using var globalLease = await GlobalAddLimiter.AcquireAsync(1);
+            if (!globalLease.IsAcquired)
+            {
+                return (null, GlobalRateLimitError);
+            }
+
             if (string.IsNullOrWhiteSpace(url) ||
                 !Uri.TryCreate(url.Trim(), UriKind.Absolute, out var uri) ||
                 (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
