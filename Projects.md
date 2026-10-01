@@ -79,6 +79,9 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 
 - [AurasPay Agentic Payments](https://auraspay.com/agentic-payments) - Merchant commerce APIs and MCP with route-scoped x402 payments on Base USDC and AurasPay-owned, unaudited 99/1 split settlement; existing payment links use a separate custom scheme.
 - [Vend — extract (pay-per-call API)](https://extract.paypercall.dev/api/v1/extract) - Pay-per-call API suite for AI agents (clean web-text extraction, geoip, search and more), settling fee-free in native Nano (XNO) via the x402 v2 exact scheme on `nano:mainnet` — no signup, no API key, zero network fee, sub-second finality. [x402 manifest](https://extract.paypercall.dev/.well-known/x402)
+- [AgentPay Web Extract](https://agentpay-extract.agentpay-apis.workers.dev) - Any URL to clean, LLM-ready markdown plus title, Open Graph metadata, canonical URL and outbound links. $0.005 USDC/call on Base or Algorand via x402; also a remote MCP server.
+- [AgentPay Domain & Network Lookup](https://agentpay-lookup.agentpay-apis.workers.dev) - DNS records, WHOIS/RDAP registration, IP ownership with reverse DNS, and one-call domain reports (email provider, SPF/DMARC, hosting). $0.005-$0.02 USDC/call on Base or Algorand via x402; also a remote MCP server.
+- [AgentPay Doc Tools](https://agentpay-tools.agentpay-apis.workers.dev) - PDF URL to per-page text, RSS/Atom/JSON Feed to normalized JSON, and sitemap (via robots.txt) to URL list. $0.005-$0.01 USDC/call on Base or Algorand via x402; also a remote MCP server.
 
 ## x402 Developer Tools & SDKs
 
