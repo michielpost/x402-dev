@@ -8,22 +8,22 @@
 	@if (ShowSearch)
 	{
 		<div class="api-list-toolbar">
-			<FluentSearch @bind-Value="searchText"
-						  @bind-Value:after="OnSearchChanged"
-						  Placeholder="Search by url or description…"
-						  aria-label="Search x402 APIs" />
+			<FluentTextInput @bind-Value="searchText"
+							 @bind-Value:after="OnSearchChanged"
+							 Placeholder="Search by url or description…"
+							 AriaLabel="Search x402 APIs" />
 		</div>
 	}
 
 	<FluentDataGrid @ref="grid" Id="x402apilist" ItemsProvider="@LoadItems" TGridItem="X402Api" AutoFit="true" MultiLine="true" ShowHover="true" OnRowClick="OnRowClicked" Pagination="@pagination">
-		<TemplateColumn Title="Status" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByAscending(a => a.HasError))">
+		<TemplateColumn Title="Status" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<X402Api>.ByAscending(a => a.HasError))">
 			<span class="fac-status @(context.HasError ? "fac-status--offline" : "fac-status--online")">
 				<span class="fac-status-dot"></span>
 				@(context.HasError ? "Error" : "OK")
 			</span>
 		</TemplateColumn>
 
-		<TemplateColumn Title="API" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByAscending(a => a.Url))">
+		<TemplateColumn Title="API" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<X402Api>.ByAscending(a => a.Url))">
 			<span class="fac-url">@context.Url</span>
 			@if (!string.IsNullOrWhiteSpace(context.ServiceName))
 			{
@@ -33,10 +33,10 @@
 
 		@if (ShowDomainColumn)
 		{
-			<PropertyColumn Title="Domain" Property="@(a => a.Domain)" Sortable="true" Align="Align.Start" />
+			<PropertyColumn Title="Domain" Property="@(a => a.Domain)" Sortable="true" Align="DataGridCellAlignment.Start" />
 		}
 
-		<TemplateColumn Title="Description" Align="Align.Start">
+		<TemplateColumn Title="Description" Align="DataGridCellAlignment.Start">
 			@if (!string.IsNullOrWhiteSpace(context.Description))
 			{
 				<span>@context.Description</span>
@@ -47,19 +47,19 @@
 			}
 		</TemplateColumn>
 
-		<TemplateColumn Title="Payments" Align="Align.Start">
+		<TemplateColumn Title="Payments" Align="DataGridCellAlignment.Start">
 			<div class="fac-networks">
 				@foreach (var req in (context.Requirements ?? new()).Distinct().Take(10))
 				{
-					<FluentBadge Appearance="Appearance.Neutral" Circular="true">@(req.NetworkName ?? req.Network)</FluentBadge>
+					<FluentBadge Appearance="BadgeAppearance.Filled" Shape="BadgeShape.Circular" Content="@(req.NetworkName ?? req.Network)" />
 					<span class="fac-note">@(req.AmountFormatted ?? req.Amount) @(req.AssetName ?? req.Asset)</span>
 				}
 			</div>
 		</TemplateColumn>
 
-		<PropertyColumn Title="Version" Property="@(a => a.Version)" Sortable="true" Align="Align.Start" />
+		<PropertyColumn Title="Version" Property="@(a => a.Version)" Sortable="true" Align="DataGridCellAlignment.Start" />
 
-		<TemplateColumn Title="Last Check" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByDescending(a => a.LastCheck))">
+		<TemplateColumn Title="Last Check" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<X402Api>.ByDescending(a => a.LastCheck))">
 			@if (context.LastCheck.HasValue)
 			{
 				<span class="fac-checked">@FormatDate(context.LastCheck.Value)</span>
@@ -70,7 +70,7 @@
 			}
 		</TemplateColumn>
 
-		<TemplateColumn Title="Added" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402Api>.ByDescending(a => a.Added))">
+		<TemplateColumn Title="Added" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<X402Api>.ByDescending(a => a.Added))">
 			<span class="fac-checked">@FormatDate(context.Added)</span>
 		</TemplateColumn>
 	</FluentDataGrid>
@@ -100,7 +100,7 @@
 		base.OnInitialized();
 	}
 
-	private void OnTotalItemCountChanged(object? sender, int? count) => InvokeAsync(StateHasChanged);
+	private void OnTotalItemCountChanged(object? sender, TotalItemCountChangedEventArgs e) => InvokeAsync(StateHasChanged);
 
 	private async Task OnSearchChanged()
 	{
@@ -123,7 +123,7 @@
 
 		foreach (var sort in request.GetSortByProperties())
 		{
-			grpcRequest.SortBy.Add(sort.Direction == SortDirection.Descending ? $"-{sort.PropertyName}" : sort.PropertyName);
+			grpcRequest.SortBy.Add(sort.Direction == DataGridSortDirection.Descending ? $"-{sort.PropertyName}" : sort.PropertyName);
 		}
 
 		var result = Mode == ListMode.Problems

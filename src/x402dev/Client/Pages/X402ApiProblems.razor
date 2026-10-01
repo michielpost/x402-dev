@@ -23,12 +23,12 @@
 		Submit an x402-protected URL. It will be checked automatically and added to the list.
 	</p>
 	<FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8">
-		<FluentTextField @bind-Value="@newUrl"
+		<FluentTextInput @bind-Value="@newUrl"
 						 Style="width: 420px; max-width: 100%;"
 						 Placeholder="https://api.example.com/protected-resource"
-						 aria-label="API URL"
+						 AriaLabel="API URL"
 						 Required="true" />
-		<FluentButton Appearance="Appearance.Accent" OnClick="AddApi" Disabled="@isAdding">Add</FluentButton>
+		<FluentButton Appearance="ButtonAppearance.Primary" OnClick="AddApi" Disabled="@isAdding">Add</FluentButton>
 	</FluentStack>
 
 	@if (!string.IsNullOrEmpty(addMessage))
@@ -46,7 +46,7 @@
 	private string? addMessage;
 	private bool addSuccess;
 	private bool isAdding;
-	private MessageIntent AddIntent => addSuccess ? MessageIntent.Success : MessageIntent.Error;
+	private MessageBarIntent AddIntent => addSuccess ? MessageBarIntent.Success : MessageBarIntent.Error;
 
 	protected override Task OnInitializedAsync() => Task.CompletedTask;
 

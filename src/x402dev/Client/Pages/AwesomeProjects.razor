@@ -10,22 +10,22 @@
         curated by the community.
     </p>
     <div class="page-header-actions">
-        <FluentAnchor Href="/x402-apis">
+        <FluentLink Href="/x402-apis">
             Looking for x402 endpoints? Check out the list here
-        </FluentAnchor>
-        <FluentAnchor Appearance="Appearance.Accent"
-                      Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md"
-                      Target="_blank"
-                      Rel="noopener">
+        </FluentLink>
+        <FluentAnchorButton Appearance="ButtonAppearance.Primary"
+                            Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md"
+                            Target="LinkTarget.Blank"
+                            Rel="noopener">
             View on GitHub
-        </FluentAnchor>
+        </FluentAnchorButton>
     </div>
 </div>
 
 @if (Text == null)
 {
     <div class="page-loading">
-        <FluentProgressRing />
+        <FluentSpinner />
         <span>Loading projects…</span>
     </div>
 }
@@ -42,12 +42,12 @@ else
             <h3>Want to add your project?</h3>
             <p>Built something with x402? Share it with the community by submitting a pull request.</p>
         </div>
-        <FluentAnchor Appearance="Appearance.Accent"
-                      Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md"
-                      Target="_blank"
-                      Rel="noopener">
+        <FluentAnchorButton Appearance="ButtonAppearance.Primary"
+                            Href="https://github.com/michielpost/x402-dev/blob/master/Projects.md"
+                            Target="LinkTarget.Blank"
+                            Rel="noopener">
             Submit a Pull Request
-        </FluentAnchor>
+        </FluentAnchorButton>
     </div>
 </FluentCard>
 

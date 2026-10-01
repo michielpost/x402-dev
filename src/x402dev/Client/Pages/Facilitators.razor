@@ -1,4 +1,4 @@
-﻿@page "/facilitators"
+@page "/facilitators"
 @inject IFacilitatorGrpcService FacilitatorGrpcService
 @using x402dev.Shared.Interfaces
 @using x402dev.Shared.Models
@@ -17,23 +17,23 @@
 @if (facilitators == null)
 {
 	<div class="page-loading">
-		<FluentProgressRing />
+		<FluentSpinner />
 		<span>Checking facilitator status…</span>
 	</div>
 }
 else
 {
 	<FluentDataGrid Id="facilitatorgrid" Items="@facilitators" TGridItem="Facilitator" AutoFit="true" MultiLine="true">
-		<TemplateColumn Title="Status" Sortable="true" Align="Align.Start" SortBy="@(GridSort<Facilitator>.ByAscending(f => f.HasError))">
+		<TemplateColumn Title="Status" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<Facilitator>.ByAscending(f => f.HasError))">
 			<span class="fac-status @(context.HasError ? "fac-status--offline" : "fac-status--online")">
 				<span class="fac-status-dot"></span>
 				@(context.HasError ? "Offline" : "Online")
 			</span>
 		</TemplateColumn>
 
-		<PropertyColumn Title="Name" Property="@(f => f.Name)" Sortable="true" Align="Align.Start" />
+		<PropertyColumn Title="Name" Property="@(f => f.Name)" Sortable="true" Align="DataGridCellAlignment.Start" />
 
-		<TemplateColumn Title="URL" Align="Align.Start">
+		<TemplateColumn Title="URL" Align="DataGridCellAlignment.Start">
 			<a href="@context.Url" class="fac-url" target="_blank" rel="noopener">@context.Url</a>
 			@if (context.NeedsApiKey)
 			{
@@ -45,28 +45,28 @@ else
 			}
 		</TemplateColumn>
 
-		<TemplateColumn Title="Networks" Align="Align.Start">
+		<TemplateColumn Title="Networks" Align="DataGridCellAlignment.Start">
 			<div class="fac-networks">
 				@foreach (var kind in (context.Kinds ?? new()).OrderBy(x => x))
 				{
-					<FluentBadge Appearance="Appearance.Neutral" Circular="true">@kind</FluentBadge>
+					<FluentBadge Appearance="BadgeAppearance.Filled" Shape="BadgeShape.Circular" Content="@kind" />
 				}
 			</div>
 		</TemplateColumn>
 
-		<TemplateColumn Title="Schemes" Align="Align.Start">
+		<TemplateColumn Title="Schemes" Align="DataGridCellAlignment.Start">
 			<div class="fac-networks">
 				@foreach (var scheme in (context.Schemes ?? new()).OrderBy(x => x))
 				{
-					<FluentBadge Appearance="Appearance.Accent" Circular="true">@scheme</FluentBadge>
+					<FluentBadge Appearance="BadgeAppearance.Filled" Shape="BadgeShape.Circular" Content="@scheme" />
 				}
 			</div>
 		</TemplateColumn>
 
-		<TemplateColumn Title="Discovery" Sortable="true" Align="Align.Start" SortBy="@(GridSort<Facilitator>.ByDescending(f => f.SupportsDiscovery))">
+		<TemplateColumn Title="Discovery" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<Facilitator>.ByDescending(f => f.SupportsDiscovery))">
 			@if (context.SupportsDiscovery)
 			{
-				<FluentBadge Appearance="Appearance.Accent" Circular="true">Bazaar</FluentBadge>
+				<FluentBadge Appearance="BadgeAppearance.Filled" Shape="BadgeShape.Circular" Content="Bazaar" />
 			}
 			else
 			{
@@ -74,7 +74,7 @@ else
 			}
 		</TemplateColumn>
 
-		<TemplateColumn Title="Last Checked" Sortable="true" Align="Align.Start" SortBy="@(GridSort<Facilitator>.ByDescending(f => f.Checked))">
+		<TemplateColumn Title="Last Checked" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<Facilitator>.ByDescending(f => f.Checked))">
 			@if (context.Checked.HasValue)
 			{
 				<span class="fac-checked">@FormatDate(context.Checked.Value)</span>
@@ -84,12 +84,12 @@ else
 }
 
 <div style="margin-top: 1rem;">
-	<FluentAnchor Appearance="Appearance.Accent"
-				  Href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json"
-				  Target="_blank"
-				  Rel="noopener">
+	<FluentAnchorButton Appearance="ButtonAppearance.Primary"
+						Href="https://github.com/michielpost/x402-dev/blob/master/facilitators.json"
+						Target="LinkTarget.Blank"
+						Rel="noopener">
 		Add facilitator on GitHub
-	</FluentAnchor>
+	</FluentAnchorButton>
 </div>
 
 @code {

@@ -1,4 +1,4 @@
-﻿@page "/base64-helper"
+@page "/base64-helper"
 @using System.Text.Json
 @using System.Net.Http.Json
 @using System.Text
@@ -16,19 +16,20 @@
 
 <FluentCard Style="max-width: 780px;">
 	<div class="form-section">
-		<FluentTextField @bind-Value="@base64Text" Placeholder="Paste a Base64 string here…" Style="width: 100%;">Base64 Input</FluentTextField>
+		<FluentTextInput @bind-Value="@base64Text" Label="Base64 Input" Placeholder="Paste a Base64 string here…" Style="width: 100%;" />
 
 		<FluentTextArea @bind-Value="@dataText"
+						Label="Decoded / Plain Text"
 						Placeholder="Plain text or JSON output will appear here…"
 						Style="width: 100%;"
-						Rows="@textAreaRows">Decoded / Plain Text</FluentTextArea>
+						Height="@($"{textAreaRows}px")" />
 
 		<div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-			<FluentButton Appearance="Appearance.Accent" OnClick="DecodeData">
+			<FluentButton Appearance="ButtonAppearance.Primary" OnClick="DecodeData">
 				<FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" Style="margin-right:4px;" />
 				Decode from Base64
 			</FluentButton>
-			<FluentButton Appearance="Appearance.Accent" OnClick="EncodeData">
+			<FluentButton Appearance="ButtonAppearance.Primary" OnClick="EncodeData">
 				<FluentIcon Value="@(new Icons.Regular.Size16.ArrowUp())" Style="margin-right:4px;" />
 				Encode to Base64
 			</FluentButton>

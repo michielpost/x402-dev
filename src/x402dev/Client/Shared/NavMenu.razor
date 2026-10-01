@@ -1,19 +1,16 @@
 <div class="navmenu">
-	<input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon" />
-	<label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
 	<nav class="sitenav" aria-labelledby="main-menu">
-		<FluentNavMenu Id="main-menu" Width="250" Collapsible="true" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
-			<FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Home</FluentNavLink>
-			<FluentNavLink Href="facilitators" Icon="@(new Icons.Regular.Size20.People())" IconColor="Color.Accent">Facilitators</FluentNavLink>
-			<FluentNavLink Href="x402-apis" Icon="@(new Icons.Regular.Size20.Globe())" IconColor="Color.Accent">x402 APIs</FluentNavLink>
-			<FluentNavLink Href="messages" Icon="@(new Icons.Regular.Size20.Chat())" IconColor="Color.Accent">Messages</FluentNavLink>
-			<FluentNavLink Href="resource-tester" Icon="@(new Icons.Regular.Size20.AppsListDetail())" IconColor="Color.Accent">Resource Tester</FluentNavLink>
-			<FluentNavLink Href="signature-builder" Icon="@(new Icons.Regular.Size20.DocumentSignature())" IconColor="Color.Accent">Signature Builder</FluentNavLink>
-			<FluentNavLink Href="base64-helper" Icon="@(new Icons.Regular.Size20.Code())" IconColor="Color.Accent">Base64 Helper</FluentNavLink>
-			@* <FluentNavLink Href="test-endpoints" Icon="@(new Icons.Regular.Size20.ServerMultiple())" IconColor="Color.Accent">Test Endpoints</FluentNavLink> *@
-			<FluentNavLink Href="awesome-projects" Icon="@(new Icons.Regular.Size20.Star())" IconColor="Color.Accent">Awesome Projects</FluentNavLink>
-			<FluentNavLink Href="settings" Icon="@(new Icons.Regular.Size20.Settings())" IconColor="Color.Accent">Settings</FluentNavLink>
-		</FluentNavMenu>
+		<FluentNav Id="main-menu" Width="250px">
+			<FluentNavItem Href="/" Match="NavLinkMatch.All" IconRest="@(new Icons.Regular.Size20.Home())">Home</FluentNavItem>
+			<FluentNavItem Href="facilitators" IconRest="@(new Icons.Regular.Size20.People())">Facilitators</FluentNavItem>
+			<FluentNavItem Href="x402-apis" IconRest="@(new Icons.Regular.Size20.Globe())">x402 APIs</FluentNavItem>
+			<FluentNavItem Href="messages" IconRest="@(new Icons.Regular.Size20.Chat())">Messages</FluentNavItem>
+			<FluentNavItem Href="resource-tester" IconRest="@(new Icons.Regular.Size20.AppsListDetail())">Resource Tester</FluentNavItem>
+			<FluentNavItem Href="signature-builder" IconRest="@(new Icons.Regular.Size20.DocumentSignature())">Signature Builder</FluentNavItem>
+			<FluentNavItem Href="base64-helper" IconRest="@(new Icons.Regular.Size20.Code())">Base64 Helper</FluentNavItem>
+			<FluentNavItem Href="awesome-projects" IconRest="@(new Icons.Regular.Size20.Star())">Awesome Projects</FluentNavItem>
+			<FluentNavItem Href="settings" IconRest="@(new Icons.Regular.Size20.Settings())">Settings</FluentNavItem>
+		</FluentNav>
 
 		<div class="nav-ext-links">
 			<a href="https://github.com/michielpost/x402-dev" target="_blank" rel="noopener" class="nav-ext-link">
@@ -27,7 +24,3 @@
 		</div>
 	</nav>
 </div>
-
-@code {
-	private bool expanded = true;
-}

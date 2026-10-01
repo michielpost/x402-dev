@@ -29,35 +29,35 @@
     <FluentCard>
         <div class="form-section">
             <p class="form-section-title">Request</p>
-            <FluentTextField @bind-Value="@url"
+            <FluentTextInput @bind-Value="@url"
+                             Label="URL"
                              Style="width: 100%;"
                              Placeholder="https://x402-dotnet.azurewebsites.net/resource/middleware"
-                             Required="true">URL</FluentTextField>
+                             Required="true" />
 
             <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                 <span style="font-size:0.875rem; color:var(--neutral-foreground-hint,#888);">Example endpoints:</span>
-                <FluentButton Appearance="Appearance.Outline" OnClick="@(() => url = ExactExampleUrl)">exact</FluentButton>
-                <FluentButton Appearance="Appearance.Outline" OnClick="@(() => url = UptoExampleUrl)">upto</FluentButton>
-                <FluentButton Appearance="Appearance.Outline" OnClick="@(() => url = BatchExampleUrl)">batch-settlement</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Outline" OnClick="@(() => url = ExactExampleUrl)">exact</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Outline" OnClick="@(() => url = UptoExampleUrl)">upto</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Outline" OnClick="@(() => url = BatchExampleUrl)">batch-settlement</FluentButton>
             </div>
 
-            <FluentTextField @bind-Value="@paymentHeader"
+            <FluentTextInput @bind-Value="@paymentHeader"
+                             Label="Optional PAYMENT-SIGNATURE header"
                              Style="width: 100%;"
-                             Placeholder="Leave empty to use MetaMask for payment…">
-                Optional PAYMENT-SIGNATURE header
-            </FluentTextField>
+                             Placeholder="Leave empty to use MetaMask for payment…" />
 
             @if (isLoading)
             {
                 <div style="display:flex; align-items:center; gap:0.6rem;">
-                    <FluentProgressRing />
+                    <FluentSpinner />
                     <span style="font-size:0.875rem; color:var(--neutral-foreground-hint,#888);">Fetching…</span>
                 </div>
             }
             else
             {
                 <div>
-                    <FluentButton Appearance="Appearance.Accent"
+                    <FluentButton Appearance="ButtonAppearance.Primary"
                                   OnClick="FetchResource"
                                   Disabled="@isLoading">Fetch Resource</FluentButton>
                 </div>
@@ -80,14 +80,14 @@
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
-        <FluentMessageBar Intent="MessageIntent.Error">
+        <FluentMessageBar Intent="MessageBarIntent.Error">
             @errorMessage
         </FluentMessageBar>
     }
 
     @if (!string.IsNullOrEmpty(successMessage))
     {
-        <FluentMessageBar Intent="MessageIntent.Success">
+        <FluentMessageBar Intent="MessageBarIntent.Success">
             @successMessage
         </FluentMessageBar>
     }
@@ -95,11 +95,12 @@
     @*     @if (headers != null)
     {
         <FluentCard>
-            <FluentLabel Typo="Typography.Subject">Response Headers</FluentLabel>
+            <h3>Response Headers</h3>
             <FluentTextArea Style="width: 100%; min-height: 100%;"
+                          Label="Response Headers"
                           Value="@headers"
                             Resize="TextAreaResize.Both"
-                          Readonly="true" />
+                          ReadOnly="true" />
         </FluentCard>
     } *@
 
@@ -107,10 +108,11 @@
     {
         <FluentCard>
             <FluentTextArea Style="width: 100%; min-height: 100%;"
+                            Label="x402 Response"
                             Value="@content"
                             Resize="TextAreaResize.Both"
-                            Rows="@lineCount"
-                            Readonly="true">x402 Response</FluentTextArea>
+                            Height="@($"{lineCount * 24}px")"
+                            ReadOnly="true" />
         </FluentCard>
     }
 
@@ -118,10 +120,11 @@
     {
         <FluentCard>
             <FluentTextArea Style="width: 100%; min-height: 100%;"
+                            Label="Final Response"
                             Value="@finalResult"
                             Resize="TextAreaResize.Both"
-                            Rows="@lineCountFinalResult"
-                            Readonly="true">Final Response</FluentTextArea>
+                            Height="@($"{lineCountFinalResult * 24}px")"
+                            ReadOnly="true" />
         </FluentCard>
     }
 </FluentStack>

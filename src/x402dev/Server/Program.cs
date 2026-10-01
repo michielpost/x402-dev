@@ -217,14 +217,13 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseBlazorFrameworkFiles();
-app.UseStaticFiles();
-
 app.UseRouting();
 
 // Rate limiting middleware must be enabled for per-endpoint attributes to work
 // Must be after UseRouting() for attribute-based rate limiting to work correctly
 app.UseRateLimiter();
+
+app.MapStaticAssets();
 
 app.UseGrpcWeb();
 app.MapGrpcService<FacilitatorGrpcService>().EnableGrpcWeb();

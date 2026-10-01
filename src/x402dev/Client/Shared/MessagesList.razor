@@ -17,26 +17,24 @@
                             <span class="msg-name">@(string.IsNullOrWhiteSpace(msg.Name) ? "Anonymous" : msg.Name)</span>
                             @if (!string.IsNullOrWhiteSpace(msg.Link))
                             {
-                                <FluentAnchor
+                                <FluentLink
                                     Href="@msg.Link"
-                                    Target="_blank"
-                                    Rel="noopener"
-                                    Appearance="Appearance.Stealth"
+                                    Target="LinkTarget.Blank"
+                                    Appearance="LinkAppearance.Subtle"
                                     Class="msg-website"
                                     IconEnd="@(new Icons.Regular.Size16.ArrowUpRight())">
                                     Website
-                                </FluentAnchor>
+                                </FluentLink>
                             }
                         </div>
                         <div class="msg-sub-row">
-                            <FluentAnchor
+                            <FluentLink
                                 Href="@($"https://basescan.org/address/{msg.Payer}")"
-                                Target="_blank"
-                                Rel="noopener"
-                                Appearance="Appearance.Stealth"
+                                Target="LinkTarget.Blank"
+                                Appearance="LinkAppearance.Subtle"
                                 Class="msg-address">
                                 @TruncateAddress(msg.Payer)
-                            </FluentAnchor>
+                            </FluentLink>
                             <span class="msg-dot" aria-hidden="true">·</span>
                             <span class="msg-date">@FormatDate(msg.CreatedDateTime)</span>
                         </div>
@@ -50,20 +48,19 @@
                 <div class="msg-footer">
                     @if (!string.IsNullOrWhiteSpace(msg.Network))
                     {
-                        <FluentBadge Fill="neutral" Color="neutral" Class="msg-badge">@msg.Network</FluentBadge>
+                        <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Subtle" Class="msg-badge" Content="@msg.Network" />
                     }
                     @if (!string.IsNullOrWhiteSpace(msg.Asset) && !string.IsNullOrWhiteSpace(msg.Value))
                     {
-                        <FluentBadge Fill="accent" Color="accent" Class="msg-badge msg-badge-accent">@msg.Value @msg.Asset</FluentBadge>
+                        <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Brand" Class="msg-badge msg-badge-accent" Content="@($"{msg.Value} {msg.Asset}")" />
                     }
-                    <FluentAnchor
+                    <FluentLink
                         Class="msg-tx"
                         Href="@($"https://basescan.org/tx/{msg.Transaction}")"
-                        Target="_blank"
-                        Rel="noopener"
-                        Appearance="Appearance.Stealth">
+                        Target="LinkTarget.Blank"
+                        Appearance="LinkAppearance.Subtle">
                         @TruncateHash(msg.Transaction)
-                    </FluentAnchor>
+                    </FluentLink>
                 </div>
             </FluentCard>
         }

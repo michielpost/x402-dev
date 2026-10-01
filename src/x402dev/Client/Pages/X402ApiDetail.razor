@@ -11,7 +11,7 @@
 @if (api == null)
 {
 	<div class="page-loading">
-		<FluentProgressRing />
+		<FluentSpinner />
 		<span>Loading API details…</span>
 	</div>
 }
@@ -22,7 +22,7 @@ else if (!found)
 		<h1>API not found</h1>
 		<p class="page-desc">This x402 API endpoint does not exist (or has not been checked yet).</p>
 		<div class="page-header-actions">
-			<FluentButton Appearance="Appearance.Lightweight" OnClick="@(() => Navigation.NavigateTo("x402-apis"))">Back to all APIs</FluentButton>
+			<FluentButton Appearance="ButtonAppearance.Transparent" OnClick="@(() => Navigation.NavigateTo("x402-apis"))">Back to all APIs</FluentButton>
 		</div>
 	</div>
 }
@@ -48,7 +48,7 @@ else
 			<div class="detail-label">URL</div>
 			<div class="detail-value">
 				<a href="@api.Url" class="fac-url" target="_blank" rel="noopener">@api.Url</a>
-				<FluentButton Appearance="Appearance.Lightweight" Class="copy-btn" OnClick="@(() => CopyToClipboard(api.Url, "url"))" title="Copy URL">
+				<FluentButton Appearance="ButtonAppearance.Transparent" Class="copy-btn" OnClick="@(() => CopyToClipboard(api.Url, "url"))" title="Copy URL">
 					@(copiedKey == "url" ? "Copied!" : "Copy")
 				</FluentButton>
 			</div>
@@ -82,7 +82,7 @@ else
 			<div class="detail-label">Curl example</div>
 			<div class="detail-value">
 				<code>@CurlCommand</code>
-				<FluentButton Appearance="Appearance.Lightweight" Class="copy-btn" OnClick="@(() => CopyToClipboard(CurlCommand, "curl"))" title="Copy curl command">
+				<FluentButton Appearance="ButtonAppearance.Transparent" Class="copy-btn" OnClick="@(() => CopyToClipboard(CurlCommand, "curl"))" title="Copy curl command">
 					@(copiedKey == "curl" ? "Copied!" : "Copy")
 				</FluentButton>
 			</div>
@@ -118,15 +118,15 @@ else
 		@if (api.Requirements?.Count > 0)
 		{
 			<FluentDataGrid Id="x402apidetailpay" Items="@(api.Requirements.AsQueryable())" TGridItem="X402ApiPaymentRequirement" AutoFit="true">
-				<TemplateColumn Title="Network" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.NetworkName ?? r.Network))">
+				<TemplateColumn Title="Network" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.NetworkName ?? r.Network))">
 					<span>@(context.NetworkName ?? context.Network)</span>
 					<p class="fac-note">@context.Network</p>
 				</TemplateColumn>
-				<TemplateColumn Title="Amount" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.AmountFormatted ?? r.Amount))">
+				<TemplateColumn Title="Amount" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.AmountFormatted ?? r.Amount))">
 					<span>@(context.AmountFormatted ?? context.Amount) @(context.AssetName ?? context.Asset)</span>
 					<p class="fac-note">@context.Amount</p>
 				</TemplateColumn>
-				<TemplateColumn Title="Asset / Contract" Sortable="true" Align="Align.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.AssetName ?? r.Asset))">
+				<TemplateColumn Title="Asset / Contract" Sortable="true" Align="DataGridCellAlignment.Start" SortBy="@(GridSort<X402ApiPaymentRequirement>.ByAscending(r => r.AssetName ?? r.Asset))">
 					<span>@(context.AssetName ?? context.Asset)</span>
 					<p class="fac-note fac-url">@context.Asset</p>
 				</TemplateColumn>
@@ -144,7 +144,7 @@ else
 		{
 			<div class="debug-log">
 				<div class="debug-log-label">
-					<FluentButton Appearance="Appearance.Lightweight" Class="copy-btn" OnClick="@(() => CopyToClipboard(api.RawJsonResponse ?? prettyJson, "json"))" title="Copy JSON">
+					<FluentButton Appearance="ButtonAppearance.Transparent" Class="copy-btn" OnClick="@(() => CopyToClipboard(api.RawJsonResponse ?? prettyJson, "json"))" title="Copy JSON">
 						@(copiedKey == "json" ? "Copied!" : "Copy")
 					</FluentButton>
 				</div>

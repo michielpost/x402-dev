@@ -1,10 +1,8 @@
-@import '_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css';
-
 body {
     --body-font: "Segoe UI Variable", "Segoe UI", sans-serif;
     font-family: var(--body-font);
-    font-size: var(--type-ramp-base-font-size);
-    line-height: var(--type-ramp-base-line-height);
+    font-size: var(--fontSizeBase300);
+    line-height: var(--lineHeightBase300);
     margin: 0;
 }
 
@@ -14,7 +12,7 @@ body {
 
 .main {
     min-height: calc(100dvh - 86px);
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
     align-items: stretch !important;
 }
 
@@ -54,7 +52,7 @@ body {
 }
 
 .alert {
-    border: 1px dashed var(--accent-fill-rest);
+    border: 1px dashed var(--colorBrandBackground);
     padding: 5px;
 }
 
@@ -225,7 +223,7 @@ code {
 .msg-card {
     padding: 0 !important;
     overflow: hidden;
-    border-radius: var(--layer-corner-radius, 8px);
+    border-radius: var(--borderRadiusMedium, 8px);
     box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
     transition: box-shadow 0.15s ease;
 }
@@ -273,7 +271,7 @@ code {
 .msg-name {
     font-weight: 600;
     font-size: 0.9375rem;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -296,18 +294,18 @@ code {
 .msg-address {
     font-size: 0.78rem;
     font-family: "Cascadia Code", "Consolas", monospace;
-    color: var(--neutral-foreground-hint, #666);
+    color: var(--colorNeutralForeground3, #666);
 }
 
 .msg-dot {
     font-size: 0.75rem;
-    color: var(--neutral-foreground-hint, #999);
+    color: var(--colorNeutralForeground3, #999);
     line-height: 1;
 }
 
 .msg-date {
     font-size: 0.78rem;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
 }
 
 /* Body */
@@ -321,7 +319,7 @@ code {
     margin: 0;
     font-size: 0.9375rem;
     line-height: 1.65;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
     word-break: break-word;
     white-space: pre-wrap;
 }
@@ -334,8 +332,8 @@ code {
     gap: 0.4rem;
     flex-wrap: wrap;
     padding: 0.5rem 1rem;
-    background: var(--neutral-layer-2, rgba(0,0,0,0.025));
-    border-top: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.06));
+    background: var(--colorNeutralBackground2, rgba(0,0,0,0.025));
+    border-top: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.06));
 }
 
 .msg-badge {
@@ -348,7 +346,7 @@ code {
     margin-left: auto;
     font-size: 0.76rem;
     font-family: "Cascadia Code", "Consolas", monospace;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     display: inline-flex;
     align-items: center;
     gap: 3px;
@@ -365,10 +363,10 @@ code {
     gap: 0.75rem;
     padding: 3rem 2rem;
     max-width: 480px;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     text-align: center;
-    border: 1px dashed var(--neutral-stroke-rest, rgba(0,0,0,0.15));
-    border-radius: var(--layer-corner-radius, 8px);
+    border: 1px dashed var(--colorNeutralStroke1, rgba(0,0,0,0.15));
+    border-radius: var(--borderRadiusMedium, 8px);
 }
 
 .msg-empty p {
@@ -408,14 +406,14 @@ code {
 /* ── Footer ────────────────────────────────────────────────── */
 
 footer {
-    background: var(--neutral-layer-4);
-    color: var(--neutral-foreground-rest);
+    background: var(--colorNeutralBackground4);
+    color: var(--colorNeutralForeground1);
     align-items: center;
     padding: 10px 10px;
 }
 
     footer a {
-        color: var(--neutral-foreground-rest);
+        color: var(--colorNeutralForeground1);
         text-decoration: none;
     }
 
@@ -440,14 +438,14 @@ footer {
 
 .footer-byline {
     font-size: 0.8rem;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
 }
 
 /* ── Nav External Links ───────────────────────────────────── */
 
 .nav-ext-links {
     padding: 0.6rem 0.5rem 0.75rem;
-    border-top: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.08));
+    border-top: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.08));
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
@@ -459,15 +457,15 @@ footer {
     gap: 0.45rem;
     padding: 0.35rem 0.75rem;
     font-size: 0.82rem;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     text-decoration: none;
     border-radius: 4px;
     transition: background 0.12s, color 0.12s;
 }
 
     .nav-ext-link:hover {
-        background: var(--neutral-fill-hover, rgba(0,0,0,0.05));
-        color: var(--neutral-foreground-rest);
+        background: var(--colorNeutralBackground1Hover, rgba(0,0,0,0.05));
+        color: var(--colorNeutralForeground1);
         text-decoration: none;
     }
 
@@ -576,12 +574,12 @@ footer {
     font-size: 1.2rem;
     font-weight: 600;
     margin: 0 0 0.3rem 0;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
 }
 
 .home-section-desc {
     font-size: 0.875rem;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     margin: 0 0 1.1rem 0;
 }
 
@@ -598,8 +596,8 @@ footer {
     flex-direction: column;
     gap: 0.45rem;
     padding: 1.25rem;
-    background: var(--neutral-layer-1, #fff);
-    border: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.08));
+    background: var(--colorNeutralBackground1, #fff);
+    border: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.08));
     border-radius: 10px;
     text-decoration: none;
     color: inherit;
@@ -608,7 +606,7 @@ footer {
 
     .feature-card:hover {
         box-shadow: 0 6px 20px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05);
-        border-color: var(--accent-fill-rest, #0078d4);
+        border-color: var(--colorBrandBackground, #0078d4);
         transform: translateY(-2px);
         text-decoration: none;
         color: inherit;
@@ -630,13 +628,13 @@ footer {
     font-size: 0.9375rem;
     font-weight: 600;
     margin: 0;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
 }
 
 .feature-card-desc {
     font-size: 0.835rem;
     line-height: 1.55;
-    color: var(--neutral-foreground-hint, #666);
+    color: var(--colorNeutralForeground3, #666);
     margin: 0;
     flex: 1;
 }
@@ -682,7 +680,7 @@ footer {
 .page-header {
     margin-bottom: 1.75rem;
     padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.08));
+    border-bottom: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.08));
 }
 
 .page-eyebrow {
@@ -691,7 +689,7 @@ footer {
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--accent-fill-rest, #0078d4);
+    color: var(--colorBrandBackground, #0078d4);
     margin-bottom: 0.4rem;
 }
 
@@ -700,13 +698,13 @@ footer {
     font-weight: 700;
     letter-spacing: -0.02em;
     margin: 0 0 0.5rem 0;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
 }
 
 .page-desc {
     font-size: 0.9rem;
     line-height: 1.65;
-    color: var(--neutral-foreground-hint, #777);
+    color: var(--colorNeutralForeground3, #777);
     margin: 0;
     max-width: 660px;
 }
@@ -726,7 +724,7 @@ footer {
     align-items: center;
     gap: 0.75rem;
     padding: 1.5rem 0;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     font-size: 0.9rem;
     font-style: italic;
 }
@@ -756,7 +754,7 @@ footer {
 
 .page-cta-inner p {
     font-size: 0.86rem;
-    color: var(--neutral-foreground-hint, #777);
+    color: var(--colorNeutralForeground3, #777);
     margin: 0;
 }
 
@@ -774,10 +772,10 @@ footer {
     font-weight: 700;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     margin: 0 0 0.25rem 0;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.07));
+    border-bottom: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.07));
 }
 
 /* ── Debug / Code Log ──────────────────────────────────────── */
@@ -785,8 +783,8 @@ footer {
 .debug-log {
     font-family: "Cascadia Code", "Consolas", monospace;
     font-size: 0.8rem;
-    background: var(--neutral-layer-2, rgba(0,0,0,0.025));
-    border: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.08));
+    background: var(--colorNeutralBackground2, rgba(0,0,0,0.025));
+    border: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.08));
     border-radius: 6px;
     padding: 0.75rem 1rem;
     white-space: pre-wrap;
@@ -794,7 +792,7 @@ footer {
     min-height: 80px;
     max-height: 260px;
     overflow-y: auto;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
     line-height: 1.6;
 }
 
@@ -803,7 +801,7 @@ footer {
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     margin-bottom: 0;
     display: flex;
     align-items: center;
@@ -822,8 +820,8 @@ footer {
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    background: var(--neutral-layer-2, rgba(0,0,0,0.025));
-    border: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.08));
+    background: var(--colorNeutralBackground2, rgba(0,0,0,0.025));
+    border: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.08));
     border-radius: 6px;
     flex-wrap: wrap;
 }
@@ -833,7 +831,7 @@ footer {
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     white-space: nowrap;
 }
 
@@ -841,7 +839,7 @@ footer {
     font-family: "Cascadia Code", "Consolas", monospace;
     font-size: 0.8rem;
     word-break: break-all;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
     flex: 1;
 }
 
@@ -892,20 +890,20 @@ footer {
 .code-block {
     margin: 0;
     padding: 0.65rem 0.9rem;
-    background: var(--neutral-layer-2, #f4f4f4);
-    border: 1px solid var(--neutral-stroke-rest, #e0e0e0);
+    background: var(--colorNeutralBackground2, #f4f4f4);
+    border: 1px solid var(--colorNeutralStroke1, #e0e0e0);
     border-radius: 6px;
     font-family: "Cascadia Code", "Consolas", monospace;
     font-size: 0.8rem;
     white-space: pre-wrap;
     word-break: break-all;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
 }
 
 .post-section-title {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
     margin: 0;
 }
 
@@ -950,7 +948,7 @@ footer {
 
 .fac-url {
     font-size: 0.82rem;
-    color: var(--accent-fill-rest, #0078d4);
+    color: var(--colorBrandBackground, #0078d4);
     text-decoration: none;
     font-family: "Cascadia Code", "Consolas", monospace;
     word-break: break-all;
@@ -960,11 +958,11 @@ footer {
 
 .fac-note {
     font-size: 0.77rem;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     margin: 0.3rem 0 0 0;
 }
 
-    .fac-note a { color: var(--accent-fill-rest, #0078d4); }
+    .fac-note a { color: var(--colorBrandBackground, #0078d4); }
 
 .fac-networks {
     display: flex;
@@ -974,7 +972,7 @@ footer {
 
 .fac-checked {
     font-size: 0.82rem;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
 }
 
 /* ── x402 API list + detail ───────────────────────────────────── */
@@ -992,7 +990,7 @@ footer {
 
 .detail-label {
     font-weight: 600;
-    color: var(--neutral-foreground-hint, #888);
+    color: var(--colorNeutralForeground3, #888);
     font-size: 0.88rem;
 }
 
@@ -1012,7 +1010,7 @@ footer {
 .md-content {
     max-width: 780px;
     line-height: 1.75;
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
     margin-bottom: 1.5rem;
 }
 
@@ -1021,17 +1019,17 @@ footer {
         letter-spacing: -0.015em;
         margin-top: 1.5rem;
         margin-bottom: 0.5rem;
-        color: var(--neutral-foreground-rest);
+        color: var(--colorNeutralForeground1);
     }
 
-    .md-content h1 { font-size: 1.5rem; border-bottom: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.1)); padding-bottom: 0.4rem; }
-    .md-content h2 { font-size: 1.2rem; border-bottom: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.08)); padding-bottom: 0.3rem; }
+    .md-content h1 { font-size: 1.5rem; border-bottom: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.1)); padding-bottom: 0.4rem; }
+    .md-content h2 { font-size: 1.2rem; border-bottom: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.08)); padding-bottom: 0.3rem; }
     .md-content h3 { font-size: 1rem; }
 
     .md-content p { margin: 0.5rem 0; }
 
     .md-content a {
-        color: var(--accent-fill-rest, #0078d4);
+        color: var(--colorBrandBackground, #0078d4);
         text-decoration: none;
     }
 
@@ -1047,13 +1045,13 @@ footer {
     .md-content code {
         font-family: "Cascadia Code", "Consolas", monospace;
         font-size: 0.85em;
-        background: var(--neutral-layer-2, rgba(0,0,0,0.04));
+        background: var(--colorNeutralBackground2, rgba(0,0,0,0.04));
         padding: 0.1em 0.35em;
         border-radius: 3px;
     }
 
     .md-content pre {
-        background: var(--neutral-layer-3, rgba(0,0,0,0.06));
+        background: var(--colorNeutralBackground3, rgba(0,0,0,0.06));
         border-radius: 6px;
         padding: 1rem;
         overflow-x: auto;
@@ -1066,11 +1064,11 @@ footer {
         }
 
     .md-content blockquote {
-        border-left: 3px solid var(--accent-fill-rest, #0078d4);
+        border-left: 3px solid var(--colorBrandBackground, #0078d4);
         margin: 0.75rem 0;
         padding: 0.5rem 1rem;
         background: rgba(0,120,212,0.04);
-        color: var(--neutral-foreground-hint, #666);
+        color: var(--colorNeutralForeground3, #666);
     }
 
     .md-content table {
@@ -1083,14 +1081,14 @@ footer {
     .md-content th {
         text-align: left;
         padding: 0.5rem 0.75rem;
-        background: var(--neutral-layer-2, rgba(0,0,0,0.03));
-        border-bottom: 2px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.1));
+        background: var(--colorNeutralBackground2, rgba(0,0,0,0.03));
+        border-bottom: 2px solid var(--colorNeutralStroke2, rgba(0,0,0,0.1));
         font-weight: 600;
     }
 
     .md-content td {
         padding: 0.5rem 0.75rem;
-        border-bottom: 1px solid var(--neutral-stroke-layer-rest, rgba(0,0,0,0.06));
+        border-bottom: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.06));
     }
 
     .md-content tr:last-child td { border-bottom: none; }
@@ -1121,7 +1119,7 @@ footer {
     align-items: center;
     gap: 1rem;
     padding: 1.5rem;
-    background: linear-gradient(120deg, var(--accent-fill-rest, #0b6ec4) 0%, var(--accent-fill-hover, #0f548c) 100%);
+    background: linear-gradient(120deg, var(--colorBrandBackground, #0b6ec4) 0%, var(--colorBrandBackgroundHover, #0f548c) 100%);
     color: #fff;
     border: none;
 }

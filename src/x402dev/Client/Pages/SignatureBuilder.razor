@@ -1,4 +1,4 @@
-﻿@page "/signature-builder"
+@page "/signature-builder"
 @using System.Text.Json
 @using System.Net.Http.Json
 @using System.Text
@@ -19,7 +19,7 @@
 @using x402dev.Server.Models
 @inject IHttpClientFactory HttpClientFactory
 @inject SignatureBuilderState State
-@inject IToastService ToastService
+@inject INotificationService ToastService
 @inject IAssetInfoProvider AssetInfoProvider
 @using Nethereum.Hex.HexTypes
 @using Nethereum.RPC.HostWallet
@@ -44,7 +44,7 @@
             <div class="form-section">
                 <p class="form-section-title">Connect Account</p>
                 <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
-                    <FluentButton Appearance="Appearance.Accent" OnClick="GenerateNewPrivateKey">Generate Test Private Key</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="GenerateNewPrivateKey">Generate Test Private Key</FluentButton>
                     <span style="font-size:0.875rem; color:var(--neutral-foreground-hint,#888);">or connect with MetaMask</span>
                 </div>
                 <Metamask SelectedAccountTruncateLength="15" ConnectText="Connect Wallet" InstallMetamaskText="Install MetaMask" />
@@ -60,7 +60,7 @@
             <div class="form-section">
                 <p class="form-section-title">Test Account</p>
                 <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
-                    <FluentButton Appearance="Appearance.Accent" OnClick="GenerateNewPrivateKey">Regenerate Key</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="GenerateNewPrivateKey">Regenerate Key</FluentButton>
                 </div>
                 <div class="key-display">
                     <span class="key-display-label">Private Key</span>
@@ -79,7 +79,7 @@
                 <span class="key-display-value">@State.Address</span>
             </div>
 
-            <FluentSelect TOption="NetworkOption" Items="@NetworkOptions" @bind-SelectedOption="@State.SelectedNetworkOption" OptionValue="@(item => item.Value)">
+            <FluentSelect TOption="NetworkOption" TValue="NetworkOption" Items="@NetworkOptions" @bind-Value="@State.SelectedNetworkOption">
                 <OptionTemplate>
                     @context.Name
                 </OptionTemplate>
@@ -87,10 +87,10 @@
 
             @if (State.SelectedNetworkOption?.Value == ulong.MaxValue.ToString())
             {
-                <FluentTextField @bind-Value="@State.CustomNetworkId" Placeholder="Enter custom network ID" />
+                <FluentTextInput @bind-Value="@State.CustomNetworkId" Label="Custom Network ID" Placeholder="Enter custom network ID" />
             }
 
-            <FluentSelect TOption="SchemeOption" Label="Payment Scheme" Items="@SchemeOptions" @bind-SelectedOption="@State.SelectedSchemeOption" OptionValue="@(item => item.Value)">
+            <FluentSelect TOption="SchemeOption" TValue="SchemeOption" Label="Payment Scheme" Items="@SchemeOptions" @bind-Value="@State.SelectedSchemeOption">
                 <OptionTemplate>
                     @context.Name
                 </OptionTemplate>
@@ -103,34 +103,35 @@
                 </p>
             }
 
-            <FluentTextField @bind-Value="@State.Network" Placeholder="Network" Style="width:100%;">Network</FluentTextField>
-            <FluentTextField @bind-Value="@State.TokenName" Placeholder="Token Name" Style="width:100%;">Token Name</FluentTextField>
-            <FluentTextField @bind-Value="@State.TokenVersion" Placeholder="Token Version" Style="width:100%;">Token Version</FluentTextField>
-            <FluentTextField @bind-Value="@State.TokenContractAddress" Placeholder="Token Contract Address" Style="width:100%;">Token Contract Address</FluentTextField>
-            <FluentTextField @bind-Value="@State.PayTo" Placeholder="Pay To Address" Style="width:100%;">Pay To</FluentTextField>
-            <FluentNumberField @bind-Value="@State.Amount" Placeholder="Amount" Style="width:100%;">Amount</FluentNumberField>
-            <FluentTextField @bind-Value="@State.Resource" Placeholder="https://example.com/protected" Style="width:100%;">Resource URL</FluentTextField>
-            <FluentNumberField @bind-Value="@State.ValidAfter" Style="width:100%;">Add minutes to valid after</FluentNumberField>
-            <FluentNumberField @bind-Value="@State.ValidBefore" Style="width:100%;">Add minutes to valid before</FluentNumberField>
+            <FluentTextInput @bind-Value="@State.Network" Label="Network" Placeholder="Network" Style="width:100%;" />
+            <FluentTextInput @bind-Value="@State.TokenName" Label="Token Name" Placeholder="Token Name" Style="width:100%;" />
+            <FluentTextInput @bind-Value="@State.TokenVersion" Label="Token Version" Placeholder="Token Version" Style="width:100%;" />
+            <FluentTextInput @bind-Value="@State.TokenContractAddress" Label="Token Contract Address" Placeholder="Token Contract Address" Style="width:100%;" />
+            <FluentTextInput @bind-Value="@State.PayTo" Label="Pay To" Placeholder="Pay To Address" Style="width:100%;" />
+            <FluentNumberInput @bind-Value="@State.Amount" Label="Amount" Placeholder="Amount" Style="width:100%;" />
+            <FluentTextInput @bind-Value="@State.Resource" Label="Resource URL" Placeholder="https://example.com/protected" Style="width:100%;" />
+            <FluentNumberInput @bind-Value="@State.ValidAfter" Label="Add minutes to valid after" Style="width:100%;" />
+            <FluentNumberInput @bind-Value="@State.ValidBefore" Label="Add minutes to valid before" Style="width:100%;" />
 
             <div>
-                <FluentButton Appearance="Appearance.Accent" OnClick="Submit">Generate Signature</FluentButton>
+                <FluentButton Appearance="ButtonAppearance.Primary" OnClick="Submit">Generate Signature</FluentButton>
             </div>
         </div>
     </FluentCard>
 
     @if (!string.IsNullOrEmpty(State.Base64Header))
     {
-        <FluentTextArea ReadOnly=true Value="@State.Base64Header" Style="width: 100%;" Rows="3">PAYMENT-SIGNATURE header value:</FluentTextArea>
+        <FluentTextArea ReadOnly="true" Label="PAYMENT-SIGNATURE header value:" Value="@State.Base64Header" Style="width: 100%;" Height="72px" />
     }
 
     @if (!string.IsNullOrEmpty(State.HeaderJson))
     {
         <FluentTextArea Style="width: 100%; min-height: 100%;"
+                        Label="Decoded PAYMENT-SIGNATURE header value"
                         Value="@State.HeaderJson"
                         Resize="TextAreaResize.Both"
-                        Rows="@State.LineCount"
-                        Readonly="true">Decoded PAYMENT-SIGNATURE header value</FluentTextArea>
+                        Height="@($"{State.LineCount * 24}px")"
+                        ReadOnly="true" />
     }
 
     @if (!string.IsNullOrEmpty(State.Base64Header))
@@ -138,28 +139,28 @@
         <FluentCard>
             <div class="form-section">
                 <p class="form-section-title">Test the Generated Signature</p>
-                <FluentTextField @bind-Value="@url"
+                <FluentTextInput @bind-Value="@url"
+                                 Label="URL"
                                  Style="width: 100%;"
                                  Placeholder="Enter URL to test"
-                                 Required="true">URL</FluentTextField>
+                                 Required="true" />
 
-                <FluentTextField Value="@State.Base64Header"
+                <FluentTextInput Value="@State.Base64Header"
+                                 Label="PAYMENT-SIGNATURE Header"
                                  Style="width: 100%;"
-                                 ReadOnly="true">
-                    PAYMENT-SIGNATURE Header
-                </FluentTextField>
+                                 ReadOnly="true" />
 
                 @if (isLoading)
                 {
                     <div style="display:flex; align-items:center; gap:0.6rem;">
-                        <FluentProgressRing />
+                        <FluentSpinner />
                         <span style="font-size:0.875rem; color:var(--neutral-foreground-hint,#888);">Fetching…</span>
                     </div>
                 }
                 else
                 {
                     <div>
-                        <FluentButton Appearance="Appearance.Accent"
+                        <FluentButton Appearance="ButtonAppearance.Primary"
                                       OnClick="FetchResource"
                                       Disabled="@isLoading">Fetch Resource</FluentButton>
                     </div>
@@ -170,7 +171,7 @@
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
-        <FluentMessageBar Intent="MessageIntent.Error">
+        <FluentMessageBar Intent="MessageBarIntent.Error">
             @errorMessage
         </FluentMessageBar>
     }
@@ -178,7 +179,7 @@
 
     @if (!string.IsNullOrEmpty(successMessage))
     {
-        <FluentMessageBar Intent="MessageIntent.Success">
+        <FluentMessageBar Intent="MessageBarIntent.Success">
             @successMessage
         </FluentMessageBar>
     }
@@ -187,10 +188,11 @@
     {
         <FluentCard>
             <FluentTextArea Style="width: 100%; min-height: 100%;"
+                            Label="x402 Response"
                             Value="@content"
                             Resize="TextAreaResize.Both"
-                            Rows="@lineCount"
-                            Readonly="true">x402 Response</FluentTextArea>
+                            Height="@($"{lineCount * 24}px")"
+                            ReadOnly="true" />
         </FluentCard>
     }
 
@@ -323,7 +325,7 @@
 
                 if (!string.IsNullOrEmpty(changeResult))
                 {
-                    ToastService.ShowToast(ToastIntent.Error, $"Error changing MetaMask to ChainId: {networkId}: {changeResult}");
+                    await ToastService.ShowErrorToastAsync("Error", $"Error changing MetaMask to ChainId: {networkId}: {changeResult}");
                     return;
                 }
 
