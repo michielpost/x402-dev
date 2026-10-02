@@ -82,10 +82,12 @@ Libraries, SDKs, and dev tools for building with x402.
 - [bridgenode-llm](https://pypi.org/project/bridgenode-llm) - Python SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
 - [cipher-x402-client](https://github.com/cryptomotifs/cipher-x402-client) - Tiny TypeScript client for x402 v2. Zero-config USDC-on-Base, auto-retry on 402 Payment Required.
 - [cipher-x402-mcp](https://github.com/cryptomotifs/cipher-x402-mcp) - MCP server exposing 8 CIPHER x402-gated tools to Claude/Cursor/VS Code. Agents auto-pay USDC per tool call.
+- [dual-rail](https://github.com/dhyabi2/dual-rail) - Add an XNO (Nano) payment leg beside an existing USDC/x402 rail, never instead of it: a feeless, instant settlement option for any x402 route. 34 Python + 22 Node tests, both-rails-live check.
 - [corbits](https://corbits.dev/) - Ready your apps for Agentic Commerce  
 - [Hilt Pay](https://www.hilt.so/x402) - Payment-to-access infrastructure for x402 V2 challenge and retry flows on Solana USDC, with settlement verification, receipts, entitlements, atomic usage consumption, webhooks, SDKs, MCP, and A2A discovery.
 - [mcp-go-x402](https://github.com/mark3labs/mcp-go-x402) - Go SDK for MCP x402  
 - [mogami.tech](https://www.mogami.tech) - SDKs, tools, and services built in Java 
+- [nano-finality-proof](https://github.com/dhyabi2/nano-finality-proof) - Measure how long an XNO (Nano) payment takes to confirm on a node you run, so an agent knows when a payment is final. 54 unit + 67 e2e checks.
 - [openai-agents-nano](https://github.com/PANDeveloper001/openai-agents-nano-x402) - Python client that pays any x402-priced HTTP endpoint in self-custodied Nano (XNO) from an OpenAI Agents SDK agent, via the feeless402 client. Feel-free and instant.
 - [stipend](https://github.com/stipend-sh/stipend) - Non-custodial USDC wallet on Base for AI agents, in Python. Buyer-side x402 auto-pay signed as EIP-3009 (no gas needed), with per-transaction, per-day and per-counterparty caps and a destination allowlist enforced in code before signing. Local stdio MCP server, 7 tools.
 - [thirdweb](https://thirdweb.com) - Infrastructure for AI Agents (supports x402 integrations)  
