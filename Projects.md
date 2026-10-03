@@ -4,6 +4,7 @@
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
 
+- [Agent Research Tools](https://x402-seller-pmlm.onrender.com) - Cited research briefs ($0.01), web page to markdown ($0.005) and x402 endpoint checks ($0.005) for AI agents. USDC on Base via x402 (CDP facilitator), no API key; errors are never charged. [OpenAPI](https://x402-seller-pmlm.onrender.com/openapi.json) | [Discovery](https://x402-seller-pmlm.onrender.com/.well-known/x402) | [llms.txt](https://x402-seller-pmlm.onrender.com/llms.txt)
 - [Bounty Aggregator API](https://bounty-api-ajis.onrender.com/bounties) - Aggregated open bounty listings for AI agents: title, USDC reward, required skills, deadline, source URL. $0.02 USDC/call on Base via x402. [Free demo](https://bounty-api-ajis.onrender.com/demo)
 - [Contract Risk Scanner](https://contract-scanner-zrjr.onrender.com/scan) - Smart-contract risk scanner: submit a contract address or bytecode, receive a risk score with findings. $0.02 USDC/call on Base via x402.
 
