@@ -88,6 +88,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Ambolt](https://ambolt.dev) - Pay-per-call data tools for AI agents over x402 on Base and Solana, no API key and no LLM: company registry lookup (Norway, Finland, Czechia, Slovakia, France, UK, Latvia, Estonia, Brazil by CNPJ, GLEIF), EU/UK tenders, ECB rates, IBAN/DNS/SSL checks and on-chain token facts. $0.003-$0.02 per call, failed calls are not charged, one free call per tool and IP per day. [OpenAPI](https://api.ambolt.dev/openapi.json) | free MCP server: https://api.ambolt.dev/mcp
 
 - [Steward](https://brianbooms.com/agents/) - Micropayments for AI agents — pay per API call in USDC on Base via x402. [Catalog](https://brianbooms.com/agents/) | [llms.txt](https://brianbooms.com/llms.txt) | [agent.json](https://brianbooms.com/.well-known/agent.json)
+- [Voidpay claim verification](https://x402.voidly.ai/.well-known/x402) - x402 v2 API for checking a censorship claim against measured evidence. `POST /v1/verify-claim` costs $0.01 USDC on Base and returns a verdict, incidents, and a citation.
+
 ## x402 Developer Tools & SDKs
 
 Libraries, SDKs, and dev tools for building with x402.
