@@ -90,7 +90,8 @@ Libraries, SDKs, and dev tools for building with x402.
 
 - [@bridgenode/llm](https://www.npmjs.com/package/@bridgenode/llm) - TypeScript SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
 - [@bridgenode/mcp](https://www.npmjs.com/package/@bridgenode/mcp) - MCP server wrapper for BridgeNode: stdio MCP server with automatic x402 payments on Solana USDC (gasless, no API keys, pay per request). One-command install for Claude Code / Cursor.
-- [a2a x402 TypeScript library](https://github.com/dabit3/a2a-x402-typescript)  
+- [a2a x402 TypeScript library](https://github.com/dabit3/a2a-x402-typescript)
+- [Agent Commerce Gateway](https://github.com/devlab-group/agent-commerce) - Self-hosted, non-custodial gateway that sells existing HTTP APIs to AI agents over HTTP, MCP and A2A, with x402 v2 `exact` (EVM) or MPP payments that go directly to the merchant wallet.
 - [agenticpay](https://github.com/krystiangw/agenticpay) - Open-source TypeScript x402 stack for MCP on Solana: SDK, CLI, paywall middleware, **first OSS self-hostable facilitator**, Eliza plugin. Hosted devnet endpoint, live Claude Opus demo paying autonomously. MIT. npm: `@agenticpay/{sdk,cli,mcp-server,facilitator,eliza-plugin}`.
 - [Arc x402 Explorer](https://apexfaucet.xyz/arc/x402/) - Every x402 payment on Arc (Circle's L1) read from the chain: EIP-3009 settlements and Circle Gateway batches, by facilitator and seller. JSON at `https://apexfaucet.xyz/api/arc/x402`.
 - [bridgenode-llm](https://pypi.org/project/bridgenode-llm) - Python SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
