@@ -87,6 +87,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Vend — extract (pay-per-call API)](https://extract.paypercall.dev/api/v1/extract) - Pay-per-call API suite for AI agents (clean web-text extraction, geoip, search and more), settling fee-free in native Nano (XNO) via the x402 v2 exact scheme on `nano:mainnet` — no signup, no API key, zero network fee, sub-second finality. [x402 manifest](https://extract.paypercall.dev/.well-known/x402)
 - [Ambolt](https://ambolt.dev) - Pay-per-call data tools for AI agents over x402 on Base and Solana, no API key and no LLM: company registry lookup (Norway, Finland, Czechia, Slovakia, France, UK, Latvia, Estonia, Brazil by CNPJ, GLEIF), EU/UK tenders, ECB rates, IBAN/DNS/SSL checks and on-chain token facts. $0.003-$0.02 per call, failed calls are not charged, one free call per tool and IP per day. [OpenAPI](https://api.ambolt.dev/openapi.json) | free MCP server: https://api.ambolt.dev/mcp
 
+- [Steward](https://brianbooms.com/agents/) - Micropayments for AI agents — pay per API call in USDC on Base via x402. [Catalog](https://brianbooms.com/agents/) | [llms.txt](https://brianbooms.com/llms.txt) | [agent.json](https://brianbooms.com/.well-known/agent.json)
 ## x402 Developer Tools & SDKs
 
 Libraries, SDKs, and dev tools for building with x402.
