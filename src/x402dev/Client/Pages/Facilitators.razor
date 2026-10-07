@@ -21,6 +21,10 @@
 		<span>Checking facilitator status…</span>
 	</div>
 }
+else if (loadFailed)
+{
+	<p class="fac-note" style="margin: 1rem 0;">Facilitator status is currently unavailable. Please try again later.</p>
+}
 else
 {
 	<FluentDataGrid Id="facilitatorgrid" Items="@facilitators" TGridItem="Facilitator" AutoFit="true" MultiLine="true">
@@ -94,13 +98,23 @@ else
 
 @code {
 	private IQueryable<Facilitator>? facilitators;
+	private bool loadFailed;
 
 	protected override async Task OnInitializedAsync()
 	{
 		if (OperatingSystem.IsBrowser())
 		{
-			var result = await FacilitatorGrpcService.GetFacilitators();
-			facilitators = result.AsQueryable();
+			try
+			{
+				var result = await FacilitatorGrpcService.GetFacilitators();
+				facilitators = result.AsQueryable();
+			}
+			catch
+			{
+				// Backend (or its gRPC endpoint) unreachable — show the page without facilitator data.
+				facilitators = Enumerable.Empty<Facilitator>().AsQueryable();
+				loadFailed = true;
+			}
 		}
 	}
 

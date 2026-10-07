@@ -66,11 +66,18 @@
         }
     </div>
 }
-else if(messages == null)
+else if (messages == null)
 {
     <div class="msg-empty">
         <FluentIcon Value="@(new Icons.Regular.Size48.Chat())" />
         <p>Loading messages...</p>
+    </div>
+}
+else if (loadFailed)
+{
+    <div class="msg-empty">
+        <FluentIcon Value="@(new Icons.Regular.Size48.Chat())" />
+        <p>Messages are currently unavailable.</p>
     </div>
 }
 else
@@ -83,6 +90,7 @@ else
 
 @code {
     private IEnumerable<PublicMessage>? messages;
+    private bool loadFailed;
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,7 +107,17 @@ else
     {
         if (OperatingSystem.IsBrowser())
         {
-            messages = await PublicMessageGrpcService.GetMessages();
+            try
+            {
+                messages = await PublicMessageGrpcService.GetMessages();
+                loadFailed = false;
+            }
+            catch
+            {
+                // Backend (or its gRPC endpoint) unreachable — show the page without messages.
+                messages = [];
+                loadFailed = true;
+            }
         }
     }
 

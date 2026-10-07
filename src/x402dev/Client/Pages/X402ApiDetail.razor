@@ -8,7 +8,18 @@
 
 <PageTitle>x402dev - API details</PageTitle>
 
-@if (api == null)
+@if (loadFailed)
+{
+	<div class="page-header">
+		<span class="page-eyebrow">x402 Network</span>
+		<h1>API details</h1>
+		<p class="page-desc">API details are currently unavailable. Please try again later.</p>
+		<div class="page-header-actions">
+			<FluentButton Appearance="ButtonAppearance.Transparent" OnClick="@(() => Navigation.NavigateTo("x402-apis"))">Back to all APIs</FluentButton>
+		</div>
+	</div>
+}
+else if (api == null)
 {
 	<div class="page-loading">
 		<FluentSpinner />
@@ -79,14 +90,6 @@ else
 			<div class="detail-label">HTTP method</div>
 			<div class="detail-value">@(string.IsNullOrWhiteSpace(api.HttpMethod) ? "—" : api.HttpMethod)</div>
 
-			<div class="detail-label">Curl example</div>
-			<div class="detail-value">
-				<code>@CurlCommand</code>
-				<FluentButton Appearance="ButtonAppearance.Transparent" Class="copy-btn" OnClick="@(() => CopyToClipboard(CurlCommand, "curl"))" title="Copy curl command">
-					@(copiedKey == "curl" ? "Copied!" : "Copy")
-				</FluentButton>
-			</div>
-
 			<div class="detail-label">Response time</div>
 			<div class="detail-value">@(api.LatencyMs.HasValue ? $"{api.LatencyMs.Value} ms" : "—")</div>
 
@@ -111,6 +114,37 @@ else
 				<div class="detail-value detail-error">@api.ErrorMessage</div>
 			}
 		</div>
+	</FluentCard>
+
+	<FluentCard Style="margin-top: 1rem;">
+		<h3>Quick start</h3>
+		<p class="page-desc">
+			Call this endpoint and handle the x402 payment handshake: request the resource,
+			then sign the <code>PAYMENT-REQUIRED</code> response and retry with a
+			<code>PAYMENT-SIGNATURE</code> header.
+		</p>
+
+		<div class="detail-grid">
+			<div class="detail-label">Test live</div>
+			<div class="detail-value">
+				<FluentAnchorButton Appearance="ButtonAppearance.Primary"
+									Href="@($"/resource-tester?url={Uri.EscapeDataString(api.Url)}&method={Uri.EscapeDataString(string.IsNullOrWhiteSpace(api.HttpMethod) ? "GET" : api.HttpMethod)}")">
+					Test in Resource Tester
+				</FluentAnchorButton>
+			</div>
+		</div>
+
+		<div class="quickstart-tabs">
+			@foreach (var lang in SampleLanguages)
+			{
+				<FluentButton Appearance="@(selectedSample == lang.Key ? ButtonAppearance.Primary : ButtonAppearance.Outline)"
+							  OnClick="@(() => selectedSample = lang.Key)">@lang.Label</FluentButton>
+			}
+		</div>
+		<pre class="code-block">@SelectedSampleCode</pre>
+		<FluentButton Appearance="ButtonAppearance.Transparent" Class="copy-btn" OnClick="@(() => CopyToClipboard(SelectedSampleCode, "sample"))" title="Copy code sample">
+			@(copiedKey == "sample" ? "Copied!" : "Copy")
+		</FluentButton>
 	</FluentCard>
 
 	<FluentCard Style="margin-top: 1rem;">
@@ -175,12 +209,120 @@ else
 	private X402Api? api;
 	private bool hasOtherDomainApis;
 	private bool found;
+	private bool loadFailed;
 	private string? prettyJson;
 	private string? copiedKey;
+	private string selectedSample = "curl";
 
-	private string CurlCommand =>
-		api == null ? string.Empty :
-		$"curl -i -X {(string.IsNullOrWhiteSpace(api.HttpMethod) ? "GET" : api.HttpMethod)} '{api.Url}'";
+	private static readonly (string Key, string Label)[] SampleLanguages =
+	[
+		("curl", "curl"),
+		("javascript", "JavaScript"),
+		("python", "Python"),
+		("go", "Go"),
+	];
+
+	private string HttpMethod => (api?.HttpMethod ?? "GET").ToUpperInvariant();
+
+	private string SelectedSampleCode => selectedSample switch
+	{
+		"javascript" => JavaScriptSample,
+		"python" => PythonSample,
+		"go" => GoSample,
+		_ => CurlSample,
+	};
+
+	private string CurlSample => $$"""
+		# 1) Request the resource
+		curl -i -X {{HttpMethod}} '{{api?.Url}}'
+
+		# 2) If the response is 402 Payment Required, the PAYMENT-REQUIRED
+		#    header contains base64-encoded payment requirements. Sign them
+		#    with your wallet (e.g. the x402 SDK) and retry:
+		curl -i -X {{HttpMethod}} '{{api?.Url}}' \
+		  -H 'PAYMENT-SIGNATURE: <base64 payload>'
+		""";
+
+	private string JavaScriptSample => $$"""
+		const url = '{{api?.Url}}';
+
+		// 1) Request the resource
+		let res = await fetch(url, { method: '{{HttpMethod}}' });
+
+		// 2) If payment is required, sign the requirements and retry
+		if (res.status === 402) {
+		  const requirements = JSON.parse(atob(res.headers.get('PAYMENT-REQUIRED')));
+		  const signature = await signPayment(requirements); // sign with your wallet / x402 SDK
+		  res = await fetch(url, {
+		    method: '{{HttpMethod}}',
+		    headers: { 'PAYMENT-SIGNATURE': signature },
+		  });
+		}
+
+		const data = await res.json();
+		console.log(data);
+		""";
+
+	private string PythonSample => $$"""
+		import base64
+		import json
+		import requests
+
+		url = '{{api?.Url}}'
+
+		# 1) Request the resource
+		res = requests.request('{{HttpMethod}}', url)
+
+		# 2) If payment is required, sign the requirements and retry
+		if res.status_code == 402:
+		    requirements = json.loads(base64.b64decode(res.headers['PAYMENT-REQUIRED']))
+		    signature = sign_payment(requirements)  # sign with your wallet / x402 SDK
+		    res = requests.request('{{HttpMethod}}', url, headers={'PAYMENT-SIGNATURE': signature})
+
+		print(res.json())
+		""";
+
+	private string GoSample => $$"""
+		package main
+
+		import (
+			"encoding/base64"
+			"encoding/json"
+			"fmt"
+			"io"
+			"net/http"
+		)
+
+		const url = "{{api?.Url}}"
+
+		func main() {
+			// 1) Request the resource
+			req, _ := http.NewRequest("{{HttpMethod}}", url, nil)
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				panic(err)
+			}
+
+			// 2) If payment is required, sign the requirements and retry
+			if res.StatusCode == http.StatusPaymentRequired {
+				raw, _ := base64.StdEncoding.DecodeString(res.Header.Get("PAYMENT-REQUIRED"))
+				var requirements map[string]any
+				_ = json.Unmarshal(raw, &requirements)
+
+				signature, _ := signPayment(requirements) // sign with your wallet / x402 SDK
+				req, _ = http.NewRequest("{{HttpMethod}}", url, nil)
+				req.Header.Set("PAYMENT-SIGNATURE", signature)
+				res, err = http.DefaultClient.Do(req)
+				if err != nil {
+					panic(err)
+				}
+			}
+
+			body, _ := io.ReadAll(res.Body)
+			defer res.Body.Close()
+			fmt.Println(string(body))
+		}
+		""";
 
 	private async Task CopyToClipboard(string text, string key)
 	{
@@ -207,20 +349,37 @@ else
 			return;
 		}
 
-		var result = await X402ApiGrpcService.GetX402ApiDetail(new GetX402ApiDetailRequest { Url = UrlParam });
-		found = result.Found;
-		api = result.Api;
-
-		if (api != null)
+		try
 		{
-			prettyJson = PrettyJson(api.RawJsonResponse);
-			var domainResult = await X402ApiGrpcService.GetX402ApisPaged(new GetX402ApisPagedRequest
+			var result = await X402ApiGrpcService.GetX402ApiDetail(new GetX402ApiDetailRequest { Url = UrlParam });
+			found = result.Found;
+			api = result.Api;
+
+			if (api != null)
 			{
-				Domain = api.Domain,
-				ExcludeUrl = api.Url,
-				Take = 1
-			});
-			hasOtherDomainApis = domainResult.TotalCount > 0;
+				prettyJson = PrettyJson(api.RawJsonResponse);
+
+				try
+				{
+					var domainResult = await X402ApiGrpcService.GetX402ApisPaged(new GetX402ApisPagedRequest
+					{
+						Domain = api.Domain,
+						ExcludeUrl = api.Url,
+						Take = 1
+					});
+					hasOtherDomainApis = domainResult.TotalCount > 0;
+				}
+				catch
+				{
+					// Optional "other APIs on this domain" section is omitted when the backend is unreachable.
+					hasOtherDomainApis = false;
+				}
+			}
+		}
+		catch
+		{
+			// Backend (or its gRPC endpoint) unreachable — render the page without API data instead of failing.
+			loadFailed = true;
 		}
 	}
 

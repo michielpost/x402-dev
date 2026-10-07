@@ -79,6 +79,11 @@
 	{
 		<FluentPaginator State="@pagination" />
 	}
+
+	@if (loadFailed)
+	{
+		<p class="fac-note" style="margin-top: 0.75rem;">The API directory is currently unavailable. Please try again later.</p>
+	}
 </div>
 
 @code {
@@ -92,6 +97,7 @@
 	private string searchText = string.Empty;
 	private PaginationState pagination = new();
 	private FluentDataGrid<X402Api>? grid;
+	private bool loadFailed;
 
 	protected override void OnInitialized()
 	{
@@ -126,11 +132,21 @@
 			grpcRequest.SortBy.Add(sort.Direction == DataGridSortDirection.Descending ? $"-{sort.PropertyName}" : sort.PropertyName);
 		}
 
-		var result = Mode == ListMode.Problems
-			? await X402ApiGrpcService.GetX402ApisWithProblemsPaged(grpcRequest)
-			: await X402ApiGrpcService.GetX402ApisPaged(grpcRequest);
+		try
+		{
+			var result = Mode == ListMode.Problems
+				? await X402ApiGrpcService.GetX402ApisWithProblemsPaged(grpcRequest)
+				: await X402ApiGrpcService.GetX402ApisPaged(grpcRequest);
 
-		return GridItemsProviderResult.From(result.Items, result.TotalCount);
+			loadFailed = false;
+			return GridItemsProviderResult.From(result.Items, result.TotalCount);
+		}
+		catch
+		{
+			// Backend (or its gRPC endpoint) unreachable — show an empty grid instead of failing the page.
+			loadFailed = true;
+			return GridItemsProviderResult.From(Array.Empty<X402Api>(), 0);
+		}
 	}
 
 	/// <summary>

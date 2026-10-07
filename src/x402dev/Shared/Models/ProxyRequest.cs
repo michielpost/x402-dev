@@ -7,6 +7,8 @@ namespace x402dev.Server.Models
         [Url]
         public string Url { get; set; } = string.Empty;
         public string? PaymentHeader { get; set; }
+        public string HttpMethod { get; set; } = "GET";
+        public string? RequestContent { get; set; }
 
     }
 

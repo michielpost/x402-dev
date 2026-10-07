@@ -32,7 +32,7 @@
             <FluentTextInput @bind-Value="@url"
                              Label="URL"
                              Style="width: 100%;"
-                             Placeholder="https://api2.x402dev.com/resourcev2/middleware"
+                             Placeholder="https://api2.x402dev.com/demo/protected"
                              Required="true" />
 
             <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
@@ -41,6 +41,19 @@
                 <FluentButton Appearance="ButtonAppearance.Outline" OnClick="@(() => url = UptoExampleUrl)">upto</FluentButton>
                 <FluentButton Appearance="ButtonAppearance.Outline" OnClick="@(() => url = BatchExampleUrl)">batch-settlement</FluentButton>
             </div>
+
+            <FluentSelect TOption="string"
+                          TValue="string"
+                          Items="@HttpMethods"
+                          @bind-Value="@httpMethod"
+                          Label="HTTP Method"
+                          Style="width: 200px;" />
+
+            <FluentTextArea @bind-Value="@requestContent"
+                            Label="Request body (optional)"
+                            Style="width: 100%;"
+                            Placeholder='{"key": "value"}'
+                            Resize="TextAreaResize.Vertical" />
 
             <FluentTextInput @bind-Value="@paymentHeader"
                              Label="Optional PAYMENT-SIGNATURE header"
@@ -130,11 +143,18 @@
 </FluentStack>
 
     @code {
-    private const string ExactExampleUrl = "https://api2.x402dev.com/resourcev2/middleware";
+    private const string ExactExampleUrl = "https://api2.x402dev.com/demo/protected";
     private const string UptoExampleUrl = "https://api2.x402dev.com/demo/upto";
     private const string BatchExampleUrl = "https://api2.x402dev.com/demo/batch-settlement";
 
+    private static readonly List<string> HttpMethods = new()
+    {
+        "GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"
+    };
+
     private string url = ExactExampleUrl;
+    private string httpMethod = "GET";
+    private string? requestContent;
     private string? paymentHeader;
     private string? headers;
     private string? result;
@@ -147,10 +167,24 @@
     private int lineCount = 0;
     private int lineCountFinalResult = 0;
 
+    [SupplyParameterFromQuery(Name = "url")] public string? UrlParam { get; set; }
+    [SupplyParameterFromQuery(Name = "method")] public string? MethodParam { get; set; }
+
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
+        if (!string.IsNullOrWhiteSpace(UrlParam))
+        {
+            url = UrlParam;
+        }
+
+        if (!string.IsNullOrWhiteSpace(MethodParam) &&
+            HttpMethods.Contains(MethodParam.Trim().ToUpperInvariant(), StringComparer.OrdinalIgnoreCase))
+        {
+            httpMethod = MethodParam.Trim().ToUpperInvariant();
+        }
 
         WalletProvider.PrepareWallet += WalletProvider_PrepareWallet;
         WalletProvider.PaymentSelected += WalletProvider_PaymentSelected;
@@ -345,7 +379,13 @@
                 return;
             }
 
-            var req = new ProxyRequest { Url = url, PaymentHeader = paymentHeader };
+            var req = new ProxyRequest
+            {
+                Url = url,
+                PaymentHeader = paymentHeader,
+                HttpMethod = httpMethod,
+                RequestContent = requestContent
+            };
             var json = JsonSerializer.Serialize(req);
 
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/proxy/proxy-x402")

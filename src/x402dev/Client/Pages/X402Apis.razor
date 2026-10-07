@@ -92,7 +92,14 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		stats = await X402ApiGrpcService.GetX402ApiStats();
+		try
+		{
+			stats = await X402ApiGrpcService.GetX402ApiStats();
+		}
+		catch
+		{
+			// Backend (or its gRPC endpoint) unreachable — the stats badges are omitted.
+		}
 	}
 
 	private async Task AddApi()
