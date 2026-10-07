@@ -93,6 +93,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 
 - [Steward](https://brianbooms.com/agents/) - Micropayments for AI agents — pay per API call in USDC on Base via x402. [Catalog](https://brianbooms.com/agents/) | [llms.txt](https://brianbooms.com/llms.txt) | [agent.json](https://brianbooms.com/.well-known/agent.json)
 - [Voidpay x402 data APIs](https://x402.voidly.ai/.well-known/x402) - Three x402 v2 POST resources on Base mainnet: claim verification (`/v1/verify-claim`, $0.01 USDC), accessibility comparison (`/v1/accessibility/check`, $0.01 USDC), and incident evidence report (`/data/incidents/report`, $0.02 USDC).
+- [Tanod](https://tanod.dev) - 40+ pay-per-call tools for AI agents over x402 v2 (`exact`, USDC on Base) and a remote MCP server, no account or API key: Solidity contract scans (solc + Slither + custom DeFi detectors, from $0.25), a pre-transaction address risk check ($0.005), OFAC SDN crypto-address screening ($0.002), a scan of MCP server and agent skill packages before install ($0.02-$0.05), plus web page, PDF, DNS/RDAP and chain-read utilities from $0.001. Small free daily tier per IP; results are automated heuristics, not audits. [OpenAPI](https://tanod.dev/openapi.json) | [Discovery](https://tanod.dev/.well-known/x402) | [MCP](https://tanod.dev/mcp) | [llms.txt](https://tanod.dev/llms.txt) | [GitHub](https://github.com/tanod-labs/integrations)
 
 ## x402 Developer Tools & SDKs
 
