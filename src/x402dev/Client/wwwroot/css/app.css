@@ -6,6 +6,19 @@ body {
     margin: 0;
 }
 
+/* FluentUI only injects these base rules at runtime (default-fuib.css), after
+   Blazor initializes. Apply them eagerly so the prerendered page (HTML/CSS only,
+   before the app boots) renders identically and doesn't show scrollbars on first paint. */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100dvh;
+    overflow: hidden;
+}
+
 .navmenu-icon {
     display: none;
 }
