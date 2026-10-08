@@ -71,5 +71,9 @@
   {
     "Name": "ArisPay",
     "Url": "https://facilitator.arispay.app"
+  },
+  {
+    "Name": "Shinjuku Shielded (Solana)",
+    "Url": "https://shinjukustaition.com/api/x402"
   }
 ]
