@@ -1,5 +1,10 @@
 [
   {
+    "Name": "X Pay (Base)",
+    "Url": "https://facilitator-xpay.llc",
+    "NeedsApiKey": true
+  },
+  {
     "Name": "Coinbase",
     "Url": "https://api.cdp.coinbase.com/platform/v2/x402/",
     "NeedsApiKey": true
@@ -77,3 +82,4 @@
     "Url": "https://shinjukustaition.com/api/x402"
   }
 ]
+
