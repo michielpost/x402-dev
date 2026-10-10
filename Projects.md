@@ -102,6 +102,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Penny Press](https://www.pennypress.org) - Essays on freedom, economics and philosophy: free for humans to read, pay-per-read for AI agents via x402 micropayments ($0.01–$0.05 per essay, USDC on Base, no account or API key). [Discovery](https://www.pennypress.org/.well-known/x402) | [OpenAPI](https://www.pennypress.org/openapi.json) | [llms.txt](https://www.pennypress.org/llms.txt) | [MCP](https://www.pennypress.org/mcp)
 - [Instant Expert](https://instant.expert/docs/x402) - Pay per question for a written or voice answer from a real professional you name (name and company, email or LinkedIn URL) or the best match for a description of who you want. From $40 in USDC on Base via x402 v2 (CDP facilitator), no account, refunded automatically if nobody answers within 7 days. [Discovery](https://instant.expert/.well-known/x402) | [llms.txt](https://instant.expert/llms.txt)
 
+- [VerifyPulse](https://verifypulse-seven.vercel.app) - Real-time RFC 5322 email verification, live DNS MX lookup, zero-send SMTP handshake ($0.01 USDC on Base via x402 v2), RFC 7208 SPF 10-lookup & DMARC policy auditing ($0.01 USDC), and verified B2B lead datasets ($6-$9 USDC), plus a keyless remote Streamable HTTP MCP server. [Discovery](https://verifypulse-seven.vercel.app/.well-known/x402) | [OpenAPI](https://verifypulse-seven.vercel.app/openapi.json) | [MCP](https://verifypulse-seven.vercel.app/mcp) | [llms.txt](https://verifypulse-seven.vercel.app/llms.txt)
+
 ## x402 Developer Tools & SDKs
 
 Libraries, SDKs, and dev tools for building with x402.
