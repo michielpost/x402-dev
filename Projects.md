@@ -149,6 +149,7 @@ Educational content, directories, and resource hubs.
 - [Firecrawl](https://www.firecrawl.dev) - Turn websites into LLM-ready data (useful for x402 + agentic use cases)  
 - [x402 Ecosystem](https://www.x402.org) - Overview of all ecosystem participants  
 - [x402 on Coingecko](https://www.coingecko.com/en/categories/x402-ecosystem) - Top x402 Ecosystem Coins by Market Cap
+- [x402 facilitator support matrix](https://tanod.dev/learn/x402-facilitator-support.html) - Which schemes (exact, upto, batch-settlement) each of 6 facilitators settles on each of 11 mainnets, read from each facilitator's /supported endpoint.
 - [AffixIO](https://www.npmjs.com/package/affixio) - Agentic Pay Kit with x402BeforePay host-side action attestation before pay (signed yes/no on host, not person KYC), agenticPay, mcpToolGate, and KYA createAgentTrust. ([GitHub](https://github.com/AffixIO/SDK)) ([docs](https://www.affix-io.com/agent-trust/))
 - [HostDeFi](https://hostdefi.com/api/v1/x402/pricing) - x402-payable token-safety API: A+–F grades, risk scores and datasets settle per call in USDC; free `scan_token` MCP tool also available.
 
