@@ -5,13 +5,30 @@
 @inject IX402ApiGrpcService X402ApiGrpcService
 
 <div class="api-list">
-	@if (ShowSearch)
+	@if (ShowSearch || ShowNetworkFilter)
 	{
-		<div class="api-list-toolbar">
-			<FluentTextInput @bind-Value="searchText"
-							 @bind-Value:after="OnSearchChanged"
-							 Placeholder="Search by url or description…"
-							 AriaLabel="Search x402 APIs" />
+		<div class="api-list-toolbar" style="max-width: none; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+			@if (ShowSearch)
+			{
+				<FluentTextInput @bind-Value="searchText"
+								 @bind-Value:after="OnSearchChanged"
+								 Placeholder="Search by url or description…"
+								 AriaLabel="Search x402 APIs"
+								 Style="max-width: 420px; flex: 1 1 260px;" />
+			}
+			@if (ShowNetworkFilter)
+			{
+				<FluentSelect TOption="X402ApiNetwork" TValue="X402ApiNetwork"
+							  Items="@networkOptions"
+							  @bind-Value="selectedNetwork"
+							  @bind-Value:after="OnNetworkChanged"
+							  AriaLabel="Filter by network"
+							  Style="width: 220px;">
+					<OptionTemplate>
+						@(context.NetworkName ?? context.Network)
+					</OptionTemplate>
+				</FluentSelect>
+			}
 		</div>
 	}
 
@@ -88,6 +105,7 @@
 
 @code {
 	[Parameter] public bool ShowSearch { get; set; } = true;
+	[Parameter] public bool ShowNetworkFilter { get; set; } = true;
 	[Parameter] public bool ShowDomainColumn { get; set; } = true;
 	[Parameter] public string? ExcludeUrl { get; set; }
 	[Parameter] public string? Domain { get; set; }
@@ -95,6 +113,8 @@
 	[Parameter] public int PageSize { get; set; } = 20;
 
 	private string searchText = string.Empty;
+	private List<X402ApiNetwork> networkOptions = new();
+	private X402ApiNetwork? selectedNetwork;
 	private PaginationState pagination = new();
 	private FluentDataGrid<X402Api>? grid;
 	private bool loadFailed;
@@ -104,6 +124,42 @@
 		pagination = new PaginationState { ItemsPerPage = PageSize };
 		pagination.TotalItemCountChanged += OnTotalItemCountChanged;
 		base.OnInitialized();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadNetworksAsync();
+		await base.OnInitializedAsync();
+	}
+
+	private async Task LoadNetworksAsync()
+	{
+		var allOption = new X402ApiNetwork { Network = string.Empty, NetworkName = "All networks" };
+		networkOptions = new List<X402ApiNetwork> { allOption };
+		selectedNetwork = allOption;
+
+		if (ShowNetworkFilter)
+		{
+			try
+			{
+				var networks = await X402ApiGrpcService.GetX402ApiNetworks();
+				networkOptions.AddRange(networks);
+			}
+			catch
+			{
+				// Backend (or its gRPC endpoint) unreachable — only "All networks" is available.
+			}
+		}
+
+		await InvokeAsync(StateHasChanged);
+	}
+
+	private async Task OnNetworkChanged()
+	{
+		if (grid != null)
+		{
+			await grid.RefreshDataAsync();
+		}
 	}
 
 	private void OnTotalItemCountChanged(object? sender, TotalItemCountChangedEventArgs e) => InvokeAsync(StateHasChanged);
@@ -124,7 +180,8 @@
 			Take = request.Count ?? pagination.ItemsPerPage,
 			Search = string.IsNullOrWhiteSpace(searchText) ? null : searchText.Trim(),
 			Domain = Domain,
-			ExcludeUrl = ExcludeUrl
+			ExcludeUrl = ExcludeUrl,
+			Network = string.IsNullOrEmpty(selectedNetwork?.Network) ? null : selectedNetwork!.Network
 		};
 
 		foreach (var sort in request.GetSortByProperties())

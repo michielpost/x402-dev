@@ -1,8 +1,14 @@
-name: Validate Projects.md URLs
+name: Projects.md PR review
 
-# Uses pull_request_target so the job has a write token even for fork pull requests.
-# Only the pull request diff is read here - no code from the pull request is checked
-# out or executed.
+# Uses pull_request_target so the job has a write token even for fork pull
+# requests. Only the pull request diff is read here - no code from the pull
+# request is checked out or executed.
+#
+# This workflow first validates the URLs added to Projects.md and closes the
+# pull request when violations are found. Only when the URL check passes does it
+# score the pull request with the Jev decision model, post the score as a pull
+# request comment, and auto-merge pull requests that only modify Projects.md
+# and score at least 70/100.
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
@@ -18,7 +24,7 @@ on:
         required: true
         type: string
       dry_run:
-        description: Only report violations (do not comment or close the pull request)
+        description: Only report (do not comment, close, or merge)
         required: false
         default: true
         type: boolean
@@ -29,7 +35,7 @@ permissions:
   issues: write
 
 jobs:
-  validate-urls:
+  review-projects-pr:
     runs-on: ubuntu-latest
 
     env:
@@ -79,4 +85,41 @@ jobs:
             gh pr close "$PR_NUMBER" --repo "$REPO"
           else
             echo "Pull request is already $state."
+          fi
+
+      - name: Score the pull request with Jev
+        id: jev
+        if: steps.check.outputs.violations != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VENICE_API_KEY: ${{ secrets.VENICE_API_KEY }}
+        run: |
+          python3 .github/scripts/jev_pr_score.py comment.md
+
+      - name: Post the Jev score on the pull request
+        if: steps.check.outputs.violations != 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq '[.[] | select(.body | contains("<!-- jev-pr-score -->"))][0].id' || true)
+          if [ -n "$existing" ]; then
+            gh api --method PATCH "repos/${REPO}/issues/comments/${existing}" \
+              --field body=@comment.md > /dev/null
+            echo "Updated the existing Jev score comment."
+          else
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file comment.md
+            echo "Posted a new Jev score comment."
+          fi
+
+      - name: Auto-merge qualifying pull requests
+        if: steps.check.outputs.violations != 'true' && steps.jev.outputs.can_automerge == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json state --jq .state)
+          if [ "$state" = "OPEN" ]; then
+            gh pr merge "$PR_NUMBER" --repo "$REPO" --squash --delete-branch
+          else
+            echo "Pull request is already $state; skipping merge."
           fi

@@ -15,7 +15,7 @@ namespace x402dev.Server.Services
         public async Task<Shared.Models.GetX402ApisPagedResult> GetX402ApisPaged(Shared.Models.GetX402ApisPagedRequest request, CallContext context = default)
         {
             var (items, totalCount) = await x402ApiService.GetCheckedX402ApisPagedAsync(
-                request.Skip, request.Take, request.Search, request.Domain, request.ExcludeUrl, request.SortBy);
+                request.Skip, request.Take, request.Search, request.Domain, request.ExcludeUrl, request.SortBy, request.Network);
 
             return new Shared.Models.GetX402ApisPagedResult
             {
@@ -84,6 +84,30 @@ namespace x402dev.Server.Services
             };
         }
 
+        public async Task<List<Shared.Models.X402ApiNetwork>> GetX402ApiNetworks(CallContext context = default)
+        {
+            var networks = await x402ApiService.GetX402ApiNetworksAsync();
+
+            return networks
+                .Select(network =>
+                {
+                    var requirement = new Shared.Models.X402ApiPaymentRequirement
+                    {
+                        Network = network,
+                        Amount = string.Empty,
+                        Asset = string.Empty
+                    };
+                    ResolveDisplayFields(requirement);
+                    return new Shared.Models.X402ApiNetwork
+                    {
+                        Network = network,
+                        NetworkName = requirement.NetworkName
+                    };
+                })
+                .OrderBy(n => n.NetworkName ?? n.Network, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
         private string? GetClientIp()
         {
             return httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
@@ -147,6 +171,21 @@ namespace x402dev.Server.Services
         private static readonly x402.Core.AssetInfoProvider AssetInfoProvider = new();
         private static readonly Type ChainEnumType = typeof(Chain);
 
+        // Display names for common non-EVM x402 network identifiers (scheme:prefix).
+        private static readonly Dictionary<string, string> KnownNetworkPrefixes = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["solana:"] = "Solana",
+            ["algorand:"] = "Algorand",
+            ["bip122:"] = "Bitcoin",
+            ["btc:"] = "Bitcoin",
+            ["ada:"] = "Cardano",
+            ["near:"] = "NEAR",
+            ["hedera:"] = "Hedera",
+            ["tezos:"] = "Tezos",
+            ["cosmos:"] = "Cosmos",
+            ["polkadot:"] = "Polkadot"
+        };
+
         /// <summary>
         /// Resolves human-readable network/asset names and formats the amount using the
         /// asset's decimals. Raw values are kept on the requirement as fallback.
@@ -176,6 +215,16 @@ namespace x402dev.Server.Services
                 if (int.TryParse(chainIdPart, out var chainId) && Enum.IsDefined(ChainEnumType, chainId))
                 {
                     requirement.NetworkName = ((Chain)chainId).ToString();
+                }
+            }
+            else
+            {
+                // Known non-EVM network scheme, e.g. "solana:..." -> Solana.
+                var known = KnownNetworkPrefixes.FirstOrDefault(kv =>
+                    requirement.Network.StartsWith(kv.Key, StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrEmpty(known.Key))
+                {
+                    requirement.NetworkName = known.Value;
                 }
             }
         }

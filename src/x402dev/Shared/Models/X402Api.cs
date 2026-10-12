@@ -98,9 +98,31 @@ namespace x402dev.Shared.Models
         public string? ExcludeUrl { get; set; }
 
         /// <summary>
+        /// Filters to APIs that accept payment on the given network (raw network id, e.g. "eip155:8453").
+        /// </summary>
+        public string? Network { get; set; }
+
+        /// <summary>
         /// Property names to sort by, e.g. "Url" or "-LastCheck" (dash = descending).
         /// </summary>
         public List<string> SortBy { get; set; } = new();
+    }
+
+    /// <summary>
+    /// A distinct payment network found in the registry, with its display name.
+    /// </summary>
+    [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
+    public record X402ApiNetwork
+    {
+        /// <summary>
+        /// Raw network identifier as recorded in the payment requirement (e.g. "eip155:8453").
+        /// </summary>
+        public required string Network { get; set; }
+
+        /// <summary>
+        /// Human-readable network name (e.g. "Base"), null when it could not be resolved.
+        /// </summary>
+        public string? NetworkName { get; set; }
     }
 
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]

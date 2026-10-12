@@ -28,5 +28,8 @@ namespace x402dev.Shared.Interfaces
 
         [OperationContract]
         Task<X402ApiStats> GetX402ApiStats(CallContext context = default);
+
+        [OperationContract]
+        Task<List<X402ApiNetwork>> GetX402ApiNetworks(CallContext context = default);
     }
 }

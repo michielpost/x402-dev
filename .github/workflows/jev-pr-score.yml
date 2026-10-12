@@ -1,0 +1,88 @@
+name: Jev PR Score
+
+# Scores pull requests with the Jev decision model and posts the score as a
+# pull request comment. Uses pull_request_target so the job has a write token
+# even for fork pull requests; no code from the pull request is checked out or
+# executed.
+#
+# Pull requests that modify Projects.md are handled by the "Projects.md PR
+# review" workflow (projects-md-url-check.yml), which runs the URL check first
+# and closes the pull request on violations. To avoid scoring a pull request
+# that the URL check already closed, this workflow only runs for pull requests
+# that do NOT modify Projects.md (see paths-ignore).
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths-ignore:
+      - 'Projects.md'
+
+  # Manual runs are useful for scoring an existing pull request. The workflow
+  # file must be present on the default branch before this trigger can be used.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to score
+        required: true
+        type: string
+      dry_run:
+        description: Do not post the score comment
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  jev-score:
+    runs-on: ubuntu-latest
+
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+      REPO: ${{ github.repository }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+
+      - name: Skip scoring when the pull request is already closed
+        id: state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json state --jq .state)
+          echo "Pull request #${PR_NUMBER} is $state."
+          if [ "$state" = "OPEN" ]; then
+            echo "pr_open=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pr_open=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Score the pull request with Jev
+        id: jev
+        if: steps.state.outputs.pr_open == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VENICE_API_KEY: ${{ secrets.VENICE_API_KEY }}
+        run: |
+          python3 .github/scripts/jev_pr_score.py comment.md
+
+      - name: Post the Jev score on the pull request
+        if: steps.state.outputs.pr_open == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq '[.[] | select(.body | contains("<!-- jev-pr-score -->"))][0].id' || true)
+          if [ -n "$existing" ]; then
+            gh api --method PATCH "repos/${REPO}/issues/comments/${existing}" \
+              --field body=@comment.md > /dev/null
+            echo "Updated the existing Jev score comment."
+          else
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file comment.md
+            echo "Posted a new Jev score comment."
+          fi

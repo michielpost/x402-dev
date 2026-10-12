@@ -71,7 +71,7 @@ namespace x402dev.Services
         /// exclude-url filters plus sorting. Runs as a single DB query per page.
         /// </summary>
         public async Task<(List<X402Api> Items, int TotalCount)> GetCheckedX402ApisPagedAsync(
-            int skip, int take, string? search = null, string? domain = null, string? excludeUrl = null, List<string>? sortBy = null)
+            int skip, int take, string? search = null, string? domain = null, string? excludeUrl = null, List<string>? sortBy = null, string? network = null)
         {
             var cutoff = DateTimeOffset.UtcNow.AddHours(-48);
 
@@ -81,7 +81,7 @@ namespace x402dev.Services
                     || (x.LastSuccessDateTime.HasValue && x.LastErrorDateTime <= x.LastSuccessDateTime)
                     || (x.LastSuccessDateTime.HasValue && x.LastSuccessDateTime > cutoff));
 
-            query = ApplyFilters(query, search, domain, excludeUrl);
+            query = ApplyFilters(query, search, domain, excludeUrl, network);
 
             var totalCount = await query.CountAsync();
 
@@ -151,7 +151,7 @@ namespace x402dev.Services
                     || (x.LastErrorDateTime != null
                         && (!x.LastSuccessDateTime.HasValue || x.LastErrorDateTime > x.LastSuccessDateTime)));
 
-            query = ApplyFilters(query, search, null, null);
+            query = ApplyFilters(query, search, null, null, null);
 
             var totalCount = await query.CountAsync();
 
@@ -165,7 +165,35 @@ namespace x402dev.Services
             return (items, totalCount);
         }
 
-        private static IQueryable<X402Api> ApplyFilters(IQueryable<X402Api> query, string? search, string? domain, string? excludeUrl)
+        /// <summary>
+        /// Distinct payment networks found in the registry, sorted by display name.
+        /// </summary>
+        public async Task<List<string>> GetX402ApiNetworksAsync(int max = 500)
+        {
+            var apis = await GetCheckedX402ApisAsync(max);
+
+            return apis
+                .Select(x => x.PaymentsJson)
+                .Where(json => !string.IsNullOrEmpty(json))
+                .SelectMany(json =>
+                {
+                    try
+                    {
+                        return JsonSerializer.Deserialize<List<PaymentRequirementJson>>(json, JsonOptions) ?? [];
+                    }
+                    catch (JsonException)
+                    {
+                        return [];
+                    }
+                })
+                .Select(p => p.Network)
+                .Where(network => !string.IsNullOrEmpty(network))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        private static IQueryable<X402Api> ApplyFilters(IQueryable<X402Api> query, string? search, string? domain, string? excludeUrl, string? network)
         {
             if (!string.IsNullOrWhiteSpace(domain))
             {
@@ -182,6 +210,17 @@ namespace x402dev.Services
                 }
                 var excludeLower = normalizedExcludeUrl.ToLowerInvariant();
                 query = query.Where(x => x.Url.ToLower() != excludeLower);
+            }
+
+            if (!string.IsNullOrWhiteSpace(network))
+            {
+                // The network id lives inside the PaymentsJson list, so match on the
+                // JSON key/value pair. Both compact and spaced serializers are covered.
+                var networkId = network.Trim();
+                var compact = $"\"network\":\"{networkId}\"";
+                var spaced = $"\"network\": \"{networkId}\"";
+                query = query.Where(x => x.PaymentsJson != null
+                    && (x.PaymentsJson.Contains(compact) || x.PaymentsJson.Contains(spaced)));
             }
 
             var term = search?.Trim();
