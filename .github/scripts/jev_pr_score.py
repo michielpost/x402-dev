@@ -121,17 +121,16 @@ def score_with_jev(state: str) -> tuple[int, float]:
                     "Choose the level that best matches the pull request."
                 ),
                 "criteria": [
-                    "0/10 - Very poor addition: broken, malicious, spam, or harmful",
-                    "1/10 - Very poor addition with almost no value",
-                    "2/10 - Poor addition with several serious problems",
-                    "3/10 - Poor addition with some value but real problems",
-                    "4/10 - Below average with meaningful issues",
-                    "5/10 - Average: acceptable but not compelling",
-                    "6/10 - Decent addition with minor concerns",
-                    "7/10 - Good addition that fits the repository well",
-                    "8/10 - Very good addition, clearly beneficial",
-                    "9/10 - Excellent addition, high value",
-                    "10/10 - Outstanding addition, exactly what the repository needs",
+                    "Very poor addition: broken, malicious, spam, or harmful",
+                    "Very poor addition with almost no value",
+                    "Poor addition with several serious problems",
+                    "Poor addition with some value but real problems",
+                    "Below average with meaningful issues",
+                    "Average: acceptable but not compelling",
+                    "Decent addition with minor concerns",
+                    "Good addition that fits the repository well",
+                    "Very good addition, clearly beneficial",
+                    "Excellent addition, high value",
                 ],
             }
         },
@@ -153,7 +152,10 @@ def score_with_jev(state: str) -> tuple[int, float]:
     answer = data["answers"]["pr_score"]
     raw_score = float(answer["score"])
     confidence = float(answer.get("confidence") or 0.0)
-    percentage = int(round(max(0.0, min(10.0, raw_score)) * 10))
+    # The score is a probability-weighted level index over the criteria list
+    # (0 = lowest level, len(criteria)-1 = highest). Normalize to 0-100.
+    max_index = len(payload["questions"]["pr_score"]["criteria"]) - 1
+    percentage = int(round(max(0.0, min(float(max_index), raw_score)) / max_index * 100))
     return percentage, confidence
 
 
