@@ -114,8 +114,11 @@ jobs:
 
       - name: Auto-merge qualifying pull requests
         if: steps.check.outputs.violations != 'true' && steps.jev.outputs.can_automerge == 'true' && github.event.inputs.dry_run != 'true'
+        # The default GITHUB_TOKEN cannot merge pull requests in this
+        # repository, so a personal access token (AUTO_MERGE_PAT) is used for
+        # the merge step. The GITHUB_TOKEN is kept as a fallback.
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.AUTO_MERGE_PAT || github.token }}
         run: |
           state=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json state --jq .state)
           if [ "$state" = "OPEN" ]; then
