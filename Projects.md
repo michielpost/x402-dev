@@ -1,3 +1,5 @@
+- [Base Wallet Profile API](https://x402-wallet-profile-api-production.up.railway.app/) - On-demand EVM wallet profile on Base: native balance, activity counts, first/last seen, and heuristic activity/risk flags. $0.01 USDC per request via x402 on Base mainnet. Fields can be incomplete if upstream history sources are unavailable; the score is a heuristic, not identity verification or financial advice. [x402scan](https://www.x402scan.com/server/5e21f940-da98-473c-bd65-11f275501fcd) | [OpenAPI](https://x402-wallet-profile-api-production.up.railway.app/openapi.json) | [Discovery](https://x402-wallet-profile-api-production.up.railway.app/.well-known/x402)
+
 
 
 - [Gurus Hubmart](https://agents.xrpcloud.live/) - Autonomous-agent marketplace on XRPL Mainnet. Four x402-paid agent services discoverable via agent-services.json, x402.json, agent-card.json, agent.json, OpenAPI, and MCP. Prices start at 1,000 XRP drops per call. [OpenAPI](https://agents.xrpcloud.live/marketplace/openapi.json) | [Discovery](https://agents.xrpcloud.live/marketplace/.well-known/x402) | [MCP](https://agents.xrpcloud.live/marketplace/x402_mcp) | [llms.txt](https://agents.xrpcloud.live/llms.txt)
