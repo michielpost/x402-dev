@@ -18,6 +18,13 @@ Outputs (written to GITHUB_OUTPUT):
     score            integer 0-100
     only_projects_md true|false
     can_automerge    true|false (only Projects.md modified and score >= 70)
+    subdomain_penalty integer, points deducted from the score when the main
+                      new URL added to Projects.md is hosted on a subdomain
+
+The final score is capped lower (SUBJECT_SUBDOMAIN_PENALTY points) when the
+primary URL of an added Projects.md entry is a subdomain (e.g. api.example.com
+instead of example.com), so subdomain-hosted endpoints are unlikely to reach
+the auto-merge threshold.
 
 Usage:
     jev_pr_score.py <comment-outfile>
@@ -27,9 +34,11 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
+from urllib.parse import urlsplit
 
 GITHUB_API = "https://api.github.com"
 VENICE_DECISIONS_URL = "https://api.venice.ai/api/v1/decisions"
@@ -39,6 +48,24 @@ MARKER = "<!-- jev-pr-score -->"
 MAX_DESCRIPTION_CHARS = 4000
 MAX_DIFF_CHARS = 60000
 TARGET_FILE = "Projects.md"
+# Deterministic points deducted from the Jev score when the main new URL is a
+# subdomain (e.g. api.example.com instead of example.com). Subdomain-hosted
+# endpoints are more likely to be ephemeral, free-tier or non-production
+# infrastructure, so the final score is capped lower regardless of Jev's rating.
+SUBJECT_SUBDOMAIN_PENALTY = 15
+# Two-part public suffixes: example.co.uk is a root domain, not a subdomain.
+TWO_PART_SUFFIXES = {
+    "ac.uk", "co.uk", "gov.uk", "me.uk", "net.uk", "org.uk",
+    "com.au", "net.au", "org.au",
+    "com.br", "net.br", "org.br",
+    "co.in", "net.in", "org.in",
+    "co.jp", "ne.jp", "or.jp",
+    "com.mx", "org.mx",
+    "com.cn", "net.cn", "org.cn",
+    "co.nz", "net.nz", "org.nz",
+    "co.za", "org.za",
+}
+URL_REGEX = re.compile(r"https?://[^\s)<>\"'`]+", re.IGNORECASE)
 
 
 def env(name: str) -> str:
@@ -88,8 +115,9 @@ def fetch_diff(repo: str, number: str) -> str:
     )
 
 
-def projects_md_has_additions(diff: str) -> bool:
-    """True when the diff adds at least one line to Projects.md."""
+def added_projects_md_lines(diff: str) -> list[str]:
+    """Return the content of every line added to Projects.md in the diff."""
+    lines: list[str] = []
     in_target = False
     for line in diff.splitlines():
         if line.startswith("diff --git "):
@@ -100,6 +128,52 @@ def projects_md_has_additions(diff: str) -> bool:
                 path = path[2:]
             in_target = path == TARGET_FILE
         elif in_target and line.startswith("+") and not line.startswith("+++"):
+            lines.append(line[1:])
+    return lines
+
+
+def projects_md_has_additions(diff: str) -> bool:
+    """True when the diff adds at least one line to Projects.md."""
+    return bool(added_projects_md_lines(diff))
+
+
+def trim_url(url: str) -> str:
+    """Strip trailing markdown/punctuation noise from a matched URL."""
+    return url.rstrip(".,;:!?*_~\"'`")
+
+
+def main_urls_of_lines(added_lines: list[str]) -> list[str]:
+    """Return the primary (first) URL of each added Projects.md entry."""
+    urls: list[str] = []
+    for line in added_lines:
+        match = URL_REGEX.search(line)
+        if match:
+            urls.append(trim_url(match.group(0)))
+    return urls
+
+
+def is_subdomain_host(host: str) -> bool:
+    """True when the host is a subdomain of a registrable domain (e.g. api.example.com)."""
+    host = host.lower().rstrip(".")
+    if host.startswith("www."):
+        host = host[4:]
+    labels = host.split(".")
+    if len(labels) < 2:
+        return False
+    # A two-part public suffix (e.g. .co.uk) makes the registrable domain 3 labels.
+    if labels[-2] + "." + labels[-1] in TWO_PART_SUFFIXES:
+        return len(labels) > 3
+    return len(labels) > 2
+
+
+def has_subdomain_main_url(urls: list[str]) -> bool:
+    """True when any primary URL's host is a subdomain."""
+    for url in urls:
+        try:
+            host = urlsplit(url).hostname
+        except ValueError:
+            continue
+        if host and is_subdomain_host(host):
             return True
     return False
 
@@ -118,6 +192,9 @@ def score_with_jev(state: str) -> tuple[int, float]:
                     "or harmful content, and does not break existing functionality. "
                     "A pull request that only adds a valid, well-formed endpoint to "
                     "Projects.md is routine and expected. "
+                    "A pull request whose main new URL is hosted on a subdomain "
+                    "(e.g. api.example.com rather than example.com) is lower quality "
+                    "and should be scored lower. "
                     "Choose the level that best matches the pull request."
                 ),
                 "criteria": [
@@ -159,7 +236,7 @@ def score_with_jev(state: str) -> tuple[int, float]:
     return percentage, confidence
 
 
-def build_state(pr: dict, files: list[str], diff: str) -> str:
+def build_state(pr: dict, files: list[str], diff: str, main_url_subdomain: bool) -> str:
     sections = [
         f"Pull request title: {pr['title']}",
         "",
@@ -170,13 +247,23 @@ def build_state(pr: dict, files: list[str], diff: str) -> str:
     ]
     sections.extend(f"- {filename}" for filename in files)
     sections.append("")
+    if main_url_subdomain:
+        sections.append(
+            "NOTE: the main new URL added to Projects.md is hosted on a subdomain; "
+            "this is a negative quality signal and should be scored lower."
+        )
+        sections.append("")
     sections.append("Diff:")
     sections.append(diff[:MAX_DIFF_CHARS])
     return "\n".join(sections)
 
 
 def build_comment(
-    score: int, confidence: float, only_projects_md: bool, can_automerge: bool
+    score: int,
+    confidence: float,
+    only_projects_md: bool,
+    can_automerge: bool,
+    subdomain_penalty: int,
 ) -> str:
     lines = [
         MARKER,
@@ -186,6 +273,12 @@ def build_comment(
         f"repository (confidence {confidence * 100:.0f}%).",
         "",
     ]
+    if subdomain_penalty:
+        lines.append(
+            f"The score was reduced by {subdomain_penalty} points because the main "
+            "new URL is hosted on a subdomain."
+        )
+        lines.append("")
     if can_automerge:
         lines.append(
             "This pull request only modifies `Projects.md` and scores above the "
@@ -205,7 +298,9 @@ def build_comment(
     return "\n".join(lines)
 
 
-def write_outputs(score: int, only_projects_md: bool, can_automerge: bool) -> None:
+def write_outputs(
+    score: int, only_projects_md: bool, can_automerge: bool, subdomain_penalty: int
+) -> None:
     output_file = os.environ.get("GITHUB_OUTPUT")
     if not output_file:
         return
@@ -213,6 +308,7 @@ def write_outputs(score: int, only_projects_md: bool, can_automerge: bool) -> No
         handle.write(f"score={score}\n")
         handle.write(f"only_projects_md={'true' if only_projects_md else 'false'}\n")
         handle.write(f"can_automerge={'true' if can_automerge else 'false'}\n")
+        handle.write(f"subdomain_penalty={subdomain_penalty}\n")
 
 
 def main(argv: list[str]) -> int:
@@ -227,26 +323,38 @@ def main(argv: list[str]) -> int:
     files = fetch_changed_files(repo, number)
     diff = fetch_diff(repo, number)
 
-    state = build_state(pr, files, diff)
+    added_lines = added_projects_md_lines(diff)
+    main_url_subdomain = has_subdomain_main_url(main_urls_of_lines(added_lines))
+
+    state = build_state(pr, files, diff, main_url_subdomain)
     try:
         score, confidence = score_with_jev(state)
     except (urllib.error.HTTPError, urllib.error.URLError, KeyError, ValueError) as exc:
         print(f"Jev scoring failed: {exc}", file=sys.stderr)
         return 1
 
-    only_projects_md = files == [TARGET_FILE] and projects_md_has_additions(diff)
+    # Deterministically ensure a subdomain main URL scores lower.
+    subdomain_penalty = SUBJECT_SUBDOMAIN_PENALTY if main_url_subdomain else 0
+    if subdomain_penalty:
+        score = max(0, score - subdomain_penalty)
+
+    only_projects_md = files == [TARGET_FILE] and bool(added_lines)
     can_automerge = only_projects_md and score >= SCORE_THRESHOLD
 
     with open(argv[1], "w", encoding="utf-8") as handle:
-        handle.write(build_comment(score, confidence, only_projects_md, can_automerge))
+        handle.write(
+            build_comment(score, confidence, only_projects_md, can_automerge, subdomain_penalty)
+        )
 
-    write_outputs(score, only_projects_md, can_automerge)
+    write_outputs(score, only_projects_md, can_automerge, subdomain_penalty)
 
     print(
         f"Jev score for pull request #{number}: {score}/100 "
         f"(confidence {confidence * 100:.0f}%)"
     )
     print(f"only_projects_md={only_projects_md} can_automerge={can_automerge}")
+    if subdomain_penalty:
+        print(f"subdomain_penalty={subdomain_penalty}")
     return 0
 
 
