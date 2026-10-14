@@ -150,6 +150,7 @@ Tools and playgrounds to experiment and prototype with x402.
 
 - [x402 Cloudflare Playground](https://playground.x402.cloudflare.com/) - Run and test x402 flows in Cloudflare Workers  
 - [x402 Test Page](https://x402-dotnet.azurewebsites.net/resource/middleware) - x402 test payment
+- [Settlens](https://settlens.com/tools/x402-checker) - Free browser checker for x402 V2 HTTP payment requirements: validates the schema, requested resource binding and recipient, asset, network and amount policies without signing or sending a payment.
 
 
 ## x402 Learning & Community Resources
