@@ -9,6 +9,10 @@ src/x402dev.Services/X402ApiService.cs (AddX402ApiAsync):
   * hosts containing a blocked domain substring (netlify, trycloudflare, workers.dev,
     sslip.io) are not allowed
 
+Additional rule enforced by this pull-request check:
+
+  * a single entry (line) longer than 500 characters is not allowed
+
 Usage:
     check_projects_urls.py <diff-file> <comment-outfile>
 
@@ -31,6 +35,8 @@ BLOCKED_DOMAIN_SUBSTRINGS = ("netlify", "onrender", "trycloudflare", "workers.de
 DASHED_IP_REGEX = re.compile(r"\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}")
 URL_REGEX = re.compile(r"https?://[^\s)<>\"'`]+", re.IGNORECASE)
 MARKER = "<!-- projects-md-url-check -->"
+# Entries in Projects.md longer than this are rejected as too verbose.
+MAX_ENTRY_LENGTH = 500
 
 
 def added_lines(diff_text: str, target_file: str) -> list[str]:
@@ -90,7 +96,7 @@ def check_url(url: str) -> str | None:
 
 
 def find_violations(diff_text: str) -> dict[str, str]:
-    """Map each offending added URL to the reason it is not allowed."""
+    """Map each offending added entry to the reason it is not allowed."""
     violations: dict[str, str] = {}
 
     for line in added_lines(diff_text, TARGET_FILE):
@@ -100,6 +106,12 @@ def find_violations(diff_text: str) -> dict[str, str]:
             if reason is not None and url not in violations:
                 violations[url] = reason
 
+        if len(line) > MAX_ENTRY_LENGTH:
+            violations[line] = (
+                f"the entry is {len(line)} characters long "
+                f"(maximum is {MAX_ENTRY_LENGTH})"
+            )
+
     return violations
 
 
@@ -107,25 +119,28 @@ def build_comment(violations: dict[str, str]) -> str:
     blocked_list = ", ".join(f"`{b}`" for b in BLOCKED_DOMAIN_SUBSTRINGS)
     lines = [
         MARKER,
-        "## Projects.md URL check failed",
+        "## Projects.md check failed",
         "",
-        "This pull request adds URLs to `Projects.md` that are not allowed. "
-        "The same rules are enforced by the server when an endpoint is registered:",
+        "This pull request adds entries to `Projects.md` that are not allowed. "
+        "The URL rules are enforced by the server when an endpoint is registered:",
         "",
         "- URLs whose host is an IP address are not allowed.",
         "- URLs whose host contains an IP-like pattern (e.g. `204-168-208-32`) are not allowed.",
         f"- URLs whose host contains a blocked domain are not allowed ({blocked_list}).",
+        f"- Entries longer than {MAX_ENTRY_LENGTH} characters are not allowed.",
         "",
-        "Rejected URLs:",
+        "Rejected entries:",
         "",
     ]
 
-    for url, reason in violations.items():
-        lines.append(f"- `{url}` - {reason}")
+    for entry, reason in violations.items():
+        display = entry if len(entry) <= 100 else entry[:97] + "..."
+        lines.append(f"- `{display}` - {reason}")
 
     lines += [
         "",
-        "Please update `Projects.md` to only use allowed, publicly resolvable domains. "
+        "Please update `Projects.md` to only use allowed, publicly resolvable domains "
+        f"and keep each entry at or below {MAX_ENTRY_LENGTH} characters. "
         "This pull request is being closed automatically.",
         "",
     ]
@@ -162,11 +177,11 @@ def main(argv: list[str]) -> int:
     write_outputs(violations)
 
     if violations:
-        print(f"Found {len(violations)} disallowed URL(s):")
+        print(f"Found {len(violations)} violation(s):")
         for url, reason in violations.items():
             print(f"  {url} - {reason}")
     else:
-        print("No disallowed URLs found in the added Projects.md lines.")
+        print("No violations found in the added Projects.md lines.")
 
     return 0
 
