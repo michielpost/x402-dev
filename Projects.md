@@ -108,6 +108,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [AgentReader](https://agentreader.xyz) - Web reader for AI agents: any URL, JS-rendered page or PDF to clean Markdown or JSON. $0.005 USDC per call on Base via x402 v2, or prepaid credits; 5 free calls/day, no account. [Discovery](https://agentreader.xyz/.well-known/x402) | [OpenAPI](https://agentreader.xyz/openapi.json) | [MCP](https://agentreader.xyz/mcp) | [llms.txt](https://agentreader.xyz/llms.txt)
 - [AgentDrives](https://agentdrives.com) - Find the SaaS tools an AI agent can use on its own for a task, from real agent drives of each product. $0.01 a search via x402 (USDC on Base) or MPP, or prepaid credit; a free search API and MCP server too. [OpenAPI](https://agentdrives.com/openapi.json) | [MCP](https://agentdrives.com/api/mcp) | [llms.txt](https://agentdrives.com/llms.txt)
 
+- [x402-tools MCP (page-read + agent-audit)](https://github.com/agent-audit-x402/x402-tools-mcp) - Remote MCP server and HTTP APIs for agents: page to clean markdown ($0.001), quote-on-page check ($0.005), check of up to 25 links ($0.01) and x402 seller audit ($0.02), paid per call in USDC on Base via x402 v2 (exact, PayAI facilitator). No account or API key. MIT source; hosted endpoint in the README.
+
 ## x402 Developer Tools & SDKs
 
 Libraries, SDKs, and dev tools for building with x402.
