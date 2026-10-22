@@ -151,6 +151,7 @@ Libraries, SDKs, and dev tools for building with x402.
 - [x402-proxy](https://github.com/cascade-protocol/x402-proxy) - `curl` for x402 paid APIs. CLI and library that auto-pays HTTP 402 responses with USDC on Base and Solana, with MCP stdio proxy for AI agents. `npx x402-proxy`.
 - [x402-python](https://github.com/cryptomotifs/x402-python) - First Python client for x402 HTTP 402 payments (Linux Foundation spec, v2). Decimal-precise nanopayment conversion, EIP-712 signing, async + sync APIs.
 - [x402-solana](https://github.com/payainetwork/x402-solana) - Solana SDK for x402
+- - [x402check](https://x402check.dpdns.org) - Free web checker for x402 endpoints: paste a paid URL to see the 402 challenge, payment options and Bazaar listability an agent sees before paying, with an A-F grade and fix snippets.
 - [x402magic](https://x402magic.xyz/) - Build payment-protected APIs in minutes with TypeScript
 - [x402scan](https://www.x402scan.com/) - Explore and analyze x402 transactions  
 - [x402station](https://x402station.com/) - Discover and monitor x402 services
