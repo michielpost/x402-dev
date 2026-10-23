@@ -15,6 +15,7 @@ using x402dev.Server.HostedServices;
 using x402dev.Server.Mcp;
 using x402dev.Server.Services;
 using x402dev.Services;
+using x402dev.Server.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -106,6 +107,10 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 builder.Services.AddHttpClient();
+// The public x402 proxy must never reach non-public addresses, follow redirects,
+// trust ambient HTTP proxy settings, or reuse untrusted response cookies.
+builder.Services.AddHttpClient(PublicProxyNetworkPolicy.ClientName)
+    .ConfigurePrimaryHttpMessageHandler(PublicProxyNetworkPolicy.CreateHandler);
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
 
