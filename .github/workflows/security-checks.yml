@@ -1,0 +1,32 @@
+name: Security checks
+
+# Runs the offline security harnesses that guard the public x402 proxy and the
+# credentialed CORS allow-list. Both projects link the production source files
+# directly, so a regression in the guards fails this workflow.
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  security-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.x'
+
+      - name: Public proxy security checks
+        run: dotnet run --project tests/PublicProxySecurityChecks --configuration Release
+
+      - name: Credentialed CORS origin checks
+        run: dotnet run --project tests/CredentialedCorsOriginChecks --configuration Release

@@ -2,21 +2,30 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 
-namespace x402dev.Server.Security;
+namespace x402dev.Services.Security;
 
 /// <summary>
-/// Fail-closed outbound connection policy for the public x402 request proxy.
+/// Fail-closed outbound connection policy for every server-side fetch of a
+/// user-supplied URL: the public x402 proxy and the registry background checker.
 /// The actual socket uses the IP addresses classified here, not a second DNS lookup:
 /// a pre-flight DNS check followed by the normal HttpClient resolver is rebindable.
 /// </summary>
-internal static class PublicProxyNetworkPolicy
+public static class PublicProxyNetworkPolicy
 {
     public const string ClientName = "public-x402-proxy";
+
+    /// <summary>
+    /// Ports a user-supplied URL may target. Refusing everything else keeps the
+    /// proxy from being used to probe unrelated services (SSH, SMTP, Redis,
+    /// Elasticsearch, ...) that happen to listen on a public address.
+    /// </summary>
+    public static bool IsAllowedPort(int port) => port is 80 or 443 or 8080 or 8443;
 
     public static bool IsAllowedUri(Uri? uri) =>
         uri is { IsAbsoluteUri: true } &&
         (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps) &&
         string.IsNullOrEmpty(uri.UserInfo) &&
+        IsAllowedPort(uri.Port) &&
         IsAllowedHost(uri.Host);
 
     public static SocketsHttpHandler CreateHandler() => new()
@@ -99,7 +108,7 @@ internal static class PublicProxyNetworkPolicy
         SocketsHttpConnectionContext context, CancellationToken cancellationToken)
     {
         var endpoint = context.DnsEndPoint;
-        if (endpoint.Port is < 1 or > 65535 || !IsAllowedHost(endpoint.Host))
+        if (!IsAllowedPort(endpoint.Port) || !IsAllowedHost(endpoint.Host))
             throw new HttpRequestException("Unsafe outbound proxy destination.");
 
         IPAddress[] resolved;

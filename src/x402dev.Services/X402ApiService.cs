@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using x402.Core.Models.v2;
 using x402dev.Database;
 using x402dev.Database.Models;
+using x402dev.Services.Security;
 
 namespace x402dev.Services
 {
@@ -461,66 +462,32 @@ namespace x402dev.Services
         }
 
         /// <summary>
-        /// True when the host resolves to a public address. Blocks loopback, private,
-        /// link-local and reserved addresses to prevent SSRF against internal services.
+        /// True when the host resolves to a public address. Delegates to the same
+        /// policy the public proxy uses, so registration and proxying cannot drift
+        /// apart on which destinations are considered reachable.
         /// </summary>
         private static async Task<bool> IsPublicHostAsync(string host)
         {
-            var normalized = host.TrimEnd('.').ToLowerInvariant();
-
-            if (normalized == "localhost" || normalized.EndsWith(".localhost") ||
-                normalized.EndsWith(".local") || normalized.EndsWith(".internal"))
+            if (!PublicProxyNetworkPolicy.IsAllowedHost(host))
             {
                 return false;
             }
 
-            IPAddress[] addresses;
-            if (IPAddress.TryParse(normalized, out var literal))
+            // IsAllowedHost already classified IP literals; only names need DNS.
+            if (IPAddress.TryParse(host.Trim().Trim('[', ']'), out _))
             {
-                addresses = [literal];
-            }
-            else
-            {
-                try
-                {
-                    addresses = await Dns.GetHostAddressesAsync(normalized);
-                }
-                catch (Exception)
-                {
-                    return false; // unresolvable host
-                }
+                return true;
             }
 
-            return addresses.Length > 0 && addresses.All(IsPublicIp);
-        }
-
-        private static bool IsPublicIp(IPAddress address) => address switch
-        {
-            { IsIPv4MappedToIPv6: true } => IsPublicIp(address.MapToIPv4()),
-            _ when IPAddress.IsLoopback(address) => false,
-            _ when address.IsIPv6LinkLocal || address.IsIPv6SiteLocal => false,
-            { AddressFamily: System.Net.Sockets.AddressFamily.InterNetwork } ip =>
-                !IsPrivateIPv4(ip.MapToIPv4()),
-            { AddressFamily: System.Net.Sockets.AddressFamily.InterNetworkV6 } =>
-                !address.IsIPv6Teredo && !IsUniqueLocalIpv6(address),
-            _ => false
-        };
-
-        private static bool IsPrivateIPv4(IPAddress ip)
-        {
-            var bytes = ip.GetAddressBytes();
-            return bytes[0] == 10
-                || bytes[0] == 127
-                || (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
-                || (bytes[0] == 192 && bytes[1] == 168)
-                || (bytes[0] == 169 && bytes[1] == 254)
-                || (bytes[0] == 100 && bytes[1] >= 64 && bytes[1] <= 127);
-        }
-
-        private static bool IsUniqueLocalIpv6(IPAddress ip)
-        {
-            var bytes = ip.GetAddressBytes();
-            return (bytes[0] & 0xFE) == 0xFC; // fc00::/7 unique local
+            try
+            {
+                return PublicProxyNetworkPolicy.AreAllPublicAddresses(
+                    await Dns.GetHostAddressesAsync(host.TrimEnd('.')));
+            }
+            catch (Exception)
+            {
+                return false; // unresolvable host
+            }
         }
 
         /// <summary>
@@ -591,7 +558,9 @@ namespace x402dev.Services
 
             logger.LogInformation("Checking {Count} x402 API(s)", dueApis.Count);
 
-            var httpClient = httpClientFactory.CreateClient();
+            // The registry checker fetches user-submitted URLs, so it must use the
+            // same pinned, redirect-free, private-address-blocking client as the proxy.
+            var httpClient = httpClientFactory.CreateClient(PublicProxyNetworkPolicy.ClientName);
             httpClient.Timeout = TimeSpan.FromSeconds(15);
 
             for (var i = 0; i < dueApis.Count; i++)
@@ -746,7 +715,12 @@ namespace x402dev.Services
         /// </summary>
         private static async Task<(string? RawJson, string? Version, List<object>? Requirements, string? Error)> ParseV1PaymentRequiredAsync(HttpResponseMessage response)
         {
-            var body = await response.Content.ReadAsStringAsync();
+            var body = await BoundedContentReader.ReadStringAsync(response.Content);
+
+            if (body is null)
+            {
+                return (null, null, null, "The 402 response body exceeded the maximum allowed size.");
+            }
 
             if (string.IsNullOrWhiteSpace(body))
             {

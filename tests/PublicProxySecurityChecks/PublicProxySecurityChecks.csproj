@@ -6,7 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Test the exact production guard without running an x402 service or using a wallet. -->
-    <Compile Include="../../src/x402dev/Server/Security/PublicProxyNetworkPolicy.cs" Link="PublicProxyNetworkPolicy.cs" />
+    <!-- Test the exact production guards without running an x402 service or using a wallet. -->
+    <Compile Include="../../src/x402dev.Services/Security/PublicProxyNetworkPolicy.cs" Link="PublicProxyNetworkPolicy.cs" />
+    <Compile Include="../../src/x402dev.Services/Security/BoundedContentReader.cs" Link="BoundedContentReader.cs" />
+    <Compile Include="../../src/x402dev/Server/Security/ProxyResponseHeaderPolicy.cs" Link="ProxyResponseHeaderPolicy.cs" />
   </ItemGroup>
 </Project>

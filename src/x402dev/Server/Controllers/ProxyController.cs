@@ -5,6 +5,7 @@ using System.Text;
 using x402;
 using x402dev.Server.Models;
 using x402dev.Server.Security;
+using x402dev.Services.Security;
 
 namespace PaymentRequiredProxyApi.Controllers;
 
@@ -46,9 +47,11 @@ public class ProxyController : ControllerBase
 
         try
         {
-            var proxyRequest = BuildProxyRequest(request, Request);
+            using var proxyRequest = BuildProxyRequest(request, Request);
 
-            var response = await client.SendAsync(proxyRequest);
+            // ResponseHeadersRead keeps the body out of memory until the bounded
+            // reader below has confirmed it fits within the size ceiling.
+            using var response = await client.SendAsync(proxyRequest, HttpCompletionOption.ResponseHeadersRead);
 
 
             // Return payload **only** when the remote server returns 402
@@ -63,7 +66,11 @@ public class ProxyController : ControllerBase
 
             }
 
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await BoundedContentReader.ReadStringAsync(response.Content);
+            if (content is null)
+            {
+                return StatusCode(502, "Target response exceeded the maximum allowed size.");
+            }
 
             var headers = response.Headers
                 .ToDictionary(h => h.Key, h => string.Join(", ", h.Value));
@@ -100,27 +107,27 @@ public class ProxyController : ControllerBase
 
         try
         {
-            var proxyRequest = BuildProxyRequest(request, Request);
+            using var proxyRequest = BuildProxyRequest(request, Request);
 
-            var response = await client.SendAsync(proxyRequest, HttpCompletionOption.ResponseHeadersRead);
+            using var response = await client.SendAsync(proxyRequest, HttpCompletionOption.ResponseHeadersRead);
 
             // Copy status code
             Response.StatusCode = (int)response.StatusCode;
 
-            // Copy headers
+            // Copy headers, except the ones a target must never control on this
+            // origin (Set-Cookie, hop-by-hop headers, and the CORS policy).
             foreach (var header in response.Headers)
             {
-                Response.Headers[header.Key] = header.Value.ToArray();
+                if (ProxyResponseHeaderPolicy.IsForwarded(header.Key))
+                    Response.Headers[header.Key] = header.Value.ToArray();
             }
             foreach (var header in response.Content.Headers)
             {
-                Response.Headers[header.Key] = header.Value.ToArray();
+                if (ProxyResponseHeaderPolicy.IsForwarded(header.Key))
+                    Response.Headers[header.Key] = header.Value.ToArray();
             }
-            // Remove headers that are forbidden to set
-            Response.Headers.Remove("transfer-encoding");
 
-            Response.Headers.Remove("Access-Control-Expose-Headers");
-            Response.Headers.Append("Access-Control-Expose-Headers", X402HandlerV2.PaymentRequiredHeader);
+            Response.Headers["Access-Control-Expose-Headers"] = X402HandlerV2.PaymentRequiredHeader;
 
             // Copy content
             var content = await response.Content.ReadAsStreamAsync();
