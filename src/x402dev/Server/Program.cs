@@ -66,20 +66,15 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var corsPolicyName = "AllowCredentialsPolicy";
+// Keep localhost development support without admitting attacker-controlled
+// origins whose host merely contains a trusted domain or "localhost".
+var allowLocalDevelopmentCors = builder.Environment.IsDevelopment();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(corsPolicyName, policy =>
     {
         policy.SetIsOriginAllowed(origin =>
-        {
-            if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri)) return false;
-            var host = uri.Host;
-            return host == "x402-dev.pages.dev"
-            || host.EndsWith("x402-dev.pages.dev")
-            || host.EndsWith("x402dev.com")
-            || host == "x402dev.com"
-            || host.Contains("localhost"); // dev only
-        })
+            TrustedCorsOrigins.IsAllowed(origin, allowLocalDevelopmentCors))
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
