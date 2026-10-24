@@ -1,0 +1,48 @@
+# x402 public request-proxy SSRF probe detection (Suricata)
+# Scope: defensive signatures for operators who expose an open request-proxy
+# endpoint that fetches a caller-supplied URL (x402dev ProxyController pattern:
+# POST /api/Proxy/* with a JSON {"url": ...} body). These rules fire on the
+# REQUEST side; they detect probes, they do not block by themselves.
+#
+# The JSON body is small, so we anchor on the url field name and then match
+# hostile address forms. All matches are case-insensitive where the target
+# can be written in mixed case (host names, hex literals).
+
+# --- RFC1918 / loopback / link-local IPv4 literals in the proxied URL ---
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF private IPv4 literal in proxied URL (10/8)"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/10\.(2[0-5][0-9]|1[0-9][0-9]|[1-9]?[0-9])\./i"; classtype:attempted-recon; sid:4901001; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF private IPv4 literal in proxied URL (192.168/16)"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; content:"192.168."; within:200; classtype:attempted-recon; sid:4901002; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF private IPv4 literal in proxied URL (172.16/12)"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/172\.(3[01]|2[0-9]|1[6-9])\./i"; classtype:attempted-recon; sid:4901003; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF loopback literal in proxied URL (127/8)"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/127\.(2[0-5][0-9]|1[0-9][0-9]|[1-9]?[0-9])\./i"; classtype:attempted-recon; sid:4901004; rev:1;)
+
+# --- Cloud/link-local metadata endpoints ---
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF cloud metadata target (169.254/16)"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; content:"169.254."; within:200; classtype:attempted-recon; sid:4901005; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF GCP metadata hostname in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; content:"metadata.google.internal"; nocase; within:200; classtype:attempted-recon; sid:4901006; rev:1;)
+
+# --- Loopback / unroutable host names ---
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF localhost-style hostname in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/(localhost|\.local|\.internal|\.invalid|\.test)[\/\s\"']/i"; classtype:attempted-recon; sid:4901007; rev:1;)
+
+# --- IPv6 loopback / link-local / ULA literals ---
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF IPv6 loopback or local literal in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/(\[::1\]|\[fe80|\[fc[0-9a-f]|\[fd[0-9a-f])/i"; classtype:attempted-recon; sid:4901008; rev:1;)
+
+# --- Obfuscated IPv4 forms used to slip past naive string filters ---
+# Pure decimal IPv4 (e.g. http://2130706433/ == 127.0.0.1)
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF decimal-integer IPv4 notation in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/https?:[\/\\]+[0-9]{7,10}[\/\\\s\"']/i"; classtype:attempted-recon; sid:4901009; rev:1;)
+
+# Hex-prefixed IPv4 octets (e.g. http://0x7f.0x0.0x0.0x1)
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF hex IPv4 notation in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/https?:[\/\\]+0x[0-9a-f]+\./i"; classtype:attempted-recon; sid:4901010; rev:1;)
+
+# Octal IPv4 octets (e.g. http://0177.0.0.01)
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF octal IPv4 notation in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/https?:[\/\\]+0[0-7]{2,3}\.[0-7]/i"; classtype:attempted-recon; sid:4901011; rev:1;)
+
+# --- Userinfo trickery: http://allowed-looking-host@127.0.0.1/ ---
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF userinfo@host smuggle in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/https?:[\/\\]+[^\/\\\"\s']+@/i"; classtype:attempted-recon; sid:4901012; rev:1;)
+
+# --- Non-HTTP schemes reachable through naive URL parsers ---
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF non-HTTP scheme in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/(file|gopher|dict|ftp|tftp|ldap|jar|netdoc):[\/\\]+/i"; classtype:attempted-recon; sid:4901013; rev:1;)
+
+# --- Percent-encoded private literal (e.g. %31%30%2e starts "10.") ---
+alert http any any -> $HOME_NET any (msg:"X402-PROXY SSRF percent-encoded private IPv4 literal in proxied URL"; flow:established,to_server; http.method; content:"POST"; http_client_body; content:"url"; pcre:"/%3[12]%[0-9a-f]%2e/i"; classtype:attempted-recon; sid:4901014; rev:1;)
