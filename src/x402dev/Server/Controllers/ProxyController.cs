@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using x402;
 using x402dev.Server.Models;
+using x402dev.Server.Security;
 
 namespace PaymentRequiredProxyApi.Controllers;
 
@@ -34,12 +35,13 @@ public class ProxyController : ControllerBase
     public async Task<IActionResult> GetPaymentRequired([FromBody] ProxyRequest request, int statusCode)
     {
         if (string.IsNullOrWhiteSpace(request.Url) ||
-            !Uri.TryCreate(request.Url, UriKind.Absolute, out var uri))
+            !Uri.TryCreate(request.Url, UriKind.Absolute, out var uri) ||
+            !PublicProxyNetworkPolicy.IsAllowedUri(uri))
         {
             return BadRequest("Invalid or missing URL.");
         }
 
-        var client = _httpClientFactory.CreateClient();
+        var client = _httpClientFactory.CreateClient(PublicProxyNetworkPolicy.ClientName);
         client.Timeout = TimeSpan.FromSeconds(10);
 
         try
@@ -87,12 +89,13 @@ public class ProxyController : ControllerBase
     public async Task<IActionResult> ProxyPassThrough([FromBody] ProxyRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Url) ||
-            !Uri.TryCreate(request.Url, UriKind.Absolute, out var uri))
+            !Uri.TryCreate(request.Url, UriKind.Absolute, out var uri) ||
+            !PublicProxyNetworkPolicy.IsAllowedUri(uri))
         {
             return BadRequest("Invalid or missing URL.");
         }
 
-        var client = _httpClientFactory.CreateClient();
+        var client = _httpClientFactory.CreateClient(PublicProxyNetworkPolicy.ClientName);
         client.Timeout = TimeSpan.FromSeconds(30);
 
         try
