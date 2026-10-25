@@ -85,6 +85,11 @@
     "Name": "Cryptonly",
     "Url": "https://api.cryptonly.net/x402/",
     "Comments": "Public /supported and discovery. Verify and settle at https://api-merchant.cryptonly.net/x402 with a Cryptonly API key."
+  },
+  {
+    "Name": "Central City (Base)",
+    "Url": "https://centralcity.ai/x402/facilitator",
+    "Comments": "x402 v2, exact, USDC on Base via EIP-3009 (ERC-1271 smart accounts included), no API key. /supported and /verify are live; /settle is being enabled. Docs: https://centralcity.ai/docs/x402-facilitator.md"
   }
 ]
 
