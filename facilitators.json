@@ -80,6 +80,11 @@
   {
     "Name": "Shinjuku Shielded (Solana)",
     "Url": "https://shinjukustaition.com/api/x402"
+  },
+  {
+    "Name": "Cryptonly",
+    "Url": "https://api.cryptonly.net/x402/",
+    "Comments": "Public /supported and discovery. Verify and settle at https://api-merchant.cryptonly.net/x402 with a Cryptonly API key."
   }
 ]
 
