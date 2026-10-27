@@ -95,6 +95,11 @@
     "Name": "Roundhouse",
     "Url": "https://x402.roundhouseai.io",
     "Comments": "x402 v1 and v2, exact, USDC on Base mainnet via EIP-3009, facilitator-sponsored gas, no API key. Docs: https://roundhouseai.io/docs/guides/use-the-roundhouse-facilitator"
+  },
+  {
+    "Name": "Priors (Robinhood Chain)",
+    "Url": "https://facilitator.priors.trade",
+    "Comments": "x402 v1 and v2, exact, USDG on Robinhood Chain (eip155:4663; v1 also accepts the name robinhood) via EIP-3009. /supported, /health and /discovery/resources are public. /verify and /settle take a merchant key, issued by open self-registration (the payTo wallet signs a challenge): 20 free settles per merchant a day, then 0.015 USDG a settle. Docs: https://x402.priors.trade"
   }
 ]
 
