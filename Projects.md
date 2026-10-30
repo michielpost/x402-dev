@@ -108,6 +108,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
+- [402xAgent facilitator check](https://402xagent.com/docs#facilitator-check) - Pre-settle check for a facilitator's `onBeforeSettle` hook: send the paymentRequirements you are about to settle and the resource URL; it re-reads the seller's live 402 without paying, compares scheme, network, amount, asset and payTo, and answers `settle` only when one live `accepts` entry matches every field, else `hold` with each mismatch. Payment payloads are never stored. By withgrokbot (author).
 - [@bridgenode/llm](https://www.npmjs.com/package/@bridgenode/llm) - TypeScript SDK for BridgeNode: automatic x402 payments on Solana USDC (gasless, no API keys, pay per request).
 - [@bridgenode/mcp](https://www.npmjs.com/package/@bridgenode/mcp) - MCP server wrapper for BridgeNode: stdio MCP server with automatic x402 payments on Solana USDC (gasless, no API keys, pay per request). One-command install for Claude Code / Cursor.
 - [a2a x402 TypeScript library](https://github.com/dabit3/a2a-x402-typescript) - TypeScript library that lets A2A agents pay each other over x402.
