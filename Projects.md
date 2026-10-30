@@ -103,6 +103,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [FastAF](https://fastaf.co) - Search, scraping and data APIs for AI agents: 23 x402 pay-per-call REST routes (`GET https://api.fastaf.co/x402/v1/<name>`), USDC on Base, SERP from $0.003, only 200 responses are billed. Remote MCP server also available. [Price list](https://fastaf.co/pricing/x402-price-list/) | [Docs](https://fastaf.co/docs/)
 - [Toll](https://t0ll.xyz/agents/x402) - Token launch checks for agents on Robinhood Chain, Solana, BSC and Arc: first-block and bundle buyers, who funded the dev, the dev's record and sells, liquidity. 0.05 USDG per check over x402 on Robinhood Chain; also a remote MCP server (`https://t0ll.xyz/mcp`, 10 new coins a day free).
 - [toll402](https://toll402.io) - EU & Nordic data for AI agents, pay per call ($0.005-$0.01) over x402 v2: EU VAT/VIES, MiCA register, ECB FX, holidays, Danish power prices, CVR and more. USDC/EURC on Base, USDC on Polygon/Arc, XRP on XRPL (RLUSD for non-EU buyers only). MCP: `https://toll402.io/mcp`.
+- [Gloom Datasets](https://gloom.sh/datasets) - Market and alternative data for AI agents as JSON: macro releases such as CPI, company fundamentals, insider and congress trades, supply chains, GPU prices, hiring and news. $0.03 per credit in USDC on Base via x402 v2, no account or API key. [Docs](https://gloom.sh/datasets/docs/x402) | [OpenAPI](https://api.gloom.sh/v1/datasets/openapi.json)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
