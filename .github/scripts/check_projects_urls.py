@@ -31,7 +31,7 @@ import sys
 from urllib.parse import urlsplit
 
 TARGET_FILE = "Projects.md"
-BLOCKED_DOMAIN_SUBSTRINGS = ("netlify", "onrender", "trycloudflare", "workers.dev", "pages.dev", "railway.app", "vercel.app", "sslip.io", "ts.net", "agent-tools.cloud", "402index")
+BLOCKED_DOMAIN_SUBSTRINGS = ("netlify", "onrender", "trycloudflare", "workers.dev", "pages.dev", "railway.app", "vercel.app", "sslip.io", "ts.net", "agent-tools.cloud", "402index", "dpdns.org")
 DASHED_IP_REGEX = re.compile(r"\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}")
 URL_REGEX = re.compile(r"https?://[^\s)<>\"'`]+", re.IGNORECASE)
 MARKER = "<!-- projects-md-url-check -->"
