@@ -145,7 +145,39 @@
         </FluentMessageBar>
     }
 
-    @if (!string.IsNullOrEmpty(successMessage))
+    @if (isSuccess)
+    {
+        <div class="result-success" role="status">
+            <div class="result-success-icon" aria-hidden="true">✓</div>
+            <div class="result-success-body">
+                <p class="result-success-title">Payment successful</p>
+                <p class="result-success-text">@successMessage</p>
+
+                @if (!string.IsNullOrWhiteSpace(settlementTransaction))
+                {
+                    <div class="result-success-meta">
+                        <span class="result-success-meta-label">Transaction</span>
+                        <code class="result-success-meta-value">@settlementTransaction</code>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(settlementNetwork))
+                {
+                    <div class="result-success-meta">
+                        <span class="result-success-meta-label">Network</span>
+                        <code class="result-success-meta-value">@settlementNetwork</code>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(settlementPayer))
+                {
+                    <div class="result-success-meta">
+                        <span class="result-success-meta-label">Payer</span>
+                        <code class="result-success-meta-value">@settlementPayer</code>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(successMessage))
     {
         <FluentMessageBar Intent="MessageBarIntent.Success">
             @successMessage
@@ -178,9 +210,17 @@
 
     @if (finalResult != null)
     {
-        <FluentCard>
+        <FluentCard Class="@(isSuccess ? "result-card-success" : null)">
+            <div class="result-card-header">
+                <span class="result-card-title">Final Response</span>
+                @if (responseStatusCode.HasValue)
+                {
+                    <span class="status-pill @(isSuccess ? "status-pill-success" : "status-pill-neutral")">
+                        @responseStatusCode @responseReasonPhrase
+                    </span>
+                }
+            </div>
             <FluentTextArea Style="width: 100%; min-height: 100%;"
-                            Label="Final Response"
                             Value="@finalResult"
                             Resize="TextAreaResize.Both"
                             Height="@($"{lineCountFinalResult * 24}px")"
@@ -220,6 +260,13 @@
 
     private bool hasUrlParam;
     private bool hasMethodParam;
+
+    private bool isSuccess;
+    private int? responseStatusCode;
+    private string? responseReasonPhrase;
+    private string? settlementTransaction;
+    private string? settlementNetwork;
+    private string? settlementPayer;
 
     private bool IsGetMethod => string.Equals(httpMethod, "GET", StringComparison.OrdinalIgnoreCase);
 
@@ -579,6 +626,12 @@
             result = null;
             networkSelection?.TrySetResult(null);
             networkOptions = null;
+            isSuccess = false;
+            responseStatusCode = null;
+            responseReasonPhrase = null;
+            settlementTransaction = null;
+            settlementNetwork = null;
+            settlementPayer = null;
 
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -605,15 +658,30 @@
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            if (response.IsSuccessStatusCode)
+            responseStatusCode = (int)response.StatusCode;
+            responseReasonPhrase = response.ReasonPhrase;
+            isSuccess = response.IsSuccessStatusCode;
+
+            if (isSuccess)
             {
                 var paymentResponse = response.ReadSettlementResponseHeader();
 
-                if (paymentResponse != null && paymentResponse.Success)
+                if (paymentResponse != null)
                 {
-                    successMessage = $"Success! Tx: {paymentResponse.Transaction}";
+                    settlementTransaction = paymentResponse.Transaction;
+                    settlementNetwork = paymentResponse.Network;
+                    settlementPayer = paymentResponse.Payer;
                 }
-                
+
+                successMessage = !string.IsNullOrWhiteSpace(settlementTransaction)
+                    ? $"Payment settled on {settlementNetwork ?? "the network"}. The resource returned {responseStatusCode} {responseReasonPhrase}."
+                    : $"The resource returned {responseStatusCode} {responseReasonPhrase} — the payment was accepted.";
+
+                WriteResultLine($"SUCCESS: {responseStatusCode} {responseReasonPhrase}");
+            }
+            else
+            {
+                WriteResultLine($"Response: {responseStatusCode} {responseReasonPhrase}");
             }
 
             // Try to format if JSON

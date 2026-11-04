@@ -846,6 +846,117 @@ footer {
     color: var(--colorPaletteDarkOrangeForeground1, #b45309);
 }
 
+/* ── Success Result ────────────────────────────────────────── */
+
+.result-success {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    border: 2px solid var(--colorPaletteGreenForeground1, #107c10);
+    border-left-width: 8px;
+    background: color-mix(in srgb, var(--colorPaletteGreenForeground1, #107c10) 14%, var(--colorNeutralBackground1, #fff));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--colorPaletteGreenForeground1, #107c10) 20%, transparent);
+}
+
+.result-success-icon {
+    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--colorPaletteGreenForeground1, #107c10);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.result-success-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.result-success-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--colorPaletteGreenForeground1, #0e700e);
+}
+
+.result-success-text {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--colorNeutralForeground1);
+}
+
+.result-success-meta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+}
+
+.result-success-meta-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--colorNeutralForeground3, #666);
+}
+
+.result-success-meta-value {
+    font-family: "Cascadia Code", "Consolas", monospace;
+    word-break: break-all;
+    color: var(--colorNeutralForeground1);
+}
+
+.result-card-success {
+    border: 2px solid var(--colorPaletteGreenForeground1, #107c10) !important;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--colorPaletteGreenForeground1, #107c10) 20%, transparent);
+}
+
+.result-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-bottom: 0.5rem;
+}
+
+.result-card-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--colorNeutralForeground3, #888);
+}
+
+.status-pill {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.status-pill-success {
+    background: var(--colorPaletteGreenForeground1, #107c10);
+    color: #fff;
+}
+
+.status-pill-neutral {
+    background: var(--colorNeutralBackground3, rgba(0, 0, 0, 0.08));
+    color: var(--colorNeutralForeground2);
+}
+
 /* ── Debug / Code Log ──────────────────────────────────────── */
 
 .debug-log {
