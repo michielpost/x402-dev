@@ -791,6 +791,61 @@ footer {
     border-bottom: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.07));
 }
 
+/* ── Network Selection ─────────────────────────────────────── */
+
+.network-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+}
+
+.network-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: left;
+    padding: 0.85rem 1rem;
+    background: var(--colorNeutralBackground2, rgba(0,0,0,0.025));
+    border: 1px solid var(--colorNeutralStroke2, rgba(0,0,0,0.1));
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    color: var(--colorNeutralForeground1);
+    transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+}
+
+.network-option:hover:not(:disabled) {
+    border-color: var(--colorBrandStroke1, #0f6cbd);
+    background: var(--colorNeutralBackground2Hover, rgba(0,0,0,0.045));
+    transform: translateY(-1px);
+}
+
+.network-option:focus-visible {
+    outline: 2px solid var(--colorBrandStroke1, #0f6cbd);
+    outline-offset: 2px;
+}
+
+.network-option:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.network-option-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.network-option-detail {
+    font-size: 0.78rem;
+    color: var(--colorNeutralForeground3, #888);
+    word-break: break-word;
+}
+
+.network-option-note {
+    font-size: 0.72rem;
+    color: var(--colorPaletteDarkOrangeForeground1, #b45309);
+}
+
 /* ── Debug / Code Log ──────────────────────────────────────── */
 
 .debug-log {
