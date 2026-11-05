@@ -60,21 +60,27 @@ wins.
 
 Add `"integration_id": <app id>` to the check entry to pin the source to this app.
 
-## Auto-merge and the payment label
+## Auto-merge and the payment check
 
 The Jev scoring workflow (`.github/workflows/projects-md-url-check.yml`) auto-merges
 pull requests that only modify `Projects.md` and score at least 70/100. That merge is
-additionally gated on the **`x402/paid`** label, which the x402 Gate app applies once
-the payment has settled:
+additionally gated on **every check on the pull request head commit being green**,
+which includes the `x402/payment` check run:
 
-- `jev_pr_score.py` only reports `can_automerge=true` when the label is present, so an
-  unpaid pull request is never merged even if it scores well.
-- The workflow also listens for the `labeled` event, so a pull request that is already
-  eligible is merged as soon as the payment lands — no new push is needed.
-- The merge step re-reads the labels immediately before merging, so removing the label
-  blocks the merge again.
+- `jev_pr_score.py` only reports `can_automerge=true` when the `x402/payment` check is
+  present and successful and no other check is failing or still running, so an unpaid
+  pull request is never merged even if it scores well.
+- The workflow also listens for the `check_run` event, so a pull request that is
+  already eligible is merged as soon as the payment check turns green — no new push is
+  needed.
+- The merge step re-reads the `x402/payment` check immediately before merging, so a
+  check that went back to `queued` blocks the merge again.
 
 The score comment states which of these conditions is still missing.
+
+Because the gate does not create a check run for exempt pull requests (maintainers,
+`payment-exempt`, and so on), those pull requests are not auto-merged; merge them
+manually.
 
 ## Explaining the charge
 

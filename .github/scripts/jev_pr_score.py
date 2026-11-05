@@ -17,15 +17,17 @@ Environment:
 Outputs (written to GITHUB_OUTPUT):
     score            integer 0-100
     only_projects_md true|false
-    has_paid_label   true|false (pull request carries the x402/paid label)
-    can_automerge    true|false (only Projects.md modified, score >= 70 and the
-                     x402/paid label is present)
+    checks_green     true|false (every check on the head commit is green,
+                     including the x402/payment check)
+    can_automerge    true|false (only Projects.md modified, score >= 70 and all
+                     checks are green)
     subdomain_penalty integer, points deducted from the score when the main
                       new URL added to Projects.md is hosted on a subdomain
 
-Auto-merge additionally requires the `x402/paid` label that the x402 Gate app
-applies once the pull request payment has settled, so a qualifying pull request
-is only merged after it has been paid for.
+Auto-merge additionally requires every check on the pull request head commit to
+be green, including the `x402/payment` check run that the x402 Gate app only
+completes once the payment has settled. A pull request is therefore never merged
+before it has been paid for.
 
 The final score is capped lower (SUBJECT_SUBDOMAIN_PENALTY points) when the
 primary URL of an added Projects.md entry is a subdomain (e.g. api.example.com
@@ -54,8 +56,12 @@ MARKER = "<!-- jev-pr-score -->"
 MAX_DESCRIPTION_CHARS = 4000
 MAX_DIFF_CHARS = 60000
 TARGET_FILE = "Projects.md"
-# Label the x402 Gate app applies once the pull request payment has settled.
-PAID_LABEL = "x402/paid"
+# Check run the x402 Gate app creates in `queued` state and only completes once
+# the pull request payment has settled.
+PAYMENT_CHECK_NAME = "x402/payment"
+# Conclusions that do not block a merge. `neutral` is what the gate reports when
+# it cancels an intent (exempt, closed, cancelled), `skipped` is a skipped job.
+GREEN_CONCLUSIONS = {"success", "neutral", "skipped"}
 # Deterministic points deducted from the Jev score when the main new URL is a
 # subdomain (e.g. api.example.com instead of example.com). Subdomain-hosted
 # endpoints are more likely to be ephemeral, free-tier or non-production
@@ -100,8 +106,73 @@ def fetch_pull_request(repo: str, number: str) -> dict:
         "title": data.get("title") or "",
         "body": data.get("body") or "",
         "url": data.get("html_url") or f"https://github.com/{repo}/pull/{number}",
-        "labels": [label.get("name") or "" for label in data.get("labels") or []],
+        "head_sha": (data.get("head") or {}).get("sha") or "",
     }
+
+
+def fetch_check_runs(repo: str, sha: str) -> list[dict]:
+    runs: list[dict] = []
+    page = 1
+    while True:
+        data = json.loads(
+            github_get(f"/repos/{repo}/commits/{sha}/check-runs?per_page=100&page={page}")
+        )
+        batch = data.get("check_runs") or []
+        runs.extend(batch)
+        if len(batch) < 100:
+            break
+        page += 1
+    return runs
+
+
+def fetch_combined_status(repo: str, sha: str) -> tuple[str, int]:
+    data = json.loads(github_get(f"/repos/{repo}/commits/{sha}/status"))
+    return data.get("state") or "pending", int(data.get("total_count") or 0)
+
+
+def evaluate_checks(repo: str, sha: str) -> tuple[bool, str]:
+    """Return (all_green, reason) for the checks on the pull request head commit.
+
+    The `x402/payment` check must be present and successful: it is the only
+    signal that the x402 payment settled. Every other check must be completed
+    with a non-blocking conclusion. The check run of the workflow that is
+    currently running is ignored, because it is still in progress.
+    """
+    if not sha:
+        return False, "the pull request head commit is unknown"
+
+    runs = fetch_check_runs(repo, sha)
+    payment = [run for run in runs if run.get("name") == PAYMENT_CHECK_NAME]
+    if not payment:
+        return False, f"the {PAYMENT_CHECK_NAME} check has not been reported yet"
+    if not any(
+        run.get("status") == "completed" and run.get("conclusion") == "success"
+        for run in payment
+    ):
+        return False, f"the {PAYMENT_CHECK_NAME} check is not green yet"
+
+    own_run_id = os.environ.get("GITHUB_RUN_ID", "")
+    own_marker = f"/runs/{own_run_id}/" if own_run_id else ""
+    pending: list[str] = []
+    failing: list[str] = []
+    for run in runs:
+        if own_marker and own_marker in (run.get("details_url") or ""):
+            continue
+        name = run.get("name") or "unnamed check"
+        if run.get("status") != "completed":
+            pending.append(name)
+        elif run.get("conclusion") not in GREEN_CONCLUSIONS:
+            failing.append(f"{name} ({run.get('conclusion')})")
+
+    if failing:
+        return False, "failing checks: " + ", ".join(failing)
+    if pending:
+        return False, "checks still running: " + ", ".join(pending)
+
+    state, total = fetch_combined_status(repo, sha)
+    if total and state != "success":
+        return False, f"the commit status is {state}"
+    return True, "all checks are green"
 
 
 def fetch_changed_files(repo: str, number: str) -> list[str]:
@@ -273,7 +344,8 @@ def build_comment(
     only_projects_md: bool,
     can_automerge: bool,
     subdomain_penalty: int,
-    has_paid_label: bool,
+    checks_green: bool,
+    checks_reason: str,
 ) -> str:
     lines = [
         MARKER,
@@ -292,15 +364,15 @@ def build_comment(
     if can_automerge:
         lines.append(
             "This pull request only modifies `Projects.md`, scores above the "
-            "70-point auto-merge threshold and carries the `x402/paid` label, so "
-            "it is eligible for automatic merging."
+            "70-point auto-merge threshold and all checks are green, so it is "
+            "eligible for automatic merging."
         )
     elif only_projects_md and score >= SCORE_THRESHOLD:
         lines.append(
             "This pull request only modifies `Projects.md` and scores above the "
-            "70-point auto-merge threshold, but it does not carry the `x402/paid` "
-            "label yet. It will be merged automatically once the x402 payment "
-            "settles and the label is applied."
+            f"70-point auto-merge threshold, but it is not ready to merge yet: "
+            f"{checks_reason}. It will be merged automatically once every check, "
+            "including `x402/payment`, is green."
         )
     elif only_projects_md:
         lines.append(
@@ -321,7 +393,7 @@ def write_outputs(
     only_projects_md: bool,
     can_automerge: bool,
     subdomain_penalty: int,
-    has_paid_label: bool,
+    checks_green: bool,
 ) -> None:
     output_file = os.environ.get("GITHUB_OUTPUT")
     if not output_file:
@@ -329,7 +401,7 @@ def write_outputs(
     with open(output_file, "a", encoding="utf-8") as handle:
         handle.write(f"score={score}\n")
         handle.write(f"only_projects_md={'true' if only_projects_md else 'false'}\n")
-        handle.write(f"has_paid_label={'true' if has_paid_label else 'false'}\n")
+        handle.write(f"checks_green={'true' if checks_green else 'false'}\n")
         handle.write(f"can_automerge={'true' if can_automerge else 'false'}\n")
         handle.write(f"subdomain_penalty={subdomain_penalty}\n")
 
@@ -362,8 +434,8 @@ def main(argv: list[str]) -> int:
         score = max(0, score - subdomain_penalty)
 
     only_projects_md = files == [TARGET_FILE] and bool(added_lines)
-    has_paid_label = PAID_LABEL in pr["labels"]
-    can_automerge = only_projects_md and score >= SCORE_THRESHOLD and has_paid_label
+    checks_green, checks_reason = evaluate_checks(repo, pr["head_sha"])
+    can_automerge = only_projects_md and score >= SCORE_THRESHOLD and checks_green
 
     with open(argv[1], "w", encoding="utf-8") as handle:
         handle.write(
@@ -373,19 +445,20 @@ def main(argv: list[str]) -> int:
                 only_projects_md,
                 can_automerge,
                 subdomain_penalty,
-                has_paid_label,
+                checks_green,
+                checks_reason,
             )
         )
 
-    write_outputs(score, only_projects_md, can_automerge, subdomain_penalty, has_paid_label)
+    write_outputs(score, only_projects_md, can_automerge, subdomain_penalty, checks_green)
 
     print(
         f"Jev score for pull request #{number}: {score}/100 "
         f"(confidence {confidence * 100:.0f}%)"
     )
     print(
-        f"only_projects_md={only_projects_md} has_paid_label={has_paid_label} "
-        f"can_automerge={can_automerge}"
+        f"only_projects_md={only_projects_md} checks_green={checks_green} "
+        f"can_automerge={can_automerge} ({checks_reason})"
     )
     if subdomain_penalty:
         print(f"subdomain_penalty={subdomain_penalty}")
