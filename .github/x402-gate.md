@@ -60,6 +60,22 @@ wins.
 
 Add `"integration_id": <app id>` to the check entry to pin the source to this app.
 
+## Auto-merge and the payment label
+
+The Jev scoring workflow (`.github/workflows/projects-md-url-check.yml`) auto-merges
+pull requests that only modify `Projects.md` and score at least 70/100. That merge is
+additionally gated on the **`x402/paid`** label, which the x402 Gate app applies once
+the payment has settled:
+
+- `jev_pr_score.py` only reports `can_automerge=true` when the label is present, so an
+  unpaid pull request is never merged even if it scores well.
+- The workflow also listens for the `labeled` event, so a pull request that is already
+  eligible is merged as soon as the payment lands — no new push is needed.
+- The merge step re-reads the labels immediately before merging, so removing the label
+  blocks the merge again.
+
+The score comment states which of these conditions is still missing.
+
 ## Explaining the charge
 
 Every gated pull request gets a payment comment. Add a `message` to `.github/x402.yml` so

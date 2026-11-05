@@ -17,9 +17,15 @@ Environment:
 Outputs (written to GITHUB_OUTPUT):
     score            integer 0-100
     only_projects_md true|false
-    can_automerge    true|false (only Projects.md modified and score >= 70)
+    has_paid_label   true|false (pull request carries the x402/paid label)
+    can_automerge    true|false (only Projects.md modified, score >= 70 and the
+                     x402/paid label is present)
     subdomain_penalty integer, points deducted from the score when the main
                       new URL added to Projects.md is hosted on a subdomain
+
+Auto-merge additionally requires the `x402/paid` label that the x402 Gate app
+applies once the pull request payment has settled, so a qualifying pull request
+is only merged after it has been paid for.
 
 The final score is capped lower (SUBJECT_SUBDOMAIN_PENALTY points) when the
 primary URL of an added Projects.md entry is a subdomain (e.g. api.example.com
@@ -48,6 +54,8 @@ MARKER = "<!-- jev-pr-score -->"
 MAX_DESCRIPTION_CHARS = 4000
 MAX_DIFF_CHARS = 60000
 TARGET_FILE = "Projects.md"
+# Label the x402 Gate app applies once the pull request payment has settled.
+PAID_LABEL = "x402/paid"
 # Deterministic points deducted from the Jev score when the main new URL is a
 # subdomain (e.g. api.example.com instead of example.com). Subdomain-hosted
 # endpoints are more likely to be ephemeral, free-tier or non-production
@@ -92,6 +100,7 @@ def fetch_pull_request(repo: str, number: str) -> dict:
         "title": data.get("title") or "",
         "body": data.get("body") or "",
         "url": data.get("html_url") or f"https://github.com/{repo}/pull/{number}",
+        "labels": [label.get("name") or "" for label in data.get("labels") or []],
     }
 
 
@@ -264,6 +273,7 @@ def build_comment(
     only_projects_md: bool,
     can_automerge: bool,
     subdomain_penalty: int,
+    has_paid_label: bool,
 ) -> str:
     lines = [
         MARKER,
@@ -281,8 +291,16 @@ def build_comment(
         lines.append("")
     if can_automerge:
         lines.append(
+            "This pull request only modifies `Projects.md`, scores above the "
+            "70-point auto-merge threshold and carries the `x402/paid` label, so "
+            "it is eligible for automatic merging."
+        )
+    elif only_projects_md and score >= SCORE_THRESHOLD:
+        lines.append(
             "This pull request only modifies `Projects.md` and scores above the "
-            "70-point auto-merge threshold, so it is eligible for automatic merging."
+            "70-point auto-merge threshold, but it does not carry the `x402/paid` "
+            "label yet. It will be merged automatically once the x402 payment "
+            "settles and the label is applied."
         )
     elif only_projects_md:
         lines.append(
@@ -299,7 +317,11 @@ def build_comment(
 
 
 def write_outputs(
-    score: int, only_projects_md: bool, can_automerge: bool, subdomain_penalty: int
+    score: int,
+    only_projects_md: bool,
+    can_automerge: bool,
+    subdomain_penalty: int,
+    has_paid_label: bool,
 ) -> None:
     output_file = os.environ.get("GITHUB_OUTPUT")
     if not output_file:
@@ -307,6 +329,7 @@ def write_outputs(
     with open(output_file, "a", encoding="utf-8") as handle:
         handle.write(f"score={score}\n")
         handle.write(f"only_projects_md={'true' if only_projects_md else 'false'}\n")
+        handle.write(f"has_paid_label={'true' if has_paid_label else 'false'}\n")
         handle.write(f"can_automerge={'true' if can_automerge else 'false'}\n")
         handle.write(f"subdomain_penalty={subdomain_penalty}\n")
 
@@ -339,20 +362,31 @@ def main(argv: list[str]) -> int:
         score = max(0, score - subdomain_penalty)
 
     only_projects_md = files == [TARGET_FILE] and bool(added_lines)
-    can_automerge = only_projects_md and score >= SCORE_THRESHOLD
+    has_paid_label = PAID_LABEL in pr["labels"]
+    can_automerge = only_projects_md and score >= SCORE_THRESHOLD and has_paid_label
 
     with open(argv[1], "w", encoding="utf-8") as handle:
         handle.write(
-            build_comment(score, confidence, only_projects_md, can_automerge, subdomain_penalty)
+            build_comment(
+                score,
+                confidence,
+                only_projects_md,
+                can_automerge,
+                subdomain_penalty,
+                has_paid_label,
+            )
         )
 
-    write_outputs(score, only_projects_md, can_automerge, subdomain_penalty)
+    write_outputs(score, only_projects_md, can_automerge, subdomain_penalty, has_paid_label)
 
     print(
         f"Jev score for pull request #{number}: {score}/100 "
         f"(confidence {confidence * 100:.0f}%)"
     )
-    print(f"only_projects_md={only_projects_md} can_automerge={can_automerge}")
+    print(
+        f"only_projects_md={only_projects_md} has_paid_label={has_paid_label} "
+        f"can_automerge={can_automerge}"
+    )
     if subdomain_penalty:
         print(f"subdomain_penalty={subdomain_penalty}")
     return 0

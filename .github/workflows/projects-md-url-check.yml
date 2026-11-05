@@ -7,11 +7,16 @@ name: Projects.md PR review
 # This workflow first validates the URLs added to Projects.md and closes the
 # pull request when violations are found. Only when the URL check passes does it
 # score the pull request with the Jev decision model, post the score as a pull
-# request comment, and auto-merge pull requests that only modify Projects.md
-# and score at least 70/100.
+# request comment, and auto-merge pull requests that only modify Projects.md,
+# score at least 70/100 and carry the `x402/paid` label.
+#
+# The `x402/paid` label is applied by the x402 Gate app once the pull request
+# payment has settled, so the `labeled` activity type is included: a pull
+# request that is otherwise eligible is merged as soon as the payment lands,
+# without waiting for a new push.
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled]
     paths:
       - 'Projects.md'
 
@@ -37,6 +42,9 @@ permissions:
 jobs:
   review-projects-pr:
     runs-on: ubuntu-latest
+    # Label events are only interesting for the x402 payment label; every other
+    # label change would just re-run the URL check and the Jev scoring.
+    if: github.event.action != 'labeled' || github.event.label.name == 'x402/paid'
 
     env:
       PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
@@ -121,8 +129,16 @@ jobs:
           GH_TOKEN: ${{ secrets.AUTO_MERGE_PAT || github.token }}
         run: |
           state=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json state --jq .state)
-          if [ "$state" = "OPEN" ]; then
-            gh pr merge "$PR_NUMBER" --repo "$REPO" --squash --delete-branch
-          else
+          if [ "$state" != "OPEN" ]; then
             echo "Pull request is already $state; skipping merge."
+            exit 0
           fi
+          # Re-check the label right before merging: the x402 gate must have
+          # settled, and the label may have been removed since scoring.
+          paid=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json labels \
+            --jq '[.labels[].name] | any(. == "x402/paid")')
+          if [ "$paid" != "true" ]; then
+            echo "Pull request #${PR_NUMBER} has no x402/paid label; waiting for the x402 payment."
+            exit 0
+          fi
+          gh pr merge "$PR_NUMBER" --repo "$REPO" --squash --delete-branch
