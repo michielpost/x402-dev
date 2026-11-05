@@ -8,17 +8,24 @@ name: Projects.md PR review
 # pull request when violations are found. Only when the URL check passes does it
 # score the pull request with the Jev decision model, post the score as a pull
 # request comment, and auto-merge pull requests that only modify Projects.md,
-# score at least 70/100 and carry the `x402/paid` label.
+# score at least 70/100 and have every check green.
 #
-# The `x402/paid` label is applied by the x402 Gate app once the pull request
-# payment has settled, so the `labeled` activity type is included: a pull
-# request that is otherwise eligible is merged as soon as the payment lands,
+# The `x402/payment` check run is created in `queued` state by the x402 Gate app
+# and only turns green once the payment has settled, so requiring all checks to
+# be green means a pull request is never merged before it has been paid for.
+# The `check_run` trigger re-runs this workflow when that check completes, so an
+# otherwise eligible pull request is merged as soon as the payment lands,
 # without waiting for a new push.
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened, labeled]
+    types: [opened, synchronize, reopened]
     paths:
       - 'Projects.md'
+
+  # Fires for every check run in the repository; the job-level `if` narrows this
+  # down to the x402 payment check completing successfully.
+  check_run:
+    types: [completed]
 
   # Manual runs are useful for validating an existing pull request. The workflow
   # file must be present on the default branch before this trigger can be used.
@@ -42,22 +49,52 @@ permissions:
 jobs:
   review-projects-pr:
     runs-on: ubuntu-latest
-    # Label events are only interesting for the x402 payment label; every other
-    # label change would just re-run the URL check and the Jev scoring.
-    if: github.event.action != 'labeled' || github.event.label.name == 'x402/paid'
+    # A check_run event is only interesting when the x402 payment check turned
+    # green; every other check run in the repository is ignored.
+    if: >
+      github.event_name != 'check_run' ||
+      (github.event.check_run.name == 'x402/payment' &&
+       github.event.check_run.conclusion == 'success')
 
     env:
-      PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
       REPO: ${{ github.repository }}
 
     steps:
+      - name: Resolve the pull request number
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_PR: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+          CHECK_SHA: ${{ github.event.check_run.head_sha }}
+        run: |
+          number="$EVENT_PR"
+          if [ -z "$number" ] && [ -n "$CHECK_SHA" ]; then
+            # check_run payloads do not carry the pull request, so match the
+            # commit against the head of the open pull requests. The
+            # /commits/{sha}/pulls endpoint is not used because it does not
+            # resolve pull requests opened from a fork.
+            number=$(gh pr list --repo "$REPO" --state open --limit 200 \
+              --json number,headRefOid \
+              --jq "[.[] | select(.headRefOid == \"${CHECK_SHA}\")][0].number // empty")
+          fi
+          if [ -z "$number" ]; then
+            echo "No open pull request found for this event; nothing to do."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "PR_NUMBER=${number}" >> "$GITHUB_ENV"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "Resolved pull request #${number}."
+
       - name: Check out repository
+        if: steps.pr.outputs.found == 'true'
         uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.base.sha || github.sha }}
 
       - name: Validate URLs added to Projects.md
         id: check
+        if: steps.pr.outputs.found == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -65,13 +102,13 @@ jobs:
           python3 .github/scripts/check_projects_urls.py pr.diff comment.md
 
       - name: Dry-run summary
-        if: steps.check.outputs.violations == 'true' && github.event.inputs.dry_run == 'true'
+        if: steps.pr.outputs.found == 'true' && steps.check.outputs.violations == 'true' && github.event.inputs.dry_run == 'true'
         run: |
           echo "Dry run: pull request #${PR_NUMBER} would be commented on and closed."
           cat comment.md
 
       - name: Comment on the pull request
-        if: steps.check.outputs.violations == 'true' && github.event.inputs.dry_run != 'true'
+        if: steps.pr.outputs.found == 'true' && steps.check.outputs.violations == 'true' && github.event.inputs.dry_run != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -84,7 +121,7 @@ jobs:
           fi
 
       - name: Close the pull request
-        if: steps.check.outputs.violations == 'true' && github.event.inputs.dry_run != 'true'
+        if: steps.pr.outputs.found == 'true' && steps.check.outputs.violations == 'true' && github.event.inputs.dry_run != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -97,7 +134,7 @@ jobs:
 
       - name: Score the pull request with Jev
         id: jev
-        if: steps.check.outputs.violations != 'true'
+        if: steps.pr.outputs.found == 'true' && steps.check.outputs.violations != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           VENICE_API_KEY: ${{ secrets.VENICE_API_KEY }}
@@ -105,7 +142,7 @@ jobs:
           python3 .github/scripts/jev_pr_score.py comment.md
 
       - name: Post the Jev score on the pull request
-        if: steps.check.outputs.violations != 'true' && github.event.inputs.dry_run != 'true'
+        if: steps.pr.outputs.found == 'true' && steps.check.outputs.violations != 'true' && github.event.inputs.dry_run != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -121,7 +158,7 @@ jobs:
           fi
 
       - name: Auto-merge qualifying pull requests
-        if: steps.check.outputs.violations != 'true' && steps.jev.outputs.can_automerge == 'true' && github.event.inputs.dry_run != 'true'
+        if: steps.pr.outputs.found == 'true' && steps.check.outputs.violations != 'true' && steps.jev.outputs.can_automerge == 'true' && github.event.inputs.dry_run != 'true'
         # The default GITHUB_TOKEN cannot merge pull requests in this
         # repository, so a personal access token (AUTO_MERGE_PAT) is used for
         # the merge step. The GITHUB_TOKEN is kept as a fallback.
@@ -133,12 +170,13 @@ jobs:
             echo "Pull request is already $state; skipping merge."
             exit 0
           fi
-          # Re-check the label right before merging: the x402 gate must have
-          # settled, and the label may have been removed since scoring.
-          paid=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json labels \
-            --jq '[.labels[].name] | any(. == "x402/paid")')
-          if [ "$paid" != "true" ]; then
-            echo "Pull request #${PR_NUMBER} has no x402/paid label; waiting for the x402 payment."
+          # Re-check the payment gate right before merging: the x402 check must
+          # still be green, and the head commit may have moved since scoring.
+          sha=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefOid --jq .headRefOid)
+          paid=$(gh api "repos/${REPO}/commits/${sha}/check-runs?per_page=100" \
+            --jq '[.check_runs[] | select(.name == "x402/payment" and .status == "completed" and .conclusion == "success")] | length')
+          if [ "$paid" -eq 0 ]; then
+            echo "The x402/payment check is not green; waiting for the x402 payment."
             exit 0
           fi
           gh pr merge "$PR_NUMBER" --repo "$REPO" --squash --delete-branch
