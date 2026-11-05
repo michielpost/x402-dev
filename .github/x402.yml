@@ -5,9 +5,8 @@ mode: hard                    # hard = required check blocks merge | soft = comm
 gate: [pull_request, issue]
 
 # Optional: explain in the payment comment why this repo charges.
-# message: |
-#   This repository asks for a small USDC payment on new issues and pull requests
-#   so that triage time goes to contributors who are serious about the change.
+message: |
+  To prove you are serious about x402, please make an x402 payment to unlock the gate. This can be done using the Base Sepolia testnet (free!) or the Base mainnet. The fee is small (and free if you use Base Sepolia!), but it helps keep the queue honest.
 
 pricing:
   pull_request: "0.25"        # USDC, human-readable
