@@ -1,0 +1,32 @@
+# x402 Gate configuration
+# Docs: https://github.com/michielpost/x402-gate/blob/master/docs/configuration.md
+version: 1
+mode: hard                    # hard = required check blocks merge | soft = comment only
+gate: [pull_request, issue]
+
+# Optional: explain in the payment comment why this repo charges.
+message: |
+  To prove you are serious about x402, please make an x402 payment to unlock the gate. This can be done using the Base Sepolia testnet (free!) or the Base mainnet. The fee is small (and free if you use Base Sepolia!), but it helps keep the queue honest.
+
+pricing:
+  pull_request: "0.25"        # USDC, human-readable
+  issue: "0.10"
+  max_price: "25.00"
+
+accept:
+  - network: eip155:8453
+    payTo: "0x92B143F46C3F8B4242bA85F800579cdF73882e98"
+  - network: eip155:84532
+    payTo: "0x92B143F46C3F8B4242bA85F800579cdF73882e98"
+
+exempt:
+  associations: [OWNER, MEMBER, COLLABORATOR]
+  users: ["dependabot[bot]", "renovate[bot]"]
+  labels: ["payment-exempt", "maintainer-pr"]
+  prior_merged_prs: 0
+
+policy:
+  charge_on_force_push: false
+  refund_on_close: false      # true only in escrow mode
+  grace_days: 14
+  comment_budget_per_hour: 30
