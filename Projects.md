@@ -114,6 +114,9 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Trust Center Directory API](https://synergetic.solutions/llms.txt) - Pay-per-call GRC and compliance data on companies, from what they publicly advertise on their trust centers: frameworks, subprocessors and AI providers. USDC on Base.
 - [OceanAlt](https://oceanalt.com) - Pre-payment check for agents: takes a payee address and returns allow, review or decline with supporting evidence. Free MCP server and API, plus x402 endpoints from 0.002 USDC on Base, X Layer and Solana.
 
+- [TRON USDT Risk Checker](https://usdt.chikocorp.com) - USDT TRC20 risk screening for AI agents on Base, three x402 tiers: live Tether freeze check 0.01 USDC, sanctions screen with OFAC, OpenSanctions and Chainabuse plus a 0-100 risk score 0.10 USDC, full AML report with counterparty exposure and two-hop tracing 1.00 USDC. No account, no API key. [OpenAPI](https://usdt.chikocorp.com/openapi.json) | [Discovery](https://usdt.chikocorp.com/.well-known/x402)
+
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
