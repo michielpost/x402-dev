@@ -111,6 +111,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [DevX x402 checks](https://tokencheck.madebydevx.com/) - Pay-per-call checks for AI agents in USDC on Base via x402, no account or API key: ERC-20/Solana token honeypot and rug verdict ($0.01), API production-readiness quick check ($0.09) and Solidity contract pre-audit quick check ($0.90). [Token Check](https://tokencheck.madebydevx.com/openapi.json) | [API Audit](https://apiaudit.madebydevx.com/openapi.json) | [Contract Audit](https://scaudit.madebydevx.com/openapi.json)
 - [Dutiful Utilities](https://dutiful.work/developers) - 16 pay-per-call utility routes for Base token and wallet lookups, Hebrew calendar and text tools, and finance arithmetic, using x402 with USDC on Base; the block-number route costs 0.001 USDC per call. Server-side x402 v2-compatible clients only.
 - [Trust Center Directory API](https://synergetic.solutions/llms.txt) - Pay-per-call GRC and compliance data on companies, from what they publicly advertise on their trust centers: frameworks, subprocessors and AI providers. USDC on Base.
+- [Momentum Brief](https://momentum-brief.fly.dev) - Pay-per-call crypto momentum brief API. $0.10 USDC on Base via x402; no signup. [OpenAPI](https://momentum-brief.fly.dev/openapi.json) | [llms.txt](https://momentum-brief.fly.dev/llms.txt)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
