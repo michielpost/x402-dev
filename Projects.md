@@ -174,6 +174,7 @@ Tools and playgrounds to experiment and prototype with x402.
 Educational content, directories, and resource hubs.
 
 - [awesome-x402](https://github.com/Merit-Systems/awesome-x402) - Curated list of x402-related projects
+- [The x402 Field Guide](https://byshovel.com/research/x402-field-guide?utm_source=x402dev) - Notes from shipping x402 endpoints on production data APIs: pricing rules, the route-pattern bug that gives paid data away free, and why the free endpoint matters.
 - [BridgeNode skill](https://bridgenode.cc/skill.md) - Agent skill for pay-per-request LLM inference via x402: installable skill with usage, endpoints and payment flow for AI agents.
 - [Firecrawl](https://www.firecrawl.dev) - Turn websites into LLM-ready data (useful for x402 + agentic use cases)
 - [x402 Ecosystem](https://www.x402.org) - Overview of all ecosystem participants
