@@ -100,6 +100,11 @@
     "Name": "Priors (Robinhood Chain)",
     "Url": "https://facilitator.priors.trade",
     "Comments": "x402 v1 and v2, exact, USDG on Robinhood Chain (eip155:4663; v1 also accepts the name robinhood) via EIP-3009. /supported, /health and /discovery/resources are public. /verify and /settle take a merchant key, issued by open self-registration (the payTo wallet signs a challenge): 20 free settles per merchant a day, then 0.015 USDG a settle. Docs: https://x402.priors.trade"
+  },
+  {
+    "Name": "Toll (Robinhood Chain)",
+    "Url": "https://x402.t0ll.xyz",
+    "Comments": "x402 v1 and v2, USDG on Robinhood Chain (eip155:4663) via EIP-3009 or Permit2: exact, upto, auth-capture escrow and batch-settlement, optional per-payer spending budgets. Keyless, no fee, facilitator-sponsored gas; checks each payTo against the seller's ERC-8004 agent wallet and signs a receipt per settlement. Docs: https://x402.t0ll.xyz/docs"
   }
 ]
 
