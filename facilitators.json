@@ -105,6 +105,12 @@
     "Name": "Toll (Robinhood Chain)",
     "Url": "https://x402.t0ll.xyz",
     "Comments": "x402 v1 and v2, USDG on Robinhood Chain (eip155:4663) via EIP-3009 or Permit2: exact, upto, auth-capture escrow and batch-settlement, optional per-payer spending budgets. Keyless, no fee, facilitator-sponsored gas; checks each payTo against the seller's ERC-8004 agent wallet and signs a receipt per settlement. Docs: https://x402.t0ll.xyz/docs"
+  },
+  {
+    "Name": "CSPR.cloud x402 Facilitator",
+    "Url": "https://x402-facilitator.cspr.cloud",
+    "NeedsApiKey": true,
+    "Comments": "Exact CEP-18 payments on Casper Mainnet and Testnet via EIP-712 signatures. Get an API key on https://console.cspr.build. Docs: https://docs.cspr.cloud/x402-facilitator-api/reference"
   }
 ]
 
