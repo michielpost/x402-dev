@@ -114,6 +114,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [OceanAlt](https://oceanalt.com) - Pre-payment check for agents: takes a payee address and returns allow, review or decline with supporting evidence. Free MCP server and API, plus x402 endpoints from 0.002 USDC on Base, X Layer and Solana.
 - [Nettrux](https://www.nettrux.ai) - First 3PL on x402. Freight broker building an x402 rail so agents can shop a lane and propose a booking; named human approval required. Discovery pointer at https://www.nettrux.ai/.well-known/x402 (resources empty; not a live public pay-and-book). [Agent guide](https://www.nettrux.ai/agents).
 
+- [agent-fleet](https://agent-fleet-ppqpwu.camelai.app) - Iranian and Persian verification and data tools for agents: national code, bank card and Sheba (IBAN) checks, mobile number to operator and province, postal code, licence plate, passport MRZ check digits, Jalali and lunar Hijri dates, RTL text safety. Hosted MCP, no key; 59 of 76 free, priced calls 0.002-0.02 USDC via x402 on Solana or Base. Unpaid priced call returns 402. [Repo](https://github.com/Elviro2658/agent-fleet-mcp)
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
