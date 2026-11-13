@@ -116,6 +116,9 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Nettrux](https://www.nettrux.ai) - First 3PL on x402. Freight broker building an x402 rail so agents can shop a lane and propose a booking; named human approval required. Discovery pointer at https://www.nettrux.ai/.well-known/x402 (resources empty; not a live public pay-and-book). [Agent guide](https://www.nettrux.ai/agents).
 - [ZERO Payment Guard](https://github.com/qweewqqwe221/zero-payment-guard) - Check before an agent pays: preflight an x402 endpoint's payment terms ($0.005), verify a Base USDC payment tx ($0.002), token safety ($0.003), wallet and tx reads ($0.001-$0.002), plus web/company data tools; USDC on Base via x402 v2, also as a remote MCP server. Open source (MIT), with a free stdlib Python preflight CLI. [API](https://zero-payment-guard.worker.beacon.host)
 
+- [TRON USDT Risk Checker](https://usdt.chikocorp.com) - USDT TRC20 risk screening for AI agents on Base, three x402 tiers: live Tether freeze check 0.01 USDC, sanctions screen with OFAC, OpenSanctions and Chainabuse plus a 0-100 risk score 0.10 USDC, full AML report with counterparty exposure and two-hop tracing 1.00 USDC. No account, no API key. [OpenAPI](https://usdt.chikocorp.com/openapi.json) | [Discovery](https://usdt.chikocorp.com/.well-known/x402)
+
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
