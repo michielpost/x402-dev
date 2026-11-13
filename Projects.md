@@ -114,6 +114,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Trust Center Directory API](https://synergetic.solutions/llms.txt) - Pay-per-call GRC and compliance data on companies, from what they publicly advertise on their trust centers: frameworks, subprocessors and AI providers. USDC on Base.
 - [OceanAlt](https://oceanalt.com) - Pre-payment check for agents: takes a payee address and returns allow, review or decline with supporting evidence. Free MCP server and API, plus x402 endpoints from 0.002 USDC on Base, X Layer and Solana.
 - [Nettrux](https://www.nettrux.ai) - First 3PL on x402. Freight broker building an x402 rail so agents can shop a lane and propose a booking; named human approval required. Discovery pointer at https://www.nettrux.ai/.well-known/x402 (resources empty; not a live public pay-and-book). [Agent guide](https://www.nettrux.ai/agents).
+- [ZERO Payment Guard](https://github.com/qweewqqwe221/zero-payment-guard) - Check before an agent pays: preflight an x402 endpoint's payment terms ($0.005), verify a Base USDC payment tx ($0.002), token safety ($0.003), wallet and tx reads ($0.001-$0.002), plus web/company data tools; USDC on Base via x402 v2, also as a remote MCP server. Open source (MIT), with a free stdlib Python preflight CLI. [API](https://zero-payment-guard.worker.beacon.host)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
