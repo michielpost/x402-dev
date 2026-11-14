@@ -167,6 +167,8 @@ Libraries, SDKs, and dev tools for building with x402.
 
 - [CommaCheck Base](https://livastic-vm5-primary-20260911.github.io/base-usdc-csv-checkout/) - Experimental open-source browser CSV preview and wallet-initiated x402 v2 EIP-3009 checkout for a 0.005 USDC Base data-quality report. Live HTTP 402 quote verified; paid wallet flow tested with mocks only. [Source](https://github.com/livastic-vm5-primary-20260911/base-usdc-csv-checkout)
 
+- [NGT Chain](https://www.ngtchain.com) - x402 v2 toolkit for Base: a TypeScript client with spending caps, Express paywall middleware and an MCP server; agents sign EIP-3009 payments in NGT or USDC. [Client](https://www.npmjs.com/package/@ngtchain/client) | [Paywall](https://www.npmjs.com/package/@ngtchain/paywall) | [MCP](https://www.npmjs.com/package/@ngtchain/mcp)
+
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
 
