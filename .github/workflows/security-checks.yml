@@ -23,7 +23,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '10.x'
+          dotnet-version: '11.x'
 
       - name: Public proxy security checks
         run: dotnet run --project tests/PublicProxySecurityChecks --configuration Release
