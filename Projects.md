@@ -172,6 +172,8 @@ Libraries, SDKs, and dev tools for building with x402.
 
 - [NGT Chain](https://www.ngtchain.com) - x402 v2 toolkit for Base: a TypeScript client with spending caps, Express paywall middleware and an MCP server; agents sign EIP-3009 payments in NGT or USDC. [Client](https://www.npmjs.com/package/@ngtchain/client) | [Paywall](https://www.npmjs.com/package/@ngtchain/paywall) | [MCP](https://www.npmjs.com/package/@ngtchain/mcp)
 
+- [plugin-caelara-x402](https://github.com/kingefman1-cmyk/plugin-caelara-x402) - TypeScript package that exposes 100 Caelara Labs API endpoints as agent tools, paid per call in USDC on Base with x402-fetch and viem. Enforces a MAX_USDC cap and a pinned payTo, and includes ElizaOS, Coinbase AgentKit and Virtuals GAME adapters.
+
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
 
