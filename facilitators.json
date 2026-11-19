@@ -105,6 +105,11 @@
     "Name": "Toll (Robinhood Chain)",
     "Url": "https://x402.t0ll.xyz",
     "Comments": "x402 v1 and v2, USDG on Robinhood Chain (eip155:4663) via EIP-3009 or Permit2: exact, upto, auth-capture escrow and batch-settlement, optional per-payer spending budgets. Keyless, no fee, facilitator-sponsored gas; checks each payTo against the seller's ERC-8004 agent wallet and signs a receipt per settlement. Docs: https://x402.t0ll.xyz/docs"
+  },
+  {
+    "Name": "Radius",
+    "Url": "https://facilitator.radiustech.xyz",
+    "Comments": "x402 v2, exact and upto. SBC on Radius (eip155:723487), USDC and SBC on Base (eip155:8453), via EIP-3009 or Permit2 with gas-sponsored Permit2 approval. No API key. Docs: https://docs.radiustech.xyz/reference/facilitator-api"
   }
 ]
 
