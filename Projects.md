@@ -1,6 +1,7 @@
 # x402 Ecosystem Overview
 ## x402 Enabled APIs & Services
 Platforms that implement or enable payments, monetization, or x402 integration.
+- [Agent Data Tools](https://tools.funwords.eu) - About 700 pay-per-call tools for AI agents over HTTP and MCP: web page and PDF to text, OFAC sanctions and EU VAT checks, crypto prices and chain reads, weather, news, LLM chat. $0.002-$0.01 USDC per call via x402 (Base, Polygon, Arbitrum, Solana) or MPP. [OpenAPI](https://tools.funwords.eu/openapi.json) | [Discovery](https://tools.funwords.eu/.well-known/x402) | [GitHub](https://github.com/Nutshell2000/agent-data-tools)
 - [Axiom Works AgentReader](https://api.axiomworks.co.uk) - Pay-per-call tools for AI agents (web→Markdown, UK Companies House/charity, SEC, EU VAT, KYB, EVM reads from $0.001) in USDC on Base via x402; HTTP + MCP; Python/npm SDKs. [OpenAPI](https://api.axiomworks.co.uk/openapi.json) | [llms.txt](https://api.axiomworks.co.uk/llms.txt) | [MCP](https://api.axiomworks.co.uk/mcp) | [GitHub](https://github.com/grokbot1233/agentreader)
 - [Central City](https://centralcity.ai) - A city for AI agents on Base: agents get USDC wallets, sell services on the Feed and pay each other via x402, settled by Central City's own facilitator through an immutable, source-verified fee router (10% protocol fee, 0.05 to 100 USDC per payment). [Fee router](https://basescan.org/address/0xe807a76385ec3d76d17ab955091c12329d0a1403#code) | [Docs](https://centralcity.ai/docs/protocol-fees.md)
 - [Subcento](https://github.com/septagos/subcento) - Transaction pre-verification for x402 on Base: agents pay 0.002 USDC for a signed SAFE/CAUTION/BLOCK verdict on the pending payment before executing it. Fail-closed, MIT, `/openapi.json` canonical. [Site](https://subcento.alterfield.com) | [OpenAPI](https://subcento.alterfield.com/openapi.json) | [llms.txt](https://subcento.alterfield.com/llms.txt)
@@ -114,6 +115,9 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Trust Center Directory API](https://synergetic.solutions/llms.txt) - Pay-per-call GRC and compliance data on companies, from what they publicly advertise on their trust centers: frameworks, subprocessors and AI providers. USDC on Base.
 - [OceanAlt](https://oceanalt.com) - Pre-payment check for agents: takes a payee address and returns allow, review or decline with supporting evidence. Free MCP server and API, plus x402 endpoints from 0.002 USDC on Base, X Layer and Solana.
 - [Nettrux](https://www.nettrux.ai) - First 3PL on x402. Freight broker building an x402 rail so agents can shop a lane and propose a booking; named human approval required. Discovery pointer at https://www.nettrux.ai/.well-known/x402 (resources empty; not a live public pay-and-book). [Agent guide](https://www.nettrux.ai/agents).
+- [ZERO Payment Guard](https://github.com/qweewqqwe221/zero-payment-guard) - Check before an agent pays: preflight an x402 endpoint's payment terms ($0.005), verify a Base USDC payment tx ($0.002), token safety ($0.003), wallet and tx reads ($0.001-$0.002), plus web/company data tools; USDC on Base via x402 v2, also as a remote MCP server. Open source (MIT), with a free stdlib Python preflight CLI. [API](https://zero-payment-guard.worker.beacon.host)
+- [Zambo](https://zambo.dev) - The verifiable work layer for AI, created by Brennan Zambo: 153 tools behind one MCP endpoint, and a verifiable AER-1 receipt for every job. Agents activate 24 hours of unlimited access with a $0.99 USDC Day Pass over x402 v2 on Base, no account or API key. [MCP](https://zambo.dev/mcp) | [x402scan](https://www.x402scan.com/server/467fd3ff-0118-4080-b3e8-f55147f24e68)
+- [WCGW Safety Suite](https://wcgw.world) - Robot hazard analysis for AI agents before power-on or deployment: send one observed or suspected failure about a robot arm (e.g. SO-101/LeRobot), mobile robot, humanoid, drone or AI agent; get STPA-style hazards, unsafe control actions, safety constraints and verification gaps. Also turns a spec into draft safety requirements. 1 USDC on Base via x402 v2, no account, charged only on success. [llms.txt](https://wcgw.world/llms.txt)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
@@ -165,6 +169,10 @@ Libraries, SDKs, and dev tools for building with x402.
 - [x402scan](https://www.x402scan.com/) - Explore and analyze x402 transactions
 
 - [CommaCheck Base](https://livastic-vm5-primary-20260911.github.io/base-usdc-csv-checkout/) - Experimental open-source browser CSV preview and wallet-initiated x402 v2 EIP-3009 checkout for a 0.005 USDC Base data-quality report. Live HTTP 402 quote verified; paid wallet flow tested with mocks only. [Source](https://github.com/livastic-vm5-primary-20260911/base-usdc-csv-checkout)
+
+- [NGT Chain](https://www.ngtchain.com) - x402 v2 toolkit for Base: a TypeScript client with spending caps, Express paywall middleware and an MCP server; agents sign EIP-3009 payments in NGT or USDC. [Client](https://www.npmjs.com/package/@ngtchain/client) | [Paywall](https://www.npmjs.com/package/@ngtchain/paywall) | [MCP](https://www.npmjs.com/package/@ngtchain/mcp)
+
+- [plugin-caelara-x402](https://github.com/kingefman1-cmyk/plugin-caelara-x402) - TypeScript package that exposes 100 Caelara Labs API endpoints as agent tools, paid per call in USDC on Base with x402-fetch and viem. Enforces a MAX_USDC cap and a pinned payTo, and includes ElizaOS, Coinbase AgentKit and Virtuals GAME adapters.
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
