@@ -118,6 +118,7 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [ZERO Payment Guard](https://github.com/qweewqqwe221/zero-payment-guard) - Check before an agent pays: preflight an x402 endpoint's payment terms ($0.005), verify a Base USDC payment tx ($0.002), token safety ($0.003), wallet and tx reads ($0.001-$0.002), plus web/company data tools; USDC on Base via x402 v2, also as a remote MCP server. Open source (MIT), with a free stdlib Python preflight CLI. [API](https://zero-payment-guard.worker.beacon.host)
 - [Zambo](https://zambo.dev) - The verifiable work layer for AI, created by Brennan Zambo: 153 tools behind one MCP endpoint, and a verifiable AER-1 receipt for every job. Agents activate 24 hours of unlimited access with a $0.99 USDC Day Pass over x402 v2 on Base, no account or API key. [MCP](https://zambo.dev/mcp) | [x402scan](https://www.x402scan.com/server/467fd3ff-0118-4080-b3e8-f55147f24e68)
 - [Screwtape.ai](https://screwtape.ai) - Pre-payment check for AI agents: POST /v1/payment-check returns allow, review or block with a signed receipt, at $0.005 USDC via x402 on Base or Solana. Hosted MCP at https://screwtape.ai/mcp. 3 free calls a day with no key, or 10 with a free key. [OpenAPI](https://screwtape.ai/openapi.json) | [MCP](https://screwtape.ai/mcp) | [llms.txt](https://screwtape.ai/llms.txt) | [GitHub](https://github.com/screwtapeai/pay-safely)
+- [WCGW Safety Suite](https://wcgw.world) - Robot hazard analysis for AI agents before power-on or deployment: send one observed or suspected failure about a robot arm (e.g. SO-101/LeRobot), mobile robot, humanoid, drone or AI agent; get STPA-style hazards, unsafe control actions, safety constraints and verification gaps. Also turns a spec into draft safety requirements. 1 USDC on Base via x402 v2, no account, charged only on success. [llms.txt](https://wcgw.world/llms.txt)
 
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
@@ -169,6 +170,10 @@ Libraries, SDKs, and dev tools for building with x402.
 - [x402scan](https://www.x402scan.com/) - Explore and analyze x402 transactions
 
 - [CommaCheck Base](https://livastic-vm5-primary-20260911.github.io/base-usdc-csv-checkout/) - Experimental open-source browser CSV preview and wallet-initiated x402 v2 EIP-3009 checkout for a 0.005 USDC Base data-quality report. Live HTTP 402 quote verified; paid wallet flow tested with mocks only. [Source](https://github.com/livastic-vm5-primary-20260911/base-usdc-csv-checkout)
+
+- [NGT Chain](https://www.ngtchain.com) - x402 v2 toolkit for Base: a TypeScript client with spending caps, Express paywall middleware and an MCP server; agents sign EIP-3009 payments in NGT or USDC. [Client](https://www.npmjs.com/package/@ngtchain/client) | [Paywall](https://www.npmjs.com/package/@ngtchain/paywall) | [MCP](https://www.npmjs.com/package/@ngtchain/mcp)
+
+- [plugin-caelara-x402](https://github.com/kingefman1-cmyk/plugin-caelara-x402) - TypeScript package that exposes 100 Caelara Labs API endpoints as agent tools, paid per call in USDC on Base with x402-fetch and viem. Enforces a MAX_USDC cap and a pinned payTo, and includes ElizaOS, Coinbase AgentKit and Virtuals GAME adapters.
 
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
