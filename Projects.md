@@ -120,6 +120,8 @@ Platforms that implement or enable payments, monetization, or x402 integration.
 - [Screwtape.ai](https://screwtape.ai) - Pre-payment check for AI agents: POST /v1/payment-check returns allow, review or block with a signed receipt, at $0.005 USDC via x402 on Base or Solana. Hosted MCP at https://screwtape.ai/mcp. 3 free calls a day with no key, or 10 with a free key. [OpenAPI](https://screwtape.ai/openapi.json) | [MCP](https://screwtape.ai/mcp) | [llms.txt](https://screwtape.ai/llms.txt) | [GitHub](https://github.com/screwtapeai/pay-safely)
 - [WCGW Safety Suite](https://wcgw.world) - Robot hazard analysis for AI agents before power-on or deployment: send one observed or suspected failure about a robot arm (e.g. SO-101/LeRobot), mobile robot, humanoid, drone or AI agent; get STPA-style hazards, unsafe control actions, safety constraints and verification gaps. Also turns a spec into draft safety requirements. 1 USDC on Base via x402 v2, no account, charged only on success. [llms.txt](https://wcgw.world/llms.txt)
 
+- [FMF Tools](https://tools.fmf-x402.workers.dev/?ref=x402-dev) - Catalog of pay-per-call MCP APIs for agents via x402 on Base and MPP on Tempo. tools/list is free; no account or API key. [MCP](https://tools.fmf-x402.workers.dev/mcp) | [GitHub](https://github.com/GeminiGeorge22/fmf-tools)
+
 ## x402 Developer Tools & SDKs
 Libraries, SDKs, and dev tools for building with x402.
 
