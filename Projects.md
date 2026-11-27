@@ -176,6 +176,8 @@ Libraries, SDKs, and dev tools for building with x402.
 
 - [plugin-caelara-x402](https://github.com/kingefman1-cmyk/plugin-caelara-x402) - TypeScript package that exposes 100 Caelara Labs API endpoints as agent tools, paid per call in USDC on Base with x402-fetch and viem. Enforces a MAX_USDC cap and a pinned payTo, and includes ElizaOS, Coinbase AgentKit and Virtuals GAME adapters.
 
+- [Verified x402](https://github.com/verifiedx402/verified-x402-mcp) - MCP server and directory of paid x402 APIs with free search and endpoint check tools and a paid ranked recommendation. Also published on npm as [@verifiedx402/mcp](https://www.npmjs.com/package/@verifiedx402/mcp).
+
 ## x402 Developer Sandboxes & Testing
 Tools and playgrounds to experiment and prototype with x402.
 
